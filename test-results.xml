@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites name="jest tests" tests="14" failures="1" errors="0" time="4.865">
+  <testsuite name="Goldfish Integration Tests" errors="0" failures="0" skipped="0" timestamp="2025-08-19T16:26:44" time="2.922" tests="7">
+    <testcase classname="Goldfish Integration Tests Memory Cleanup and Promotion should cleanup expired memories and enforce limits" name="Goldfish Integration Tests Memory Cleanup and Promotion should cleanup expired memories and enforce limits" time="0.045">
+    </testcase>
+    <testcase classname="Goldfish Integration Tests Memory Cleanup and Promotion should identify memories for promotion to ProjectKnowledge" name="Goldfish Integration Tests Memory Cleanup and Promotion should identify memories for promotion to ProjectKnowledge" time="0.007">
+    </testcase>
+    <testcase classname="Goldfish Integration Tests Session Save and Restore Workflow should save session with all context" name="Goldfish Integration Tests Session Save and Restore Workflow should save session with all context" time="0.01">
+    </testcase>
+    <testcase classname="Goldfish Integration Tests Session Save and Restore Workflow should restore most recent session by sessionId" name="Goldfish Integration Tests Session Save and Restore Workflow should restore most recent session by sessionId" time="0.023">
+    </testcase>
+    <testcase classname="Goldfish Integration Tests TODO List Lifecycle should create, update, and promote TODO lists" name="Goldfish Integration Tests TODO List Lifecycle should create, update, and promote TODO lists" time="0.012">
+    </testcase>
+    <testcase classname="Goldfish Integration Tests TODO List Lifecycle should cleanup expired TODO lists" name="Goldfish Integration Tests TODO List Lifecycle should cleanup expired TODO lists" time="0.016">
+    </testcase>
+    <testcase classname="Goldfish Integration Tests Cross-workspace Operations should handle multiple workspaces correctly" name="Goldfish Integration Tests Cross-workspace Operations should handle multiple workspaces correctly" time="0.019">
+    </testcase>
+  </testsuite>
+  <testsuite name="Goldfish Core Functionality" errors="0" failures="1" skipped="0" timestamp="2025-08-19T16:26:44" time="3.23" tests="7">
+    <testcase classname="Goldfish Core Functionality Workspace Detection should detect workspace from git root" name="Goldfish Core Functionality Workspace Detection should detect workspace from git root" time="0.461">
+    </testcase>
+    <testcase classname="Goldfish Core Functionality Workspace Detection should fallback to directory name when not in git repo" name="Goldfish Core Functionality Workspace Detection should fallback to directory name when not in git repo" time="0.003">
+    </testcase>
+    <testcase classname="Goldfish Core Functionality Chronological ID Generation should generate valid chronological IDs" name="Goldfish Core Functionality Chronological ID Generation should generate valid chronological IDs" time="0.005">
+    </testcase>
+    <testcase classname="Goldfish Core Functionality Chronological ID Generation should generate sortable chronological IDs" name="Goldfish Core Functionality Chronological ID Generation should generate sortable chronological IDs" time="0.001">
+    </testcase>
+    <testcase classname="Goldfish Core Functionality Memory Storage should create memory directories" name="Goldfish Core Functionality Memory Storage should create memory directories" time="0.011">
+      <failure>Error: expect(received).toBe(expected) // Object.is equality
+
+Expected: true
+Received: false
+    at Timeout._onTimeout (C:\source\COA Goldfish MCP\src\tests\core.test.ts:96:27)
+    at listOnTimeout (node:internal/timers:588:17)
+    at processTimers (node:internal/timers:523:7)</failure>
+    </testcase>
+    <testcase classname="Goldfish Core Functionality TTL and Expiration Logic should correctly calculate memory age" name="Goldfish Core Functionality TTL and Expiration Logic should correctly calculate memory age" time="0.002">
+    </testcase>
+    <testcase classname="Goldfish Core Functionality TTL and Expiration Logic should determine if memory should be promoted" name="Goldfish Core Functionality TTL and Expiration Logic should determine if memory should be promoted" time="0.003">
+    </testcase>
+  </testsuite>
+</testsuites>

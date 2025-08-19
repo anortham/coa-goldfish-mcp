@@ -19,6 +19,7 @@ import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js'
 import {
   CallToolRequestSchema,
   ListToolsRequestSchema,
+  CallToolRequest,
 } from '@modelcontextprotocol/sdk/types.js';
 import fs from 'fs-extra';
 import { join } from 'path';
@@ -725,7 +726,7 @@ ${todoList.items.length > completedItems.length ? `\nRemaining tasks:\n- ${todoL
       ]
     }));
 
-    this.server.setRequestHandler(CallToolRequestSchema, async (request) => {
+    this.server.setRequestHandler(CallToolRequestSchema, async (request: CallToolRequest) => {
       const { name, arguments: args } = request.params;
 
       try {
