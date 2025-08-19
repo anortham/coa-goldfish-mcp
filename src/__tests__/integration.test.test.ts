@@ -32,7 +32,7 @@ describe('Goldfish Integration Tests', () => {
       // Create memories with different ages
       const memories = [
         {
-          id: '20250101120000-OLD00001',
+          id: '18C3A2B4000-000001',
           timestamp: new Date(Date.now() - (25 * 60 * 60 * 1000)), // 25 hours ago (expired)
           workspace: 'test-workspace',
           type: 'general',
@@ -40,7 +40,7 @@ describe('Goldfish Integration Tests', () => {
           ttlHours: 24
         },
         {
-          id: '20250119120000-NEW00001',
+          id: '18C3A2B4F12-000002',
           timestamp: new Date(Date.now() - (1 * 60 * 60 * 1000)), // 1 hour ago (fresh)
           workspace: 'test-workspace',
           type: 'general',
@@ -48,7 +48,7 @@ describe('Goldfish Integration Tests', () => {
           ttlHours: 24
         },
         {
-          id: '20250119121000-NEW00002',
+          id: '18C3A2B4F13-000003',
           timestamp: new Date(Date.now() - (30 * 60 * 1000)), // 30 minutes ago (fresh)
           workspace: 'test-workspace',
           type: 'general',
@@ -56,7 +56,7 @@ describe('Goldfish Integration Tests', () => {
           ttlHours: 24
         },
         {
-          id: '20250119122000-NEW00003',
+          id: '18C3A2B4F14-000004',
           timestamp: new Date(), // Just now (fresh)
           workspace: 'test-workspace',
           type: 'general',
@@ -64,7 +64,7 @@ describe('Goldfish Integration Tests', () => {
           ttlHours: 24
         },
         {
-          id: '20250119123000-NEW00004',
+          id: '18C3A2B4F15-000005',
           timestamp: new Date(), // Just now (fresh) - over limit
           workspace: 'test-workspace',
           type: 'general',
@@ -128,7 +128,7 @@ describe('Goldfish Integration Tests', () => {
       expect(remainingFiles.length).toBeLessThanOrEqual(MAX_MEMORIES);
       
       // Expired memory should be gone
-      expect(await fs.pathExists(join(memoriesDir, '20250101120000-OLD00001.json'))).toBe(false);
+      expect(await fs.pathExists(join(memoriesDir, '18C3A2B4000-000001.json'))).toBe(false);
     });
 
     test('should identify memories for promotion to ProjectKnowledge', async () => {
@@ -186,7 +186,7 @@ describe('Goldfish Integration Tests', () => {
       };
 
       const sessionMemory = {
-        id: '20250119123456-SESSION1',
+        id: '18C3A2B4F16-SESS01',
         timestamp: new Date(),
         workspace: 'test-workspace',
         sessionId,
@@ -212,7 +212,7 @@ describe('Goldfish Integration Tests', () => {
       // Create multiple sessions with same ID (different timestamps)
       const sessions = [
         {
-          id: '20250119100000-SESS0001',
+          id: '18C3A2B4F17-SESS02',
           timestamp: new Date(Date.now() - (2 * 60 * 60 * 1000)), // 2 hours ago
           sessionId,
           type: 'checkpoint',
@@ -220,7 +220,7 @@ describe('Goldfish Integration Tests', () => {
           metadata: { isSession: true }
         },
         {
-          id: '20250119120000-SESS0002',
+          id: '18C3A2B4F18-SESS03',
           timestamp: new Date(Date.now() - (30 * 60 * 1000)), // 30 minutes ago (most recent)
           sessionId,
           type: 'checkpoint',
@@ -256,7 +256,7 @@ describe('Goldfish Integration Tests', () => {
       const latestSession = await findLatestSession(sessionId);
       expect(latestSession).toBeTruthy();
       expect(latestSession.content.description).toBe('Most recent session');
-      expect(latestSession.id).toBe('20250119120000-SESS0002');
+      expect(latestSession.id).toBe('18C3A2B4F18-SESS03');
     });
   });
 
@@ -264,18 +264,18 @@ describe('Goldfish Integration Tests', () => {
     test('should create, update, and promote TODO lists', async () => {
       // Create TODO list
       const todoList = {
-        id: '20250119123456-TODO0001',
+        id: '18C3A2B4F19-TODO01',
         title: 'Goldfish Improvements',
         items: [
           {
-            id: '20250119123457-ITEM0001',
+            id: '18C3A2B4F1A-ITEM01',
             task: 'Update tool descriptions',
             status: 'pending',
             priority: 'high',
             createdAt: new Date()
           },
           {
-            id: '20250119123458-ITEM0002',
+            id: '18C3A2B4F1B-ITEM02',
             task: 'Write comprehensive tests',
             status: 'pending',
             priority: 'normal',
@@ -294,7 +294,7 @@ describe('Goldfish Integration Tests', () => {
         const todoPath = join(todosDir, `${listId}.json`);
         const todo = await fs.readJson(todoPath);
         
-        const item = todo.items.find((i: any) => i.id === itemId || i.id.endsWith(itemId.slice(-8)));
+        const item = todo.items.find((i: any) => i.id === itemId || i.id.startsWith(itemId));
         if (item) {
           item.status = newStatus;
           item.updatedAt = new Date();
@@ -328,7 +328,7 @@ describe('Goldfish Integration Tests', () => {
       
       // Create old TODO list (older than 72 hours)
       const oldTodoList = {
-        id: '20250116000000-OLDTODO1',
+        id: '18C3A2B4000-OLDTOD',
         title: 'Old TODO List',
         items: [],
         createdAt: new Date(now.getTime() - (75 * 60 * 60 * 1000)), // 75 hours ago
@@ -337,7 +337,7 @@ describe('Goldfish Integration Tests', () => {
 
       // Create fresh TODO list
       const freshTodoList = {
-        id: '20250119123456-NEWTODO1',
+        id: '18C3A2B4F1C-NEWTOD',
         title: 'Fresh TODO List',
         items: [],
         createdAt: new Date(now.getTime() - (1 * 60 * 60 * 1000)), // 1 hour ago

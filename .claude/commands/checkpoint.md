@@ -1,24 +1,42 @@
 ---
-allowed-tools: ["mcp__goldfish__save_session", "mcp__goldfish__snapshot", "mcp__goldfish__remember"]
+allowed-tools: ["mcp__goldfish__checkpoint", "mcp__goldfish__remember"]
 description: "Create a checkpoint of current work session"
 ---
 
-Create a quick checkpoint of current work session using goldfish memory.
+Create a checkpoint of current work session using the new unified checkpoint system.
 
 $ARGUMENTS
 
 ## Steps:
-1. Create structured session:
-   - Use save_session without providing a sessionId (let it use the memory ID)
-   - The tool will return the chronological ID as the sessionId
-   - This becomes the single identifier for this session
+1. Use the checkpoint tool with appropriate detail:
+   - **Required**: description (brief summary of current state)
+   - **Optional**: highlights (key achievements/decisions to remember)
+   - **Optional**: activeFiles (files being worked on)
+   - **Optional**: workContext (what you're doing next)
+   - **Auto-detected**: gitBranch (current git branch)
 
-2. Create related checkpoint:
-   - Use snapshot with descriptive label 
-   - Use the sessionId returned from save_session to link them
-   - Use remember to store key context like active files or current focus
+2. For quick checkpoints, just provide description:
+   ```
+   checkpoint({ description: "Completed feature X" })
+   ```
 
-3. Display results:
-   - Show: "✓ Checkpoint created: {label}"
-   - Show: "Session ID: {sessionId}" (the chronological ID from save_session)
+3. For detailed session state, include all context:
+   ```
+   checkpoint({ 
+     description: "Major refactoring complete",
+     highlights: ["Converted to TypeScript", "Added session management"],
+     activeFiles: ["src/index.ts", "src/types.ts"],
+     workContext: "Next: write tests and update documentation"
+   })
+   ```
+
+4. Display results:
+   - Show: "✓ Checkpoint saved: {description}"
+   - Show: "Session ID: {sessionId}" 
    - Show: "📌 Use /resume to continue from this checkpoint"
+
+## Benefits:
+- Crash-safe development (frequent checkpoints)
+- Session continuity after /clear
+- Searchable work history
+- Accumulated session highlights

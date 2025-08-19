@@ -139,15 +139,15 @@ describe('Goldfish Tool Handlers', () => {
           content: [
             {
               type: 'text',
-              text: `✅ Remembered in "${workspace}" (ID: ${memoryId.slice(-8)}, expires in ${ttlHours}h)\n🧠 ${content}`
+              text: `✅ Remembered in "${workspace}" (ID: ${memoryId}, expires in ${ttlHours}h)\n🧠 ${content}`
             }
           ]
         };
       };
 
-      const response = generateResponse('20250119123456-ABC12345', 'Test memory', 'test-workspace', 24);
+      const response = generateResponse('18C3A2B4F12-A3F2CD', 'Test memory', 'test-workspace', 24);
       expect(response.content[0].text).toContain('✅ Remembered in "test-workspace"');
-      expect(response.content[0].text).toContain('ABC12345');
+      expect(response.content[0].text).toContain('18C3A2B4F12-A3F2CD');
       expect(response.content[0].text).toContain('expires in 24h');
       expect(response.content[0].text).toContain('🧠 Test memory');
     });
@@ -166,7 +166,7 @@ describe('Goldfish Tool Handlers', () => {
             context: '🔗'
           }[memory.type] || '📄';
           
-          output.push(`${typeIcon} [${memory.id.slice(-8)}] ${ageStr} - ${memory.type.toUpperCase()}`);
+          output.push(`${typeIcon} [${memory.id}] ${ageStr} - ${memory.type.toUpperCase()}`);
           output.push(`   ${memory.content}`);
           if (memory.tags && memory.tags.length > 0) {
             output.push(`   Tags: ${memory.tags.join(', ')}`);
@@ -179,7 +179,7 @@ describe('Goldfish Tool Handlers', () => {
 
       const testMemories = [
         {
-          id: '20250119123456-ABC12345',
+          id: '18C3A2B4F12-A3F2CD',
           timestamp: new Date(),
           type: 'todo',
           content: 'Test TODO item',
@@ -208,7 +208,7 @@ describe('Goldfish Tool Handlers', () => {
         };
 
         const output = [
-          `📝 **${todoList.title}** (${todoList.id.slice(-8)})`,
+          `📝 **${todoList.title}** (${todoList.id})`,
           `Created: ${new Date(todoList.createdAt).toLocaleDateString()}`,
           '',
           `📊 Status: ${statusCounts.pending} pending, ${statusCounts.active} active, ${statusCounts.done} done`,
@@ -219,7 +219,7 @@ describe('Goldfish Tool Handlers', () => {
       };
 
       const testTodoList = {
-        id: '20250119123456-ABC12345',
+        id: '18C3A2B4F12-A3F2CD',
         title: 'Test TODO List',
         createdAt: new Date(),
         items: [

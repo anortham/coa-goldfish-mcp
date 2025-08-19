@@ -58,35 +58,34 @@ describe('Goldfish Core Functionality', () => {
   });
 
   describe('Chronological ID Generation', () => {
-    test('should generate valid chronological IDs', () => {
+    test('should generate valid hex chronological IDs', () => {
+      let _counter = Math.floor(Math.random() * 0xFFFFFF);
+      
       const generateChronologicalId = (): string => {
-        const now = new Date();
-        const datePart = now.toISOString()
-          .replace(/[-:T]/g, '')
-          .slice(0, 14); // YYYYMMDDHHMMSS
-        const randomPart = Math.random().toString(36).substring(2, 10).toUpperCase();
-        return `${datePart}-${randomPart}`;
+        // ProjectKnowledge-style hex format
+        const timestamp = Date.now();
+        const counter = (++_counter) & 0xFFFFFF; // 24-bit counter
+        return `${timestamp.toString(16).toUpperCase()}-${counter.toString(16).padStart(6, '0').toUpperCase()}`;
       };
 
       const id1 = generateChronologicalId();
       const id2 = generateChronologicalId();
 
-      // Should match format YYYYMMDDHHMMSS-RANDOM
-      expect(id1).toMatch(/^\d{14}-[A-Z0-9]{8}$/);
-      expect(id2).toMatch(/^\d{14}-[A-Z0-9]{8}$/);
+      // Should match format {timestamp-hex}-{counter-hex}
+      expect(id1).toMatch(/^[0-9A-F]+-[0-9A-F]{6}$/);
+      expect(id2).toMatch(/^[0-9A-F]+-[0-9A-F]{6}$/);
       
       // IDs should be different
       expect(id1).not.toBe(id2);
     });
 
-    test('should generate sortable chronological IDs', async () => {
+    test('should generate sortable hex chronological IDs', async () => {
+      let _counter = Math.floor(Math.random() * 0xFFFFFF);
+      
       const generateChronologicalId = (): string => {
-        const now = new Date();
-        const datePart = now.toISOString()
-          .replace(/[-:T]/g, '')
-          .slice(0, 14);
-        const randomPart = Math.random().toString(36).substring(2, 10).toUpperCase();
-        return `${datePart}-${randomPart}`;
+        const timestamp = Date.now();
+        const counter = (++_counter) & 0xFFFFFF;
+        return `${timestamp.toString(16).toUpperCase()}-${counter.toString(16).padStart(6, '0').toUpperCase()}`;
       };
 
       const id1 = generateChronologicalId();

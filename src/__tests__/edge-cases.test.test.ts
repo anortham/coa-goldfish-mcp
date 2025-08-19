@@ -38,7 +38,7 @@ describe('Goldfish Edge Cases and Error Handling', () => {
 
       // Create one valid file
       const validMemory = {
-        id: '20250119123456-VALID001',
+        id: '18C3A2B4F20-VALID1',
         timestamp: new Date(),
         workspace: 'test-workspace',
         type: 'general',
@@ -78,12 +78,12 @@ describe('Goldfish Edge Cases and Error Handling', () => {
       
       expect(result.validMemories.length).toBe(1);
       expect(result.corruptedCount).toBe(4);
-      expect(result.validMemories[0].id).toBe('20250119123456-VALID001');
+      expect(result.validMemories[0].id).toBe('18C3A2B4F20-VALID1');
 
       // Verify corrupted files were removed
       const remainingFiles = await fs.readdir(memoriesDir);
       expect(remainingFiles.length).toBe(1);
-      expect(remainingFiles[0]).toBe('20250119123456-VALID001.json');
+      expect(remainingFiles[0]).toBe('18C3A2B4F20-VALID1.json');
     });
 
     test('should handle missing workspace directories', async () => {
@@ -380,7 +380,7 @@ describe('Goldfish Edge Cases and Error Handling', () => {
 
       // Add one more (should trigger cleanup)
       const extraMemory = {
-        id: '20250119123999-EXTRA01',
+        id: '18C3A2B4F21-EXTRA1',
         timestamp: new Date(),
         workspace: 'test-workspace',
         type: 'general',
@@ -412,7 +412,7 @@ describe('Goldfish Edge Cases and Error Handling', () => {
       expect(remainingFiles.length).toBe(MAX_MEMORIES);
       
       // The extra memory (most recent) should be kept
-      expect(remainingFiles).toContain('20250119123999-EXTRA01.json');
+      expect(remainingFiles).toContain('18C3A2B4F21-EXTRA1.json');
     });
 
     test('should handle empty workspace gracefully', async () => {
