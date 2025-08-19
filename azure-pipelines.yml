@@ -13,7 +13,6 @@ pool:
   vmImage: 'ubuntu-latest'
 
 variables:
-  - group: npm-publishing
   - name: packagePath
     value: '.'
   - name: artifactFeedName
