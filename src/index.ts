@@ -27,7 +27,7 @@ import { homedir } from 'os';
 import { v4 as uuidv4 } from 'uuid';
 import { execSync } from 'child_process';
 import { createRequire } from 'module';
-const require = createRequire(import.meta.url);
+const _require = createRequire(import.meta.url);
 
 // Types
 interface GoldfishMemory {
@@ -106,11 +106,11 @@ class GoldfishServer {
         }).trim();
         
         // Normalize workspace name (like ProjectKnowledge does)
-        const workspaceName = gitRoot.split(/[\/\\]/).pop() || 'unknown';
+        const workspaceName = gitRoot.split(/[/\\]/).pop() || 'unknown';
         return this.normalizeWorkspaceName(workspaceName);
       } catch {
         // Not in a git repo, fall back to directory name
-        const dirName = cwd.split(/[\/\\]/).pop() || 'unknown';
+        const dirName = cwd.split(/[/\\]/).pop() || 'unknown';
         return this.normalizeWorkspaceName(dirName);
       }
     } catch {
@@ -190,7 +190,7 @@ class GoldfishServer {
         console.error(`🔄 Promoted memory ${memory.id.slice(-8)} to ProjectKnowledge`);
         return true;
       }
-    } catch (error) {
+    } catch (_error) {
       // Silently fail - promotion is optional
       // console.error(`Failed to promote memory: ${error}`);
     }
@@ -250,7 +250,7 @@ class GoldfishServer {
             await fs.remove(filePath);
             cleaned++;
           }
-        } catch (error) {
+        } catch (_error) {
           // Remove corrupted files
           await fs.remove(join(memoriesDir, file));
           cleaned++;
@@ -273,8 +273,8 @@ class GoldfishServer {
       }
 
       return cleaned;
-    } catch (error) {
-      console.error('Error cleaning up memories:', error);
+    } catch (_error) {
+      console.error('Error cleaning up memories:', _error);
       return 0;
     }
   }
@@ -308,7 +308,7 @@ class GoldfishServer {
             await fs.remove(filePath);
             cleaned++;
           }
-        } catch (error) {
+        } catch (_error) {
           // Remove corrupted files
           await fs.remove(join(todosDir, file));
           cleaned++;
@@ -316,8 +316,8 @@ class GoldfishServer {
       }
 
       return cleaned;
-    } catch (error) {
-      console.error('Error cleaning up TODO lists:', error);
+    } catch (_error) {
+      console.error('Error cleaning up TODO lists:', _error);
       return 0;
     }
   }
@@ -371,7 +371,7 @@ ${todoList.items.length > completedItems.length ? `\nRemaining tasks:\n- ${todoL
         console.error(`🔄 Promoted TODO list "${todoList.title}" to ProjectKnowledge`);
         return true;
       }
-    } catch (error) {
+    } catch (_error) {
       // Silently fail - promotion is optional
     }
     
@@ -441,12 +441,12 @@ ${todoList.items.length > completedItems.length ? `\nRemaining tasks:\n- ${todoL
                 memory.workspace = workspace;
               }
               memories.push(memory);
-            } catch (error) {
+            } catch (_error) {
               // Skip corrupted files
               continue;
             }
           }
-        } catch (error) {
+        } catch (_error) {
           // Skip inaccessible workspace directories
           continue;
         }
@@ -458,7 +458,7 @@ ${todoList.items.length > completedItems.length ? `\nRemaining tasks:\n- ${todoL
         .slice(0, limit);
 
       return sortedMemories;
-    } catch (error) {
+    } catch (_error) {
       return [];
     }
   }
@@ -752,13 +752,13 @@ ${todoList.items.length > completedItems.length ? `\nRemaining tasks:\n- ${todoL
           default:
             throw new Error(`Unknown tool: ${name}`);
         }
-      } catch (error) {
+      } catch (_error) {
         return {
           isError: true,
           content: [
             {
               type: 'text',
-              text: `Error in ${name}: ${error instanceof Error ? error.message : String(error)}`
+              text: `Error in ${name}: ${_error instanceof Error ? _error.message : String(_error)}`
             }
           ]
         };
@@ -1016,7 +1016,7 @@ ${todoList.items.length > completedItems.length ? `\nRemaining tasks:\n- ${todoL
             await fs.remove(join(memoriesDir, file));
             deleted++;
           }
-        } catch (error) {
+        } catch (_error) {
           // Skip corrupted files
         }
       }
@@ -1097,7 +1097,7 @@ ${todoList.items.length > completedItems.length ? `\nRemaining tasks:\n- ${todoL
         return await fs.readJson(filepath);
       }
       return null;
-    } catch (error) {
+    } catch (_error) {
       return null;
     }
   }
@@ -1119,14 +1119,14 @@ ${todoList.items.length > completedItems.length ? `\nRemaining tasks:\n- ${todoL
         try {
           const todoList = await fs.readJson(join(todosDir, file));
           todoLists.push(todoList);
-        } catch (error) {
+        } catch (_error) {
           // Skip corrupted files
           continue;
         }
       }
       
       return todoLists.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
-    } catch (error) {
+    } catch (_error) {
       return [];
     }
   }
