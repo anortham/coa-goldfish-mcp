@@ -1,0 +1,51 @@
+{
+  "name": "coa-goldfish-mcp",
+  "version": "1.0.0",
+  "description": "Short-term memory MCP server for AI agents - simple JSON file storage with auto-expiration",
+  "main": "dist/index.js",
+  "type": "module",
+  "scripts": {
+    "build": "tsc",
+    "start": "node dist/index.js",
+    "dev": "tsx src/index.ts",
+    "test": "jest",
+    "lint": "eslint src/**/*.ts",
+    "clean": "rm -rf dist"
+  },
+  "keywords": [
+    "mcp",
+    "memory",
+    "ai-agent",
+    "short-term",
+    "goldfish"
+  ],
+  "author": "COA Development Team",
+  "license": "ISC",
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^0.6.0",
+    "fs-extra": "^11.2.0",
+    "uuid": "^10.0.0"
+  },
+  "devDependencies": {
+    "@types/fs-extra": "^11.0.4",
+    "@types/node": "^20.0.0",
+    "@types/uuid": "^10.0.0",
+    "tsx": "^4.0.0",
+    "typescript": "^5.0.0",
+    "eslint": "^9.0.0",
+    "@typescript-eslint/eslint-plugin": "^8.0.0",
+    "@typescript-eslint/parser": "^8.0.0",
+    "jest": "^30.0.0",
+    "@types/jest": "^29.0.0",
+    "jest-junit": "^16.0.0",
+    "ts-jest": "^29.0.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "overrides": {
+    "glob": "^10.0.0",
+    "rimraf": "^5.0.0",
+    "inflight": "npm:@types/node@*"
+  }
+}
