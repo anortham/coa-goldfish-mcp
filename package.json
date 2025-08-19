@@ -43,6 +43,13 @@
   "engines": {
     "node": ">=18.0.0"
   },
+  "publishConfig": {
+    "registry": "https://pkgs.dev.azure.com/childrensal/_packaging/COA-NPM-Packages/npm/registry/"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://childrensal.visualstudio.com/COA%20Goldfish%20MCP/_git/COA%20Goldfish%20MCP"
+  },
   "overrides": {
     "glob": "^10.0.0",
     "rimraf": "^5.0.0",

@@ -16,7 +16,7 @@ variables:
   - name: packagePath
     value: '.'
   - name: artifactFeedName
-    value: 'COA-Goldfish-MCP'
+    value: 'COA-NPM-Packages'
 
 stages:
   - stage: Build
@@ -147,7 +147,7 @@ stages:
               echo "Current version: $CURRENT_VERSION"
               
               # Check if version exists in feed
-              FEED_URL="https://pkgs.dev.azure.com/childrensal/_packaging/COA-Goldfish-MCP/npm/registry"
+              FEED_URL="https://pkgs.dev.azure.com/childrensal/_packaging/COA-NPM-Packages/npm/registry"
               PACKAGE_NAME="coa-goldfish-mcp"
               
               # Function to check if version exists
