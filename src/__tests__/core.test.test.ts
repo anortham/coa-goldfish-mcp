@@ -79,7 +79,7 @@ describe('Goldfish Core Functionality', () => {
       expect(id1).not.toBe(id2);
     });
 
-    test('should generate sortable chronological IDs', () => {
+    test('should generate sortable chronological IDs', async () => {
       const generateChronologicalId = (): string => {
         const now = new Date();
         const datePart = now.toISOString()
@@ -90,11 +90,11 @@ describe('Goldfish Core Functionality', () => {
       };
 
       const id1 = generateChronologicalId();
-      // Wait a bit to ensure different timestamp
-      setTimeout(() => {
-        const id2 = generateChronologicalId();
-        expect(id1 < id2).toBe(true); // Should be chronologically sortable
-      }, 10);
+      // Wait enough time to ensure different timestamp (1 second for reliable comparison)
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      const id2 = generateChronologicalId();
+      
+      expect(id1 < id2).toBe(true); // Should be chronologically sortable
     });
   });
 
