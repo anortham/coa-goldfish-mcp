@@ -154,7 +154,7 @@ class GoldfishServer {
     const datePart = now.toISOString()
       .replace(/[-:T]/g, '')
       .slice(0, 14); // YYYYMMDDHHMMSS
-    const randomPart = uuidv4().split('-')[0].toUpperCase();
+    const randomPart = uuidv4().split('-')[0]?.toUpperCase();
     return `${datePart}-${randomPart}`;
   }
 
@@ -1439,6 +1439,10 @@ ${todoList.items.length > completedItems.length ? `\nRemaining tasks:\n- ${todoL
     }
 
     const latestSession = sessionMemories[0]; // Already sorted by chronological ID (most recent first)
+    if (!latestSession) {
+      return { content: [{ type: "text", text: "❌ No session found" }] };
+    }
+    
     const sessionData = latestSession.content;
 
     const age = Math.round((Date.now() - new Date(latestSession.timestamp).getTime()) / (1000 * 60 * 60 * 24 * 10)) / 100;

@@ -6,16 +6,19 @@
     "allowSyntheticDefaultImports": true,
     "esModuleInterop": true,
     "allowJs": true,
-    "strict": true,
-    "declaration": true,
+    "sourceMap": true,
     "outDir": "./dist",
     "rootDir": "./src",
-    "removeComments": true,
-    "sourceMap": true,
-    "resolveJsonModule": true,
+    "strict": true,
+    "declaration": true,
+    "declarationMap": true,
     "skipLibCheck": true,
-    "types": ["node"],
-    "lib": ["ES2022"]
+    "forceConsistentCasingInFileNames": true,
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "noEmit": false,
+    "incremental": true,
+    "noUncheckedIndexedAccess": true
   },
   "include": [
     "src/**/*"
@@ -23,7 +26,6 @@
   "exclude": [
     "node_modules",
     "dist",
-    "src/**/*.test.ts",
-    "src/**/*.spec.ts"
+    "**/*.test.ts"
   ]
 }

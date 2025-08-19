@@ -1,42 +1,108 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuites name="jest tests" tests="14" failures="1" errors="0" time="4.865">
-  <testsuite name="Goldfish Integration Tests" errors="0" failures="0" skipped="0" timestamp="2025-08-19T16:26:44" time="2.922" tests="7">
-    <testcase classname="Goldfish Integration Tests Memory Cleanup and Promotion should cleanup expired memories and enforce limits" name="Goldfish Integration Tests Memory Cleanup and Promotion should cleanup expired memories and enforce limits" time="0.045">
+<testsuites name="jest tests" tests="40" failures="1" errors="0" time="7.024">
+  <testsuite name="Goldfish Tool Handlers" errors="0" failures="0" skipped="0" timestamp="2025-08-19T16:31:57" time="0.887" tests="15">
+    <testcase classname="Goldfish Tool Handlers Parameter Validation remember tool should require content parameter" name="Goldfish Tool Handlers Parameter Validation remember tool should require content parameter" time="0.022">
     </testcase>
-    <testcase classname="Goldfish Integration Tests Memory Cleanup and Promotion should identify memories for promotion to ProjectKnowledge" name="Goldfish Integration Tests Memory Cleanup and Promotion should identify memories for promotion to ProjectKnowledge" time="0.007">
+    <testcase classname="Goldfish Tool Handlers Parameter Validation recall tool should validate limit parameter" name="Goldfish Tool Handlers Parameter Validation recall tool should validate limit parameter" time="0.002">
     </testcase>
-    <testcase classname="Goldfish Integration Tests Session Save and Restore Workflow should save session with all context" name="Goldfish Integration Tests Session Save and Restore Workflow should save session with all context" time="0.01">
+    <testcase classname="Goldfish Tool Handlers Parameter Validation snapshot tool should require label parameter" name="Goldfish Tool Handlers Parameter Validation snapshot tool should require label parameter" time="0.002">
     </testcase>
-    <testcase classname="Goldfish Integration Tests Session Save and Restore Workflow should restore most recent session by sessionId" name="Goldfish Integration Tests Session Save and Restore Workflow should restore most recent session by sessionId" time="0.023">
+    <testcase classname="Goldfish Tool Handlers Parameter Validation create_todo_list should require title and items" name="Goldfish Tool Handlers Parameter Validation create_todo_list should require title and items" time="0.002">
+    </testcase>
+    <testcase classname="Goldfish Tool Handlers Parameter Validation save_session should require sessionId and description" name="Goldfish Tool Handlers Parameter Validation save_session should require sessionId and description" time="0.002">
+    </testcase>
+    <testcase classname="Goldfish Tool Handlers Parameter Validation restore_session should require sessionId" name="Goldfish Tool Handlers Parameter Validation restore_session should require sessionId" time="0.002">
+    </testcase>
+    <testcase classname="Goldfish Tool Handlers Parameter Validation update_todo should require listId" name="Goldfish Tool Handlers Parameter Validation update_todo should require listId" time="0.002">
+    </testcase>
+    <testcase classname="Goldfish Tool Handlers Tool Response Formats remember tool should return success message with memory ID" name="Goldfish Tool Handlers Tool Response Formats remember tool should return success message with memory ID" time="0.001">
+    </testcase>
+    <testcase classname="Goldfish Tool Handlers Tool Response Formats recall tool should format memories with icons and timestamps" name="Goldfish Tool Handlers Tool Response Formats recall tool should format memories with icons and timestamps" time="0.002">
+    </testcase>
+    <testcase classname="Goldfish Tool Handlers Tool Response Formats view_todos should show progress and status counts" name="Goldfish Tool Handlers Tool Response Formats view_todos should show progress and status counts" time="0.017">
+    </testcase>
+    <testcase classname="Goldfish Tool Handlers Error Handling should handle missing memory file gracefully" name="Goldfish Tool Handlers Error Handling should handle missing memory file gracefully" time="0.002">
+    </testcase>
+    <testcase classname="Goldfish Tool Handlers Error Handling should handle corrupted JSON files" name="Goldfish Tool Handlers Error Handling should handle corrupted JSON files" time="0.004">
+    </testcase>
+    <testcase classname="Goldfish Tool Handlers Error Handling should handle network failures for ProjectKnowledge promotion" name="Goldfish Tool Handlers Error Handling should handle network failures for ProjectKnowledge promotion" time="0.002">
+    </testcase>
+    <testcase classname="Goldfish Tool Handlers Memory Type Handling should assign correct icons for memory types" name="Goldfish Tool Handlers Memory Type Handling should assign correct icons for memory types" time="0.001">
+    </testcase>
+    <testcase classname="Goldfish Tool Handlers Memory Type Handling should validate memory types in enum" name="Goldfish Tool Handlers Memory Type Handling should validate memory types in enum" time="0.002">
+    </testcase>
+  </testsuite>
+  <testsuite name="Goldfish Integration Tests" errors="0" failures="0" skipped="0" timestamp="2025-08-19T16:31:57" time="0.93" tests="7">
+    <testcase classname="Goldfish Integration Tests Memory Cleanup and Promotion should cleanup expired memories and enforce limits" name="Goldfish Integration Tests Memory Cleanup and Promotion should cleanup expired memories and enforce limits" time="0.028">
+    </testcase>
+    <testcase classname="Goldfish Integration Tests Memory Cleanup and Promotion should identify memories for promotion to ProjectKnowledge" name="Goldfish Integration Tests Memory Cleanup and Promotion should identify memories for promotion to ProjectKnowledge" time="0.008">
+    </testcase>
+    <testcase classname="Goldfish Integration Tests Session Save and Restore Workflow should save session with all context" name="Goldfish Integration Tests Session Save and Restore Workflow should save session with all context" time="0.009">
+    </testcase>
+    <testcase classname="Goldfish Integration Tests Session Save and Restore Workflow should restore most recent session by sessionId" name="Goldfish Integration Tests Session Save and Restore Workflow should restore most recent session by sessionId" time="0.021">
     </testcase>
     <testcase classname="Goldfish Integration Tests TODO List Lifecycle should create, update, and promote TODO lists" name="Goldfish Integration Tests TODO List Lifecycle should create, update, and promote TODO lists" time="0.012">
     </testcase>
-    <testcase classname="Goldfish Integration Tests TODO List Lifecycle should cleanup expired TODO lists" name="Goldfish Integration Tests TODO List Lifecycle should cleanup expired TODO lists" time="0.016">
+    <testcase classname="Goldfish Integration Tests TODO List Lifecycle should cleanup expired TODO lists" name="Goldfish Integration Tests TODO List Lifecycle should cleanup expired TODO lists" time="0.014">
     </testcase>
-    <testcase classname="Goldfish Integration Tests Cross-workspace Operations should handle multiple workspaces correctly" name="Goldfish Integration Tests Cross-workspace Operations should handle multiple workspaces correctly" time="0.019">
+    <testcase classname="Goldfish Integration Tests Cross-workspace Operations should handle multiple workspaces correctly" name="Goldfish Integration Tests Cross-workspace Operations should handle multiple workspaces correctly" time="0.013">
     </testcase>
   </testsuite>
-  <testsuite name="Goldfish Core Functionality" errors="0" failures="1" skipped="0" timestamp="2025-08-19T16:26:44" time="3.23" tests="7">
-    <testcase classname="Goldfish Core Functionality Workspace Detection should detect workspace from git root" name="Goldfish Core Functionality Workspace Detection should detect workspace from git root" time="0.461">
+  <testsuite name="Goldfish Core Functionality" errors="0" failures="0" skipped="0" timestamp="2025-08-19T16:31:57" time="1.215" tests="7">
+    <testcase classname="Goldfish Core Functionality Workspace Detection should detect workspace from git root" name="Goldfish Core Functionality Workspace Detection should detect workspace from git root" time="0.388">
     </testcase>
-    <testcase classname="Goldfish Core Functionality Workspace Detection should fallback to directory name when not in git repo" name="Goldfish Core Functionality Workspace Detection should fallback to directory name when not in git repo" time="0.003">
+    <testcase classname="Goldfish Core Functionality Workspace Detection should fallback to directory name when not in git repo" name="Goldfish Core Functionality Workspace Detection should fallback to directory name when not in git repo" time="0.002">
     </testcase>
-    <testcase classname="Goldfish Core Functionality Chronological ID Generation should generate valid chronological IDs" name="Goldfish Core Functionality Chronological ID Generation should generate valid chronological IDs" time="0.005">
+    <testcase classname="Goldfish Core Functionality Chronological ID Generation should generate valid chronological IDs" name="Goldfish Core Functionality Chronological ID Generation should generate valid chronological IDs" time="0.004">
     </testcase>
     <testcase classname="Goldfish Core Functionality Chronological ID Generation should generate sortable chronological IDs" name="Goldfish Core Functionality Chronological ID Generation should generate sortable chronological IDs" time="0.001">
     </testcase>
-    <testcase classname="Goldfish Core Functionality Memory Storage should create memory directories" name="Goldfish Core Functionality Memory Storage should create memory directories" time="0.011">
-      <failure>Error: expect(received).toBe(expected) // Object.is equality
-
-Expected: true
-Received: false
-    at Timeout._onTimeout (C:\source\COA Goldfish MCP\src\tests\core.test.ts:96:27)
-    at listOnTimeout (node:internal/timers:588:17)
-    at processTimers (node:internal/timers:523:7)</failure>
+    <testcase classname="Goldfish Core Functionality Memory Storage should create memory directories" name="Goldfish Core Functionality Memory Storage should create memory directories" time="0.01">
     </testcase>
-    <testcase classname="Goldfish Core Functionality TTL and Expiration Logic should correctly calculate memory age" name="Goldfish Core Functionality TTL and Expiration Logic should correctly calculate memory age" time="0.002">
+    <testcase classname="Goldfish Core Functionality TTL and Expiration Logic should correctly calculate memory age" name="Goldfish Core Functionality TTL and Expiration Logic should correctly calculate memory age" time="0.001">
     </testcase>
-    <testcase classname="Goldfish Core Functionality TTL and Expiration Logic should determine if memory should be promoted" name="Goldfish Core Functionality TTL and Expiration Logic should determine if memory should be promoted" time="0.003">
+    <testcase classname="Goldfish Core Functionality TTL and Expiration Logic should determine if memory should be promoted" name="Goldfish Core Functionality TTL and Expiration Logic should determine if memory should be promoted" time="0.001">
+    </testcase>
+  </testsuite>
+  <testsuite name="Goldfish Edge Cases and Error Handling" errors="0" failures="1" skipped="0" timestamp="2025-08-19T16:31:57" time="5.979" tests="11">
+    <testcase classname="Goldfish Edge Cases and Error Handling Corrupted File Handling should handle corrupted JSON memory files gracefully" name="Goldfish Edge Cases and Error Handling Corrupted File Handling should handle corrupted JSON memory files gracefully" time="0.025">
+    </testcase>
+    <testcase classname="Goldfish Edge Cases and Error Handling Corrupted File Handling should handle missing workspace directories" name="Goldfish Edge Cases and Error Handling Corrupted File Handling should handle missing workspace directories" time="0.007">
+    </testcase>
+    <testcase classname="Goldfish Edge Cases and Error Handling Corrupted File Handling should handle filesystem permission errors" name="Goldfish Edge Cases and Error Handling Corrupted File Handling should handle filesystem permission errors" time="0.007">
+    </testcase>
+    <testcase classname="Goldfish Edge Cases and Error Handling Concurrent Operations should handle concurrent memory writes safely" name="Goldfish Edge Cases and Error Handling Concurrent Operations should handle concurrent memory writes safely" time="0.011">
+    </testcase>
+    <testcase classname="Goldfish Edge Cases and Error Handling Concurrent Operations should handle concurrent cleanup operations" name="Goldfish Edge Cases and Error Handling Concurrent Operations should handle concurrent cleanup operations" time="0.019">
+    </testcase>
+    <testcase classname="Goldfish Edge Cases and Error Handling Network Failures should handle ProjectKnowledge promotion failures gracefully" name="Goldfish Edge Cases and Error Handling Network Failures should handle ProjectKnowledge promotion failures gracefully" time="0.007">
+    </testcase>
+    <testcase classname="Goldfish Edge Cases and Error Handling Network Failures should handle AbortSignal timeout" name="Goldfish Edge Cases and Error Handling Network Failures should handle AbortSignal timeout" time="5.018">
+      <failure>Error: thrown: &quot;Exceeded timeout of 5000 ms for a test.
+Add a timeout value to this test to increase the timeout, if this is a long-running test. See https://jestjs.io/docs/api#testname-fn-timeout.&quot;
+    at C:\source\COA Goldfish MCP\src\__tests__\edge-cases.test.test.ts:329:9
+    at _dispatchDescribe (C:\source\COA Goldfish MCP\node_modules\jest-circus\build\jestAdapterInit.js:604:26)
+    at describe (C:\source\COA Goldfish MCP\node_modules\jest-circus\build\jestAdapterInit.js:572:44)
+    at C:\source\COA Goldfish MCP\src\__tests__\edge-cases.test.test.ts:270:11
+    at _dispatchDescribe (C:\source\COA Goldfish MCP\node_modules\jest-circus\build\jestAdapterInit.js:604:26)
+    at describe (C:\source\COA Goldfish MCP\node_modules\jest-circus\build\jestAdapterInit.js:572:44)
+    at Object.&lt;anonymous&gt; (C:\source\COA Goldfish MCP\src\__tests__\edge-cases.test.test.ts:7:9)
+    at Runtime._execModule (C:\source\COA Goldfish MCP\node_modules\jest-runtime\build\index.js:1266:24)
+    at Runtime._loadModule (C:\source\COA Goldfish MCP\node_modules\jest-runtime\build\index.js:942:12)
+    at Runtime.requireModule (C:\source\COA Goldfish MCP\node_modules\jest-runtime\build\index.js:830:12)
+    at jestAdapter (C:\source\COA Goldfish MCP\node_modules\jest-circus\build\runner.js:95:13)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at runTestInternal (C:\source\COA Goldfish MCP\node_modules\jest-runner\build\testWorker.js:275:16)
+    at runTest (C:\source\COA Goldfish MCP\node_modules\jest-runner\build\testWorker.js:343:7)
+    at Object.worker (C:\source\COA Goldfish MCP\node_modules\jest-runner\build\testWorker.js:497:12)</failure>
+    </testcase>
+    <testcase classname="Goldfish Edge Cases and Error Handling Memory Limit Edge Cases should handle workspace with exactly max memories" name="Goldfish Edge Cases and Error Handling Memory Limit Edge Cases should handle workspace with exactly max memories" time="0.01">
+    </testcase>
+    <testcase classname="Goldfish Edge Cases and Error Handling Memory Limit Edge Cases should handle empty workspace gracefully" name="Goldfish Edge Cases and Error Handling Memory Limit Edge Cases should handle empty workspace gracefully" time="0.004">
+    </testcase>
+    <testcase classname="Goldfish Edge Cases and Error Handling Time and Date Edge Cases should handle timezone differences correctly" name="Goldfish Edge Cases and Error Handling Time and Date Edge Cases should handle timezone differences correctly" time="0.005">
+    </testcase>
+    <testcase classname="Goldfish Edge Cases and Error Handling Time and Date Edge Cases should handle memory expiration at exact TTL boundary" name="Goldfish Edge Cases and Error Handling Time and Date Edge Cases should handle memory expiration at exact TTL boundary" time="0.005">
     </testcase>
   </testsuite>
 </testsuites>
