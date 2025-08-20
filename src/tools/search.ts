@@ -5,6 +5,7 @@
 import { SearchEngine } from '../core/search.js';
 import { Storage } from '../core/storage.js';
 import { SessionManager } from '../core/session-manager.js';
+import { SearchHistoryResponse, RecallResponse, TimelineResponse } from '../types/responses.js';
 
 export class SearchTools {
   private searchEngine: SearchEngine;
@@ -76,10 +77,10 @@ export class SearchTools {
           output.push(`   ${memory.content}`);
         }
 
-        // Show match context
+        // Show match context (skip if it looks like raw JSON)
         if (matches.length > 0) {
           const bestMatch = matches[0];
-          if (bestMatch && bestMatch.value) {
+          if (bestMatch && bestMatch.value && !bestMatch.value.startsWith('{')) {
             const snippet = this.getMatchSnippet(bestMatch.value, bestMatch.indices);
             output.push(`   🎯 "${snippet}"`);
           }
@@ -92,11 +93,30 @@ export class SearchTools {
         output.push(`... and ${results.length - 10} more results`);
       }
 
+      // Create structured response following ProjectKnowledge pattern
+      const response: SearchHistoryResponse = {
+        success: true,
+        operation: 'search-history',
+        formattedOutput: output.join('\n'),  // Preserve as structured field
+        query,
+        resultsFound: results.length,
+        matches: results.slice(0, 10).map(result => ({
+          memory: result.memory,
+          score: 1 - result.score,
+          snippet: result.matches.length > 0 && result.matches[0] ? 
+            this.getMatchSnippet(result.matches[0].value, result.matches[0].indices) : undefined
+        })),
+        meta: {
+          mode: 'formatted',
+          lines: output.length
+        }
+      };
+
       return {
         content: [
           {
             type: 'text',
-            text: output.join('\n')
+            text: JSON.stringify(response, null, 2)  // Serialize entire object
           }
         ]
       };
@@ -173,8 +193,8 @@ export class SearchTools {
         }
       }
 
-      // Format timeline
-      const output = [`📅 Work Timeline (${since})\n`];
+      // Build formatted output
+      const output = [`📅 Work Timeline (${since})`];
       
       const sortedDates = Array.from(timelineMap.keys()).sort().reverse();
       
@@ -182,10 +202,10 @@ export class SearchTools {
         const dayData = timelineMap.get(date)!;
         const dayName = this.formatDateName(new Date(date));
         
-        output.push(`**${dayName}** (${date})`);
+        output.push(`\n**${dayName}** (${date})`);
         
         for (const [ws, data] of dayData.entries()) {
-          const wsDisplay = ws === this.storage.getCurrentWorkspace() ? 'current' : ws;
+          const wsDisplay = ws; // Always show actual workspace name
           output.push(`  📁 ${wsDisplay}: ${data.count} checkpoints`);
           
           // Show unique highlights
@@ -199,15 +219,34 @@ export class SearchTools {
             }
           }
         }
-        
-        output.push('');
       }
+
+      // Create structured response following ProjectKnowledge pattern
+      const response: TimelineResponse = {
+        success: true,
+        operation: 'timeline',
+        formattedOutput: output.join('\n'),  // Preserve as structured field
+        scope,
+        since,
+        workspace,
+        totalItems: memories.length,
+        workspacesFound: new Set(memories.map(m => m.workspace || 'unknown')).size,
+        checkpointsFound: memories.filter(m => m.type === 'checkpoint').length,
+        data: {
+          byDate: Object.fromEntries(timelineMap),
+          byWorkspace: {}  // Could organize by workspace if needed
+        },
+        meta: {
+          mode: 'formatted',
+          lines: output.length
+        }
+      };
 
       return {
         content: [
           {
             type: 'text',
-            text: output.join('\n')
+            text: JSON.stringify(response, null, 2)  // Serialize entire object
           }
         ]
       };
@@ -279,7 +318,8 @@ export class SearchTools {
         };
       }
 
-      const output = ['🧠 Recent Memories:\n'];
+      // Build formatted output
+      const output = ['🧠 Recent Memories:'];
 
       for (const memory of memories) {
         const age = this.formatAge(memory.timestamp);
@@ -306,11 +346,32 @@ export class SearchTools {
         output.push('');
       }
 
+      // Create structured response following ProjectKnowledge pattern
+      const response: RecallResponse = {
+        success: true,
+        operation: 'recall',
+        formattedOutput: output.join('\n'),  // Preserve as structured field
+        memoriesFound: memories.length,
+        timeRange: since,
+        memories: memories.map(m => ({
+          id: m.id,
+          type: m.type,
+          age: this.formatAge(m.timestamp),
+          content: typeof m.content === 'string' ? m.content : JSON.stringify(m.content),
+          workspace: m.workspace,
+          tags: m.tags
+        })),
+        meta: {
+          mode: 'formatted',
+          lines: output.length
+        }
+      };
+
       return {
         content: [
           {
             type: 'text',
-            text: output.join('\n')
+            text: JSON.stringify(response, null, 2)  // Serialize entire object
           }
         ]
       };

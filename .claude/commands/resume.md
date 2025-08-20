@@ -40,13 +40,15 @@ Display format:
 ═══════════════════════════════════════════════════════════
 
 📝 **{list_title}** - {progress}% ({completed}/{total})
-   ✅ {completed_task}
-   🔄 {active_task}
-   ⏳ {pending_task}
+   ✅ [1] {completed_task}
+   🔄 [2] {active_task}
+   ⏳ [3] {pending_task}
+   ⏳ [4] {another_pending_task}
+   ⏳ [5] {yet_another_task}
 
 ═══════════════════════════════════════════════════════════
 ✅ Session restored successfully
-📝 {todo_count} pending tasks ready
+📝 {pending_count} pending tasks ready
 🚀 Ready to continue. What would you like to work on?
 ═══════════════════════════════════════════════════════════
 ```
@@ -54,17 +56,41 @@ Display format:
 ### 3. Implementation Notes
 
 **Key Pattern**: 
-- Call tools to get data
-- Parse the responses 
+- Call tools to get data (restore_session, view_todos)
+- Parse the JSON responses to extract values
 - Display formatted information in YOUR message
 - This prevents CLI collapse since it's your direct output
 
 **Data Extraction**:
-- Parse checkpoint: description, context, branch, files, highlights
-- Parse todos: list titles, progress stats, individual items with status
-- Format with proper icons: ✅ ⏳ 🔄
+- Parse checkpoint from `data[0].content`: description, workContext, gitBranch, activeFiles, highlights
+- Parse todos from `data.items`: iterate through each item showing [id] task with status icon
+- Calculate pending count: total - completed
+- Format with proper icons: ✅ (done) 🔄 (active) ⏳ (pending)
 
-### 4. Fallback (No Checkpoint)
+**Important Formatting Rules**:
+- ALWAYS show todo item IDs in brackets: [1], [2], [3], etc.
+- Show ALL todo items, not just examples
+- Use the exact ID from the item, don't renumber
+- Keep task descriptions on one line (truncate if > 70 chars)
+
+### 4. Example TODO Display
+When displaying todos, show them exactly like this:
+```
+📝 **Bug Fixes** - 40% (2/5)
+   ✅ [1] Fix authentication error on login
+   ✅ [2] Resolve database connection timeout
+   🔄 [3] Debug memory leak in session handler
+   ⏳ [4] Fix CSS layout issue on mobile
+   ⏳ [5] Patch XSS vulnerability in comment form
+```
+
+Notice:
+- Each item shows its ID in brackets [1], [2], etc.
+- Status icons come before the ID
+- Items are sorted by ID number, not by status
+- All items are shown, not just a subset
+
+### 5. Fallback (No Checkpoint)
 If no checkpoint found:
 ```
 ⚠️ No recent checkpoint found. Showing recent activity:

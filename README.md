@@ -1,46 +1,133 @@
 # COA Goldfish MCP
 
-> Short-term memory MCP server for AI agents - named after goldfish for their famously short attention spans!
+> Crash-safe event-source work journal for developers - named after goldfish for focused, short-term working memory!
 
 ## 🐠 What is Goldfish?
 
-Goldfish is a simple, lightweight MCP server designed specifically for short-term memory storage for AI agents. Unlike heavy-duty knowledge management systems, Goldfish:
+Goldfish is a **crash-safe developer's work journal** built on event-sourcing principles. Think of it as a "flight recorder" for your development sessions that:
 
-- **Expires automatically** - Memories disappear after 24 hours (configurable)
-- **Zero overhead** - Just JSON files, no database
-- **Simple & fast** - 10 focused tools covering all short-term memory needs
-- **Cross-session** - Can bridge multiple conversation sessions
-- **Self-cleaning** - Automatically removes old memories
+- **Never loses your work** - Frequent checkpoints survive crashes, power outages, terminal closures
+- **Manages context intelligently** - Progressive restoration (minimal/highlights/full) balances context vs token usage  
+- **Enables temporal navigation** - "What did I work on Tuesday?" becomes easily answerable
+- **Tracks active tasks** - TODO lists that persist with your sessions
+- **Provides working memory** - Short-term notes (24h) for immediate context
+- **Zero overhead** - Just JSON files organized by date, no database
+
+## 🚀 Core Workflow
+
+**The checkpoint/resume cycle is Goldfish's heart:**
+
+```bash
+# During development - frequent checkpoints
+/checkpoint "Implemented user auth with JWT validation"
+
+# After auto-compact or /clear - minimal restoration
+/resume              # Just last checkpoint + TODOs
+
+# Next morning - balanced restoration  
+/resume highlights   # Last checkpoint + session highlights
+
+# After vacation - complete context
+/resume full        # All session checkpoints aggregated
+```
+
+## 🎯 Context Management Philosophy
+
+**The Balance Problem**: After `/clear` or auto-compact, you need context to continue but can't flood the window you just cleared.
+
+**Progressive Restoration**:
+- **Minimal** (`/resume`) - Last checkpoint only. For post-compact continuation.
+- **Highlights** (`/resume highlights`) - Default. Last checkpoint + key achievements.
+- **Full** (`/resume full`) - Complete session replay. For long breaks when you don't remember what you were doing.
 
 ## 🛠 Tools (10 Total)
 
-### Core Memory Tools
-- **`remember`** - ALWAYS store working context when starting tasks, discovering issues, or making decisions
-- **`recall`** - Enhanced memory recall with fuzzy search - check recent work proactively at session start
+### Event Recording
+- **`checkpoint`** - Create timestamped work events with highlights, context, active files
+
+### Context Restoration  
+- **`restore_session`** - Progressive restoration (minimal/highlights/full)
+- **`summarize_session`** - AI-condensed summary of session or time period
+
+### Task Management
+- **`create_todo_list`** - Create TODO lists tied to current session
+- **`view_todos`** - View active TODO lists with progress indicators
+- **`update_todo`** - Update task status, edit descriptions, add/delete items
+
+### Temporal Navigation
+- **`timeline`** - Show chronological work sessions for standups and reviews
 - **`search_history`** - Search work history across all projects with fuzzy matching
-- **`timeline`** - Show chronological timeline of work sessions for standups and activity review
 
-### Session Management  
-- **`checkpoint`** - Create crash-safe checkpoints to save current progress (required: description only)
-- **`restore_session`** - IMMEDIATELY restore session state after /clear or long breaks
-- **`summarize_session`** - AI-condensed summary of session or recent work
+### Working Memory
+- **`remember`** - Store ephemeral thoughts and notes (24h expiry)
+- **`recall`** - Fuzzy search across recent memories and checkpoints
 
-### Task Tracking
-- **`create_todo_list`** - Create TODO lists tied to current session when users mention multiple tasks
-- **`view_todos`** - View active TODO lists with markdown table display (no collapse issues)
-- **`update_todo`** - Update task status or add new tasks to existing lists
-
-### Quick Reference
+### Usage Patterns
 ```typescript
-// Proactive AI agent usage patterns
-remember("Working on auth refactor - changed JWT validation logic") // Store context immediately
-recall({ scope: "all", since: "24h" }) // Check recent work at session start
-snapshot({ label: "Auth refactor complete" }) // Create checkpoint after milestones
-save_session({ sessionId: "auth-work-2025-01-19", description: "JWT implementation done" })
-create_todo_list({ title: "API Updates", items: ["Update docs", "Add tests"] }) // When user lists tasks
+// Crash-safe development
+checkpoint({ description: "Auth refactor complete", highlights: ["Added JWT", "Fixed login flow"] })
+
+// Temporal queries
+timeline({ since: "yesterday" })              // Yesterday's work
+timeline({ since: "2025-01-14" })             // Specific Tuesday 
+search_history({ query: "bug fix", since: "3d" }) // Recent bug work
+
+// Working memory
+remember("Need to update API docs after this auth change")
+recall({ query: "JWT", since: "1w" })         // Find JWT-related work
 ```
 
-## 🏗 Architecture
+## 🏗 Event-Source Architecture
+
+### Storage Pattern
+```
+~/.coa/goldfish/{workspace}/
+├── checkpoints/
+│   ├── 2025-01-19/                    # Date-based folders
+│   │   ├── 20250119-143022-456-A1B2.json  # Chronological IDs
+│   │   ├── 20250119-150815-123-C3D4.json  # Natural time ordering
+│   │   └── 20250119-162445-789-E5F6.json
+│   └── 2025-01-20/
+│       └── 20250120-091234-567-G7H8.json
+├── todos/                             # Persistent task lists
+│   └── active-lists.json
+└── memories/                          # 24h ephemeral notes
+    └── recent-thoughts.json
+```
+
+### Key Concepts
+
+**Event Sourcing**: Every checkpoint is an immutable event. Work history is reconstructed by replaying events chronologically.
+
+**Checkpoints vs Memories**:
+- **Checkpoints** - Permanent events in your work timeline
+- **Memories** - 24h ephemeral working notes (via `remember`)
+
+**72-Hour Sliding Window**: Recent work (last 3 days) is prioritized in searches and timelines, but all history is preserved and queryable.
+
+**Workspace Isolation**: Each project gets its own event stream, but you can query across workspaces for standups.
+
+### Temporal Queries
+
+Goldfish enables natural time-based questions:
+
+```typescript
+// Recent work patterns
+timeline({ since: "24h" })     // Today's work
+timeline({ since: "3d" })      // This week's work
+
+// Specific dates
+timeline({ since: "2025-01-14" })      // Last Tuesday's work
+timeline({ since: "2025-01-14", scope: "all" })  // Tuesday across all projects
+
+// Fuzzy search with time bounds
+search_history({ query: "authentication bug", since: "1w" })
+search_history({ query: "database migration", since: "2025-01-10" })
+
+// Cross-workspace standup queries
+timeline({ scope: "all", since: "yesterday" })  // All projects yesterday
+search_history({ query: "completed", scope: "all", since: "3d" })  // Wins this week
+```
 
 ### Project Structure
 ```

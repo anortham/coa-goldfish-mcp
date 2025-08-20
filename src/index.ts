@@ -348,41 +348,6 @@ class GoldfishMCPServer {
       };
     }
 
-    const output = [
-      '## 📋 Active TODO Lists',
-      ''
-    ];
-
-    for (const list of todoLists.slice(0, 5)) {
-      const filteredItems = showCompleted 
-        ? list.items 
-        : list.items.filter(item => item.status !== 'done');
-
-      if (filteredItems.length === 0 && !showCompleted) continue;
-
-      const progress = list.items.filter(i => i.status === 'done').length;
-      const total = list.items.length;
-      const percentage = total > 0 ? Math.round((progress / total) * 100) : 0;
-      const active = list.items.filter(i => i.status === 'active').length;
-
-      output.push(`### 📝 ${list.title} [${list.id.slice(-6)}] - ${this.formatAge(list.updatedAt)}`);
-      output.push(`*Progress: ${percentage}% (${progress}/${total}) • Active: ${active}*`);
-      output.push('');
-
-      // Show actual todo items as markdown list with IDs
-      for (const item of filteredItems) {
-        let icon = '⏳';  // pending
-        if (item.status === 'done') icon = '✅';
-        else if (item.status === 'active') icon = '🔄';
-        
-        const priorityMark = item.priority === 'high' ? ' 🔥' : '';
-        
-        output.push(`- ${icon} **[${item.id}]** ${item.task}${priorityMark}`);
-      }
-      
-      output.push('');
-    }
-
     // Focus on the most recently updated list (most likely to be active)
     const sortedLists = todoLists.sort((a, b) => 
       new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime()
@@ -405,32 +370,58 @@ class GoldfishMCPServer {
       return parseInt(a.id) - parseInt(b.id);
     });
 
-    // Return single list view with separate content blocks
-    const contentBlocks = [];
+    // Build formatted output like ProjectKnowledge
+    const output = [];
     
     const completedCount = listItems.filter(i => i.status === 'done').length;
     const activeCount = listItems.filter(i => i.status === 'active').length;
+    const percentage = listItems.length > 0 ? Math.round((completedCount / listItems.length) * 100) : 0;
     
-    // Metadata available via smart defaulting in update_todo (no visible block needed)
+    // Build formatted todo list
+    output.push(`📋 ${currentList.title}`);
+    output.push(`━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━`);
+    output.push(`📊 Progress: ${percentage}% (${completedCount}/${listItems.length}) • Active: ${activeCount}`);
+    output.push(``);
     
-    // List header as first block
-    contentBlocks.push({
-      type: 'text',
-      text: `📋 ${currentList.title} (${listItems.length} tasks, ${completedCount} done, ${activeCount} active)`
-    });
-    
-    // Each todo item as a separate content block
+    // Each todo item
     for (const item of listItems) {
       const icon = item.status === 'done' ? '✅' : item.status === 'active' ? '🔄' : '⏳';
       const taskText = item.task.length > 80 ? item.task.slice(0, 80) + '...' : item.task;
-      contentBlocks.push({
-        type: 'text',
-        text: `${icon} [${item.id}] ${taskText}`
-      });
+      output.push(`${icon} [${item.id}] ${taskText}`);
     }
+    
+    // Create structured response following ProjectKnowledge pattern
+    const response = {
+      success: true,
+      operation: 'view-todos',
+      formattedOutput: output.join('\n'),  // Preserve multi-line formatting
+      data: {
+        listId: currentList.id,
+        title: currentList.title,
+        totalTasks: listItems.length,
+        completedTasks: completedCount,
+        activeTasks: activeCount,
+        percentage: percentage,
+        items: listItems.map(item => ({
+          id: item.id,
+          task: item.task,
+          status: item.status,
+          priority: item.priority
+        }))
+      },
+      meta: {
+        mode: 'formatted',
+        lines: output.length
+      }
+    };
 
     return {
-      content: contentBlocks
+      content: [
+        {
+          type: 'text',
+          text: JSON.stringify(response, null, 2)  // Serialize like ProjectKnowledge
+        }
+      ]
     };
   }
 

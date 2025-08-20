@@ -6,6 +6,7 @@ import { Storage } from '../core/storage.js';
 import { SessionManager } from '../core/session-manager.js';
 import { SearchEngine } from '../core/search.js';
 import { GoldfishMemory } from '../types/index.js';
+import { SessionRestoreResponse, SessionSummaryResponse } from '../types/responses.js';
 
 export class SessionTools {
   private storage: Storage;
@@ -130,11 +131,30 @@ export class SessionTools {
       output.push('🚀 What would you like to work on?');
       output.push('═══════════════════════════════════════════════════════════');
 
+      // Create structured response following ProjectKnowledge pattern
+      const response: SessionRestoreResponse = {
+        success: true,
+        operation: 'session-restore',
+        formattedOutput: output.join('\n'),  // Preserve as structured field
+        sessionId: sessionId || 'latest',
+        depth,
+        checkpointsFound: targetMemories.length,
+        highlightsFound: targetMemories.filter((m: any) => 
+          typeof m.content === 'object' && m.content.highlights?.length > 0
+        ).length,
+        workspace,
+        data: targetMemories.slice(0, 3), // Sample data for debugging
+        meta: {
+          mode: 'formatted',
+          lines: output.length
+        }
+      };
+
       return {
         content: [
           {
             type: 'text',
-            text: output.join('\n')
+            text: JSON.stringify(response, null, 2)  // Serialize entire object
           }
         ]
       };
@@ -283,11 +303,33 @@ export class SessionTools {
         }
       }
 
+      // Create structured response following ProjectKnowledge pattern
+      const response: SessionSummaryResponse = {
+        success: true,
+        operation: 'session-summary',
+        formattedOutput: output.join('\n'),  // Preserve as structured field
+        sessionId: sessionId || undefined,
+        timeRange: since,
+        workspace,
+        achievements: uniqueHighlights.slice(-5),
+        nextSteps: [],  // Could be populated from TODOs if available
+        data: {
+          checkpoints: memories.length,
+          workAreas: Array.from(workAreas),
+          branches: Array.from(gitBranches),
+          files: Array.from(activeFiles).slice(0, 10)
+        },
+        meta: {
+          mode: 'formatted',
+          lines: output.length
+        }
+      };
+
       return {
         content: [
           {
             type: 'text',
-            text: output.join('\n')
+            text: JSON.stringify(response, null, 2)  // Serialize entire object
           }
         ]
       };
