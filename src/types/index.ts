@@ -56,6 +56,8 @@ export interface CheckpointContent extends Record<string, unknown> {
   sessionId?: string;
 }
 
+export type SearchMode = 'strict' | 'normal' | 'fuzzy' | 'auto';
+
 export interface SearchOptions {
   query?: string;
   since?: string;
@@ -63,6 +65,7 @@ export interface SearchOptions {
   type?: string;
   scope?: 'current' | 'global' | 'all';
   limit?: number;
+  mode?: SearchMode;
 }
 
 export interface TimelineEntry {

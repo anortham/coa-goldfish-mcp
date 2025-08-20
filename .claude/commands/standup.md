@@ -1,5 +1,5 @@
 ---
-allowed-tools: ["mcp__goldfish__timeline", "mcp__goldfish__view_todos", "mcp__goldfish__recall", "mcp__projectknowledge__show_activity"]
+allowed-tools: ["mcp__goldfish__timeline", "mcp__goldfish__view_todos", "mcp__goldfish__recall"]
 description: "Generate daily standup report with yesterday's work, today's todos, and blockers"
 ---
 
@@ -13,7 +13,7 @@ $ARGUMENTS
 ```
 timeline({ since: "24h", scope: "all" })
 view_todos()
-show_activity({ daysAgo: 1 })
+recall({ since: "24h" })
 ```
 
 ### 2. Format Standup Report

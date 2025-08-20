@@ -1,41 +1,141 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuites name="jest tests" tests="51" failures="0" errors="0" time="3.154">
-  <testsuite name="Goldfish Tool Handlers" errors="0" failures="0" skipped="0" timestamp="2025-08-20T17:30:34" time="0.683" tests="26">
-    <testcase classname="Goldfish Tool Handlers Parameter Validation remember tool should require content parameter" name="Goldfish Tool Handlers Parameter Validation remember tool should require content parameter" time="0.02">
+<testsuites name="jest tests" tests="95" failures="1" errors="0" time="3.214">
+  <testsuite name="Search Validation - Success Criteria" errors="0" failures="0" skipped="0" timestamp="2025-08-20T17:47:47" time="0.801" tests="5">
+    <testcase classname="Search Validation - Success Criteria Precision Target: 80% Single word queries should achieve 80%+ precision" name="Search Validation - Success Criteria Precision Target: 80% Single word queries should achieve 80%+ precision" time="0.016">
     </testcase>
-    <testcase classname="Goldfish Tool Handlers Parameter Validation recall tool should validate limit parameter" name="Goldfish Tool Handlers Parameter Validation recall tool should validate limit parameter" time="0.002">
+    <testcase classname="Search Validation - Success Criteria Precision Target: 80% Multi-word queries should achieve 75%+ precision" name="Search Validation - Success Criteria Precision Target: 80% Multi-word queries should achieve 75%+ precision" time="0.01">
     </testcase>
-    <testcase classname="Goldfish Tool Handlers Parameter Validation snapshot tool should require label parameter" name="Goldfish Tool Handlers Parameter Validation snapshot tool should require label parameter" time="0.002">
+    <testcase classname="Search Validation - Success Criteria Recall Target: 90% All queries should achieve 90%+ recall" name="Search Validation - Success Criteria Recall Target: 90% All queries should achieve 90%+ recall" time="0.013">
     </testcase>
-    <testcase classname="Goldfish Tool Handlers Parameter Validation create_todo_list should require title and items" name="Goldfish Tool Handlers Parameter Validation create_todo_list should require title and items" time="0.002">
+    <testcase classname="Search Validation - Success Criteria Overall Performance Metrics Complete performance analysis" name="Search Validation - Success Criteria Overall Performance Metrics Complete performance analysis" time="0.012">
+    </testcase>
+    <testcase classname="Search Validation - Success Criteria Comparison with Baseline Show improvement over baseline" name="Search Validation - Success Criteria Comparison with Baseline Show improvement over baseline" time="0.002">
+    </testcase>
+  </testsuite>
+  <testsuite name="Search Baseline - Current Performance" errors="0" failures="0" skipped="0" timestamp="2025-08-20T17:47:47" time="0.837" tests="21">
+    <testcase classname="Search Baseline - Current Performance Single Word Search Baseline Case 1: Should find all authentication-related memories" name="Search Baseline - Current Performance Single Word Search Baseline Case 1: Should find all authentication-related memories" time="0.011">
+    </testcase>
+    <testcase classname="Search Baseline - Current Performance Single Word Search Baseline Case 2: Should find auth as partial match of authentication" name="Search Baseline - Current Performance Single Word Search Baseline Case 2: Should find auth as partial match of authentication" time="0.003">
+    </testcase>
+    <testcase classname="Search Baseline - Current Performance Single Word Search Baseline Case 3: Should find bug-related memories" name="Search Baseline - Current Performance Single Word Search Baseline Case 3: Should find bug-related memories" time="0.002">
+    </testcase>
+    <testcase classname="Search Baseline - Current Performance Single Word Search Baseline Case 4: Should find user-related memories" name="Search Baseline - Current Performance Single Word Search Baseline Case 4: Should find user-related memories" time="0.002">
+    </testcase>
+    <testcase classname="Search Baseline - Current Performance Single Word Search Baseline Case 5: Should handle typo in database" name="Search Baseline - Current Performance Single Word Search Baseline Case 5: Should handle typo in database" time="0.002">
+    </testcase>
+    <testcase classname="Search Baseline - Current Performance Multi-Word Search Baseline (Critical) Case 6: Should rank memory 2 highest (contains both terms)" name="Search Baseline - Current Performance Multi-Word Search Baseline (Critical) Case 6: Should rank memory 2 highest (contains both terms)" time="0.003">
+    </testcase>
+    <testcase classname="Search Baseline - Current Performance Multi-Word Search Baseline (Critical) Case 7: Should find memories with both user and authentication" name="Search Baseline - Current Performance Multi-Word Search Baseline (Critical) Case 7: Should find memories with both user and authentication" time="0.002">
+    </testcase>
+    <testcase classname="Search Baseline - Current Performance Multi-Word Search Baseline (Critical) Case 8: Should rank exact phrase match highest" name="Search Baseline - Current Performance Multi-Word Search Baseline (Critical) Case 8: Should rank exact phrase match highest" time="0.003">
+    </testcase>
+    <testcase classname="Search Baseline - Current Performance Multi-Word Search Baseline (Critical) Case 9: Should find exact phrase match" name="Search Baseline - Current Performance Multi-Word Search Baseline (Critical) Case 9: Should find exact phrase match" time="0.003">
+    </testcase>
+    <testcase classname="Search Baseline - Current Performance Multi-Word Search Baseline (Critical) Case 10: Should find exact phrase match" name="Search Baseline - Current Performance Multi-Word Search Baseline (Critical) Case 10: Should find exact phrase match" time="0.002">
+    </testcase>
+    <testcase classname="Search Baseline - Current Performance Phrase Search Baseline Case 11: Should find exact phrase" name="Search Baseline - Current Performance Phrase Search Baseline Case 11: Should find exact phrase" time="0.004">
+    </testcase>
+    <testcase classname="Search Baseline - Current Performance Phrase Search Baseline Case 12: Should find exact phrase" name="Search Baseline - Current Performance Phrase Search Baseline Case 12: Should find exact phrase" time="0.002">
+    </testcase>
+    <testcase classname="Search Baseline - Current Performance Phrase Search Baseline Case 13: Should find phrase in content" name="Search Baseline - Current Performance Phrase Search Baseline Case 13: Should find phrase in content" time="0.002">
+    </testcase>
+    <testcase classname="Search Baseline - Current Performance Edge Cases Baseline Case 14: Should handle words in different order" name="Search Baseline - Current Performance Edge Cases Baseline Case 14: Should handle words in different order" time="0.002">
+    </testcase>
+    <testcase classname="Search Baseline - Current Performance Edge Cases Baseline Case 15: Should handle scrambled word order" name="Search Baseline - Current Performance Edge Cases Baseline Case 15: Should handle scrambled word order" time="0.001">
+    </testcase>
+    <testcase classname="Search Baseline - Current Performance Edge Cases Baseline Case 16: Should return no results for non-existent terms" name="Search Baseline - Current Performance Edge Cases Baseline Case 16: Should return no results for non-existent terms" time="0.002">
+    </testcase>
+    <testcase classname="Search Baseline - Current Performance Edge Cases Baseline Case 17: Empty query should return all memories" name="Search Baseline - Current Performance Edge Cases Baseline Case 17: Empty query should return all memories" time="0">
+    </testcase>
+    <testcase classname="Search Baseline - Current Performance Edge Cases Baseline Case 18: Should handle wildcard-like patterns" name="Search Baseline - Current Performance Edge Cases Baseline Case 18: Should handle wildcard-like patterns" time="0.001">
+    </testcase>
+    <testcase classname="Search Baseline - Current Performance Performance Baseline Search performance with 100 memories" name="Search Baseline - Current Performance Performance Baseline Search performance with 100 memories" time="0.003">
+    </testcase>
+    <testcase classname="Search Baseline - Current Performance Performance Baseline Memory usage baseline" name="Search Baseline - Current Performance Performance Baseline Memory usage baseline" time="0.012">
+    </testcase>
+    <testcase classname="Search Baseline - Current Performance Current Fuse.js Configuration Analysis Analyze current search settings" name="Search Baseline - Current Performance Current Fuse.js Configuration Analysis Analyze current search settings" time="0.002">
+    </testcase>
+  </testsuite>
+  <testsuite name="Improved Search Engine - Mode Testing" errors="0" failures="1" skipped="0" timestamp="2025-08-20T17:47:47" time="0.872" tests="18">
+    <testcase classname="Improved Search Engine - Mode Testing Strict Mode Tests Strict Mode - Case 1: Should find all authentication-related memories" name="Improved Search Engine - Mode Testing Strict Mode Tests Strict Mode - Case 1: Should find all authentication-related memories" time="0.011">
+    </testcase>
+    <testcase classname="Improved Search Engine - Mode Testing Strict Mode Tests Strict Mode - Case 2: Should find auth as partial match of authentication" name="Improved Search Engine - Mode Testing Strict Mode Tests Strict Mode - Case 2: Should find auth as partial match of authentication" time="0.002">
+    </testcase>
+    <testcase classname="Improved Search Engine - Mode Testing Strict Mode Tests Strict Mode - Case 3: Should find bug-related memories" name="Improved Search Engine - Mode Testing Strict Mode Tests Strict Mode - Case 3: Should find bug-related memories" time="0.002">
+    </testcase>
+    <testcase classname="Improved Search Engine - Mode Testing Strict Mode Tests Strict Mode - Case 4: Should find user-related memories" name="Improved Search Engine - Mode Testing Strict Mode Tests Strict Mode - Case 4: Should find user-related memories" time="0.001">
+    </testcase>
+    <testcase classname="Improved Search Engine - Mode Testing Strict Mode Tests Strict Mode - Case 5: Should handle typo in database" name="Improved Search Engine - Mode Testing Strict Mode Tests Strict Mode - Case 5: Should handle typo in database" time="0.003">
+    </testcase>
+    <testcase classname="Improved Search Engine - Mode Testing Normal Mode Tests Normal Mode - Case 6: Should rank memory 2 highest (contains both terms)" name="Improved Search Engine - Mode Testing Normal Mode Tests Normal Mode - Case 6: Should rank memory 2 highest (contains both terms)" time="0.002">
+    </testcase>
+    <testcase classname="Improved Search Engine - Mode Testing Normal Mode Tests Normal Mode - Case 7: Should find memories with both user and authentication" name="Improved Search Engine - Mode Testing Normal Mode Tests Normal Mode - Case 7: Should find memories with both user and authentication" time="0.003">
+    </testcase>
+    <testcase classname="Improved Search Engine - Mode Testing Normal Mode Tests Normal Mode - Case 8: Should rank exact phrase match highest" name="Improved Search Engine - Mode Testing Normal Mode Tests Normal Mode - Case 8: Should rank exact phrase match highest" time="0.002">
+    </testcase>
+    <testcase classname="Improved Search Engine - Mode Testing Normal Mode Tests Normal Mode - Case 9: Should find exact phrase match" name="Improved Search Engine - Mode Testing Normal Mode Tests Normal Mode - Case 9: Should find exact phrase match" time="0.003">
+    </testcase>
+    <testcase classname="Improved Search Engine - Mode Testing Normal Mode Tests Normal Mode - Case 10: Should find exact phrase match" name="Improved Search Engine - Mode Testing Normal Mode Tests Normal Mode - Case 10: Should find exact phrase match" time="0.003">
+    </testcase>
+    <testcase classname="Improved Search Engine - Mode Testing Auto-Escalation Mode Tests Auto Mode - Should find exact matches first" name="Improved Search Engine - Mode Testing Auto-Escalation Mode Tests Auto Mode - Should find exact matches first" time="0.002">
+    </testcase>
+    <testcase classname="Improved Search Engine - Mode Testing Auto-Escalation Mode Tests Auto Mode - Should handle typos with escalation" name="Improved Search Engine - Mode Testing Auto-Escalation Mode Tests Auto Mode - Should handle typos with escalation" time="0.004">
+      <failure>Error: expect(received).toBeGreaterThan(expected)
+
+Expected: &gt; 0.5
+Received:   0.2
+    at C:\source\COA Goldfish MCP\src\__tests__\search-improved.test.ts:117:27
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)</failure>
+    </testcase>
+    <testcase classname="Improved Search Engine - Mode Testing Auto-Escalation Mode Tests Auto Mode - Should return empty for truly nonexistent" name="Improved Search Engine - Mode Testing Auto-Escalation Mode Tests Auto Mode - Should return empty for truly nonexistent" time="0.006">
+    </testcase>
+    <testcase classname="Improved Search Engine - Mode Testing Extended Search Operator Tests Extended - Case 19: Exact phrase only" name="Improved Search Engine - Mode Testing Extended Search Operator Tests Extended - Case 19: Exact phrase only" time="0.001">
+    </testcase>
+    <testcase classname="Improved Search Engine - Mode Testing Extended Search Operator Tests Extended - Case 20: Must include both terms" name="Improved Search Engine - Mode Testing Extended Search Operator Tests Extended - Case 20: Must include both terms" time="0.002">
+    </testcase>
+    <testcase classname="Improved Search Engine - Mode Testing Extended Search Operator Tests Extended - Case 21: Include authentication, exclude refactor" name="Improved Search Engine - Mode Testing Extended Search Operator Tests Extended - Case 21: Include authentication, exclude refactor" time="0.004">
+    </testcase>
+    <testcase classname="Improved Search Engine - Mode Testing Extended Search Operator Tests Extended - Case 22: Either bug OR issue" name="Improved Search Engine - Mode Testing Extended Search Operator Tests Extended - Case 22: Either bug OR issue" time="0.007">
+    </testcase>
+    <testcase classname="Improved Search Engine - Mode Testing Configuration Comparison Compare all modes for same query" name="Improved Search Engine - Mode Testing Configuration Comparison Compare all modes for same query" time="0.004">
+    </testcase>
+  </testsuite>
+  <testsuite name="Goldfish Tool Handlers" errors="0" failures="0" skipped="0" timestamp="2025-08-20T17:47:47" time="0.876" tests="26">
+    <testcase classname="Goldfish Tool Handlers Parameter Validation remember tool should require content parameter" name="Goldfish Tool Handlers Parameter Validation remember tool should require content parameter" time="0.026">
+    </testcase>
+    <testcase classname="Goldfish Tool Handlers Parameter Validation recall tool should validate limit parameter" name="Goldfish Tool Handlers Parameter Validation recall tool should validate limit parameter" time="0.003">
+    </testcase>
+    <testcase classname="Goldfish Tool Handlers Parameter Validation snapshot tool should require label parameter" name="Goldfish Tool Handlers Parameter Validation snapshot tool should require label parameter" time="0.003">
+    </testcase>
+    <testcase classname="Goldfish Tool Handlers Parameter Validation create_todo_list should require title and items" name="Goldfish Tool Handlers Parameter Validation create_todo_list should require title and items" time="0.003">
     </testcase>
     <testcase classname="Goldfish Tool Handlers Parameter Validation save_session should require sessionId and description" name="Goldfish Tool Handlers Parameter Validation save_session should require sessionId and description" time="0.003">
     </testcase>
     <testcase classname="Goldfish Tool Handlers Parameter Validation restore_session should require sessionId" name="Goldfish Tool Handlers Parameter Validation restore_session should require sessionId" time="0.001">
     </testcase>
-    <testcase classname="Goldfish Tool Handlers Parameter Validation update_todo should require listId" name="Goldfish Tool Handlers Parameter Validation update_todo should require listId" time="0.001">
+    <testcase classname="Goldfish Tool Handlers Parameter Validation update_todo should require listId" name="Goldfish Tool Handlers Parameter Validation update_todo should require listId" time="0.002">
     </testcase>
-    <testcase classname="Goldfish Tool Handlers Tool Response Formats remember tool should return success message with memory ID" name="Goldfish Tool Handlers Tool Response Formats remember tool should return success message with memory ID" time="0.001">
+    <testcase classname="Goldfish Tool Handlers Tool Response Formats remember tool should return success message with memory ID" name="Goldfish Tool Handlers Tool Response Formats remember tool should return success message with memory ID" time="0.002">
     </testcase>
-    <testcase classname="Goldfish Tool Handlers Tool Response Formats recall tool should format memories with icons and timestamps" name="Goldfish Tool Handlers Tool Response Formats recall tool should format memories with icons and timestamps" time="0.001">
+    <testcase classname="Goldfish Tool Handlers Tool Response Formats recall tool should format memories with icons and timestamps" name="Goldfish Tool Handlers Tool Response Formats recall tool should format memories with icons and timestamps" time="0.003">
     </testcase>
-    <testcase classname="Goldfish Tool Handlers Tool Response Formats view_todos should show progress and status counts" name="Goldfish Tool Handlers Tool Response Formats view_todos should show progress and status counts" time="0.015">
+    <testcase classname="Goldfish Tool Handlers Tool Response Formats view_todos should show progress and status counts" name="Goldfish Tool Handlers Tool Response Formats view_todos should show progress and status counts" time="0.023">
     </testcase>
-    <testcase classname="Goldfish Tool Handlers Error Handling should handle missing memory file gracefully" name="Goldfish Tool Handlers Error Handling should handle missing memory file gracefully" time="0.002">
+    <testcase classname="Goldfish Tool Handlers Error Handling should handle missing memory file gracefully" name="Goldfish Tool Handlers Error Handling should handle missing memory file gracefully" time="0.003">
     </testcase>
     <testcase classname="Goldfish Tool Handlers Error Handling should handle corrupted JSON files" name="Goldfish Tool Handlers Error Handling should handle corrupted JSON files" time="0.005">
     </testcase>
     <testcase classname="Goldfish Tool Handlers Error Handling should handle network failures for ProjectKnowledge promotion" name="Goldfish Tool Handlers Error Handling should handle network failures for ProjectKnowledge promotion" time="0.002">
     </testcase>
-    <testcase classname="Goldfish Tool Handlers Memory Type Handling should assign correct icons for memory types" name="Goldfish Tool Handlers Memory Type Handling should assign correct icons for memory types" time="0.002">
+    <testcase classname="Goldfish Tool Handlers Memory Type Handling should assign correct icons for memory types" name="Goldfish Tool Handlers Memory Type Handling should assign correct icons for memory types" time="0.001">
     </testcase>
     <testcase classname="Goldfish Tool Handlers Memory Type Handling should validate memory types in enum" name="Goldfish Tool Handlers Memory Type Handling should validate memory types in enum" time="0.002">
     </testcase>
     <testcase classname="Goldfish Tool Handlers Updated Todo System Tests view_todos single-list format should display most recently updated list only" name="Goldfish Tool Handlers Updated Todo System Tests view_todos single-list format should display most recently updated list only" time="0.002">
     </testcase>
-    <testcase classname="Goldfish Tool Handlers Updated Todo System Tests view_todos single-list format should sort items by ID number regardless of status" name="Goldfish Tool Handlers Updated Todo System Tests view_todos single-list format should sort items by ID number regardless of status" time="0.003">
+    <testcase classname="Goldfish Tool Handlers Updated Todo System Tests view_todos single-list format should sort items by ID number regardless of status" name="Goldfish Tool Handlers Updated Todo System Tests view_todos single-list format should sort items by ID number regardless of status" time="0.001">
     </testcase>
-    <testcase classname="Goldfish Tool Handlers Updated Todo System Tests view_todos single-list format should return separate content blocks for each item" name="Goldfish Tool Handlers Updated Todo System Tests view_todos single-list format should return separate content blocks for each item" time="0.002">
+    <testcase classname="Goldfish Tool Handlers Updated Todo System Tests view_todos single-list format should return separate content blocks for each item" name="Goldfish Tool Handlers Updated Todo System Tests view_todos single-list format should return separate content blocks for each item" time="0.001">
     </testcase>
     <testcase classname="Goldfish Tool Handlers Updated Todo System Tests update_todo enhanced functionality should update task description when itemId and newTask provided" name="Goldfish Tool Handlers Updated Todo System Tests update_todo enhanced functionality should update task description when itemId and newTask provided" time="0.001">
     </testcase>
@@ -45,66 +145,66 @@
     </testcase>
     <testcase classname="Goldfish Tool Handlers Updated Todo System Tests update_todo enhanced functionality should prioritize update over create when itemId provided" name="Goldfish Tool Handlers Updated Todo System Tests update_todo enhanced functionality should prioritize update over create when itemId provided" time="0.001">
     </testcase>
-    <testcase classname="Goldfish Tool Handlers Updated Todo System Tests update_todo enhanced functionality should track changes for update feedback" name="Goldfish Tool Handlers Updated Todo System Tests update_todo enhanced functionality should track changes for update feedback" time="0.002">
+    <testcase classname="Goldfish Tool Handlers Updated Todo System Tests update_todo enhanced functionality should track changes for update feedback" name="Goldfish Tool Handlers Updated Todo System Tests update_todo enhanced functionality should track changes for update feedback" time="0.001">
     </testcase>
-    <testcase classname="Goldfish Tool Handlers Updated Todo System Tests Todo system integration should handle empty todo lists gracefully" name="Goldfish Tool Handlers Updated Todo System Tests Todo system integration should handle empty todo lists gracefully" time="0.001">
+    <testcase classname="Goldfish Tool Handlers Updated Todo System Tests Todo system integration should handle empty todo lists gracefully" name="Goldfish Tool Handlers Updated Todo System Tests Todo system integration should handle empty todo lists gracefully" time="0.002">
     </testcase>
-    <testcase classname="Goldfish Tool Handlers Updated Todo System Tests Todo system integration should truncate long task descriptions" name="Goldfish Tool Handlers Updated Todo System Tests Todo system integration should truncate long task descriptions" time="0.002">
+    <testcase classname="Goldfish Tool Handlers Updated Todo System Tests Todo system integration should truncate long task descriptions" name="Goldfish Tool Handlers Updated Todo System Tests Todo system integration should truncate long task descriptions" time="0.001">
     </testcase>
-    <testcase classname="Goldfish Tool Handlers Updated Todo System Tests Todo system integration should maintain proper status icons" name="Goldfish Tool Handlers Updated Todo System Tests Todo system integration should maintain proper status icons" time="0.002">
-    </testcase>
-  </testsuite>
-  <testsuite name="Goldfish Integration Tests" errors="0" failures="0" skipped="0" timestamp="2025-08-20T17:30:34" time="0.694" tests="7">
-    <testcase classname="Goldfish Integration Tests Memory Cleanup and Promotion should cleanup expired memories and enforce limits" name="Goldfish Integration Tests Memory Cleanup and Promotion should cleanup expired memories and enforce limits" time="0.032">
-    </testcase>
-    <testcase classname="Goldfish Integration Tests Memory Cleanup and Promotion should identify memories for promotion to ProjectKnowledge" name="Goldfish Integration Tests Memory Cleanup and Promotion should identify memories for promotion to ProjectKnowledge" time="0.006">
-    </testcase>
-    <testcase classname="Goldfish Integration Tests Session Save and Restore Workflow should save session with all context" name="Goldfish Integration Tests Session Save and Restore Workflow should save session with all context" time="0.013">
-    </testcase>
-    <testcase classname="Goldfish Integration Tests Session Save and Restore Workflow should restore most recent session by sessionId" name="Goldfish Integration Tests Session Save and Restore Workflow should restore most recent session by sessionId" time="0.02">
-    </testcase>
-    <testcase classname="Goldfish Integration Tests TODO List Lifecycle should create, update, and promote TODO lists" name="Goldfish Integration Tests TODO List Lifecycle should create, update, and promote TODO lists" time="0.01">
-    </testcase>
-    <testcase classname="Goldfish Integration Tests TODO List Lifecycle should cleanup expired TODO lists" name="Goldfish Integration Tests TODO List Lifecycle should cleanup expired TODO lists" time="0.015">
-    </testcase>
-    <testcase classname="Goldfish Integration Tests Cross-workspace Operations should handle multiple workspaces correctly" name="Goldfish Integration Tests Cross-workspace Operations should handle multiple workspaces correctly" time="0.022">
+    <testcase classname="Goldfish Tool Handlers Updated Todo System Tests Todo system integration should maintain proper status icons" name="Goldfish Tool Handlers Updated Todo System Tests Todo system integration should maintain proper status icons" time="0.001">
     </testcase>
   </testsuite>
-  <testsuite name="Goldfish Edge Cases and Error Handling" errors="0" failures="0" skipped="1" timestamp="2025-08-20T17:30:34" time="0.72" tests="11">
-    <testcase classname="Goldfish Edge Cases and Error Handling Corrupted File Handling should handle corrupted JSON memory files gracefully" name="Goldfish Edge Cases and Error Handling Corrupted File Handling should handle corrupted JSON memory files gracefully" time="0.027">
+  <testsuite name="Goldfish Integration Tests" errors="0" failures="0" skipped="0" timestamp="2025-08-20T17:47:47" time="0.895" tests="7">
+    <testcase classname="Goldfish Integration Tests Memory Cleanup and Promotion should cleanup expired memories and enforce limits" name="Goldfish Integration Tests Memory Cleanup and Promotion should cleanup expired memories and enforce limits" time="0.041">
     </testcase>
-    <testcase classname="Goldfish Edge Cases and Error Handling Corrupted File Handling should handle missing workspace directories" name="Goldfish Edge Cases and Error Handling Corrupted File Handling should handle missing workspace directories" time="0.008">
+    <testcase classname="Goldfish Integration Tests Memory Cleanup and Promotion should identify memories for promotion to ProjectKnowledge" name="Goldfish Integration Tests Memory Cleanup and Promotion should identify memories for promotion to ProjectKnowledge" time="0.011">
     </testcase>
-    <testcase classname="Goldfish Edge Cases and Error Handling Corrupted File Handling should handle filesystem permission errors" name="Goldfish Edge Cases and Error Handling Corrupted File Handling should handle filesystem permission errors" time="0.006">
+    <testcase classname="Goldfish Integration Tests Session Save and Restore Workflow should save session with all context" name="Goldfish Integration Tests Session Save and Restore Workflow should save session with all context" time="0.015">
     </testcase>
-    <testcase classname="Goldfish Edge Cases and Error Handling Concurrent Operations should handle concurrent memory writes safely" name="Goldfish Edge Cases and Error Handling Concurrent Operations should handle concurrent memory writes safely" time="0.011">
+    <testcase classname="Goldfish Integration Tests Session Save and Restore Workflow should restore most recent session by sessionId" name="Goldfish Integration Tests Session Save and Restore Workflow should restore most recent session by sessionId" time="0.027">
     </testcase>
-    <testcase classname="Goldfish Edge Cases and Error Handling Concurrent Operations should handle concurrent cleanup operations" name="Goldfish Edge Cases and Error Handling Concurrent Operations should handle concurrent cleanup operations" time="0.025">
+    <testcase classname="Goldfish Integration Tests TODO List Lifecycle should create, update, and promote TODO lists" name="Goldfish Integration Tests TODO List Lifecycle should create, update, and promote TODO lists" time="0.017">
     </testcase>
-    <testcase classname="Goldfish Edge Cases and Error Handling Network Failures should handle ProjectKnowledge promotion failures gracefully" name="Goldfish Edge Cases and Error Handling Network Failures should handle ProjectKnowledge promotion failures gracefully" time="0.009">
+    <testcase classname="Goldfish Integration Tests TODO List Lifecycle should cleanup expired TODO lists" name="Goldfish Integration Tests TODO List Lifecycle should cleanup expired TODO lists" time="0.016">
+    </testcase>
+    <testcase classname="Goldfish Integration Tests Cross-workspace Operations should handle multiple workspaces correctly" name="Goldfish Integration Tests Cross-workspace Operations should handle multiple workspaces correctly" time="0.019">
+    </testcase>
+  </testsuite>
+  <testsuite name="Goldfish Edge Cases and Error Handling" errors="0" failures="0" skipped="1" timestamp="2025-08-20T17:47:47" time="0.908" tests="11">
+    <testcase classname="Goldfish Edge Cases and Error Handling Corrupted File Handling should handle corrupted JSON memory files gracefully" name="Goldfish Edge Cases and Error Handling Corrupted File Handling should handle corrupted JSON memory files gracefully" time="0.04">
+    </testcase>
+    <testcase classname="Goldfish Edge Cases and Error Handling Corrupted File Handling should handle missing workspace directories" name="Goldfish Edge Cases and Error Handling Corrupted File Handling should handle missing workspace directories" time="0.01">
+    </testcase>
+    <testcase classname="Goldfish Edge Cases and Error Handling Corrupted File Handling should handle filesystem permission errors" name="Goldfish Edge Cases and Error Handling Corrupted File Handling should handle filesystem permission errors" time="0.012">
+    </testcase>
+    <testcase classname="Goldfish Edge Cases and Error Handling Concurrent Operations should handle concurrent memory writes safely" name="Goldfish Edge Cases and Error Handling Concurrent Operations should handle concurrent memory writes safely" time="0.014">
+    </testcase>
+    <testcase classname="Goldfish Edge Cases and Error Handling Concurrent Operations should handle concurrent cleanup operations" name="Goldfish Edge Cases and Error Handling Concurrent Operations should handle concurrent cleanup operations" time="0.021">
+    </testcase>
+    <testcase classname="Goldfish Edge Cases and Error Handling Network Failures should handle ProjectKnowledge promotion failures gracefully" name="Goldfish Edge Cases and Error Handling Network Failures should handle ProjectKnowledge promotion failures gracefully" time="0.008">
     </testcase>
     <testcase classname="Goldfish Edge Cases and Error Handling Network Failures should handle AbortSignal timeout" name="Goldfish Edge Cases and Error Handling Network Failures should handle AbortSignal timeout" time="0">
       <skipped/>
     </testcase>
-    <testcase classname="Goldfish Edge Cases and Error Handling Memory Limit Edge Cases should handle workspace with exactly max memories" name="Goldfish Edge Cases and Error Handling Memory Limit Edge Cases should handle workspace with exactly max memories" time="0.011">
+    <testcase classname="Goldfish Edge Cases and Error Handling Memory Limit Edge Cases should handle workspace with exactly max memories" name="Goldfish Edge Cases and Error Handling Memory Limit Edge Cases should handle workspace with exactly max memories" time="0.013">
     </testcase>
-    <testcase classname="Goldfish Edge Cases and Error Handling Memory Limit Edge Cases should handle empty workspace gracefully" name="Goldfish Edge Cases and Error Handling Memory Limit Edge Cases should handle empty workspace gracefully" time="0.005">
+    <testcase classname="Goldfish Edge Cases and Error Handling Memory Limit Edge Cases should handle empty workspace gracefully" name="Goldfish Edge Cases and Error Handling Memory Limit Edge Cases should handle empty workspace gracefully" time="0.004">
     </testcase>
-    <testcase classname="Goldfish Edge Cases and Error Handling Time and Date Edge Cases should handle timezone differences correctly" name="Goldfish Edge Cases and Error Handling Time and Date Edge Cases should handle timezone differences correctly" time="0.006">
+    <testcase classname="Goldfish Edge Cases and Error Handling Time and Date Edge Cases should handle timezone differences correctly" name="Goldfish Edge Cases and Error Handling Time and Date Edge Cases should handle timezone differences correctly" time="0.004">
     </testcase>
-    <testcase classname="Goldfish Edge Cases and Error Handling Time and Date Edge Cases should handle memory expiration at exact TTL boundary" name="Goldfish Edge Cases and Error Handling Time and Date Edge Cases should handle memory expiration at exact TTL boundary" time="0.005">
+    <testcase classname="Goldfish Edge Cases and Error Handling Time and Date Edge Cases should handle memory expiration at exact TTL boundary" name="Goldfish Edge Cases and Error Handling Time and Date Edge Cases should handle memory expiration at exact TTL boundary" time="0.004">
     </testcase>
   </testsuite>
-  <testsuite name="Goldfish Core Functionality" errors="0" failures="0" skipped="0" timestamp="2025-08-20T17:30:34" time="2.019" tests="7">
-    <testcase classname="Goldfish Core Functionality Workspace Detection should detect workspace from git root" name="Goldfish Core Functionality Workspace Detection should detect workspace from git root" time="0.388">
+  <testsuite name="Goldfish Core Functionality" errors="0" failures="0" skipped="0" timestamp="2025-08-20T17:47:47" time="2.16" tests="7">
+    <testcase classname="Goldfish Core Functionality Workspace Detection should detect workspace from git root" name="Goldfish Core Functionality Workspace Detection should detect workspace from git root" time="0.372">
     </testcase>
-    <testcase classname="Goldfish Core Functionality Workspace Detection should fallback to directory name when not in git repo" name="Goldfish Core Functionality Workspace Detection should fallback to directory name when not in git repo" time="0.002">
+    <testcase classname="Goldfish Core Functionality Workspace Detection should fallback to directory name when not in git repo" name="Goldfish Core Functionality Workspace Detection should fallback to directory name when not in git repo" time="0.001">
     </testcase>
-    <testcase classname="Goldfish Core Functionality Chronological ID Generation should generate valid hex chronological IDs" name="Goldfish Core Functionality Chronological ID Generation should generate valid hex chronological IDs" time="0.001">
+    <testcase classname="Goldfish Core Functionality Chronological ID Generation should generate valid hex chronological IDs" name="Goldfish Core Functionality Chronological ID Generation should generate valid hex chronological IDs" time="0.002">
     </testcase>
-    <testcase classname="Goldfish Core Functionality Chronological ID Generation should generate sortable hex chronological IDs" name="Goldfish Core Functionality Chronological ID Generation should generate sortable hex chronological IDs" time="1.017">
+    <testcase classname="Goldfish Core Functionality Chronological ID Generation should generate sortable hex chronological IDs" name="Goldfish Core Functionality Chronological ID Generation should generate sortable hex chronological IDs" time="1.002">
     </testcase>
-    <testcase classname="Goldfish Core Functionality Memory Storage should create memory directories" name="Goldfish Core Functionality Memory Storage should create memory directories" time="0.007">
+    <testcase classname="Goldfish Core Functionality Memory Storage should create memory directories" name="Goldfish Core Functionality Memory Storage should create memory directories" time="0.011">
     </testcase>
     <testcase classname="Goldfish Core Functionality TTL and Expiration Logic should correctly calculate memory age" name="Goldfish Core Functionality TTL and Expiration Logic should correctly calculate memory age" time="0.001">
     </testcase>

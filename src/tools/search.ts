@@ -171,7 +171,9 @@ export class SearchTools {
       const timelineMap = new Map<string, Map<string, { count: number; highlights: string[] }>>();
       
       for (const memory of memories) {
-        const date = memory.timestamp.toISOString().split('T')[0] || 'unknown';
+        // Use local date for grouping to avoid timezone issues
+        const date = new Date(memory.timestamp.getFullYear(), memory.timestamp.getMonth(), memory.timestamp.getDate())
+          .toISOString().split('T')[0] || 'unknown';
         const ws = memory.workspace || 'unknown';
         
         if (!timelineMap.has(date)) {
@@ -204,7 +206,8 @@ export class SearchTools {
       
       for (const date of sortedDates) {
         const dayData = timelineMap.get(date)!;
-        const dayName = this.formatDateName(new Date(date));
+        const parsedDate = new Date(date + 'T12:00:00'); // Add time to avoid timezone issues
+        const dayName = this.formatDateName(parsedDate);
         
         output.push(`\n**${dayName}** (${date})`);
         
@@ -421,9 +424,14 @@ export class SearchTools {
     const yesterday = new Date(today);
     yesterday.setDate(yesterday.getDate() - 1);
 
-    if (date.toDateString() === today.toDateString()) {
+    // Normalize dates to local date strings for comparison
+    const dateStr = date.toDateString();
+    const todayStr = today.toDateString();
+    const yesterdayStr = yesterday.toDateString();
+
+    if (dateStr === todayStr) {
       return 'Today';
-    } else if (date.toDateString() === yesterday.toDateString()) {
+    } else if (dateStr === yesterdayStr) {
       return 'Yesterday';
     } else {
       return date.toLocaleDateString('en-US', { weekday: 'long' });

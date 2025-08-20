@@ -3,18 +3,65 @@
  */
 
 import Fuse from 'fuse.js';
-import { GoldfishMemory, SearchOptions } from '../types/index.js';
+import { GoldfishMemory, SearchOptions, SearchMode } from '../types/index.js';
 import { Storage } from './storage.js';
+
+interface SearchConfig {
+  threshold: number;
+  useExtendedSearch: boolean;
+  weights: {
+    content: number;
+    highlights: number;
+    tags: number;
+    workspace: number;
+    type: number;
+  };
+  distance: number;
+  minMatchCharLength: number;
+}
 
 export class SearchEngine {
   private storage: Storage;
+  private searchConfigs: Record<SearchMode, SearchConfig>;
 
   constructor(storage: Storage) {
     this.storage = storage;
+    
+    // Define search configurations for different modes
+    this.searchConfigs = {
+      strict: {
+        threshold: 0.2,
+        useExtendedSearch: true,
+        weights: { content: 0.8, highlights: 0.6, tags: 0.4, workspace: 0.2, type: 0.1 },
+        distance: 50,
+        minMatchCharLength: 2
+      },
+      normal: {
+        threshold: 0.4,
+        useExtendedSearch: true,
+        weights: { content: 0.7, highlights: 0.6, tags: 0.5, workspace: 0.3, type: 0.2 },
+        distance: 200,
+        minMatchCharLength: 1
+      },
+      fuzzy: {
+        threshold: 0.6,
+        useExtendedSearch: false,
+        weights: { content: 0.7, highlights: 0.8, tags: 0.5, workspace: 0.3, type: 0.2 },
+        distance: 1000,
+        minMatchCharLength: 1
+      },
+      auto: {
+        threshold: 0.3, // Will be adjusted by auto-escalation logic
+        useExtendedSearch: true,
+        weights: { content: 0.8, highlights: 0.6, tags: 0.4, workspace: 0.2, type: 0.1 },
+        distance: 100,
+        minMatchCharLength: 1
+      }
+    };
   }
 
   /**
-   * Search memories with fuzzy matching
+   * Search memories with configurable search modes
    */
   async searchMemories(options: SearchOptions): Promise<GoldfishMemory[]> {
     const {
@@ -23,7 +70,8 @@ export class SearchEngine {
       type,
       scope = 'current',
       limit = 50,
-      since
+      since,
+      mode = 'normal'
     } = options;
 
     // Determine which workspaces to search
@@ -72,22 +120,30 @@ export class SearchEngine {
       return filteredMemories.slice(0, limit);
     }
 
-    // Set up Fuse.js for fuzzy search with better multi-word support
+    // Handle auto-escalation mode
+    if (mode === 'auto') {
+      return this.performAutoEscalationSearch(query, filteredMemories, limit);
+    }
+
+    // Get configuration for the specified mode
+    const config = this.searchConfigs[mode];
+    
+    // Set up Fuse.js with mode-specific configuration
     const fuseOptions = {
       keys: [
-        { name: 'content', weight: 0.7 },
-        { name: 'highlights', weight: 0.8 }, // Highlights are very important
-        { name: 'tags', weight: 0.5 },
-        { name: 'workspace', weight: 0.3 },
-        { name: 'type', weight: 0.2 }
+        { name: 'content', weight: config.weights.content },
+        { name: 'highlights', weight: config.weights.highlights },
+        { name: 'tags', weight: config.weights.tags },
+        { name: 'workspace', weight: config.weights.workspace },
+        { name: 'type', weight: config.weights.type }
       ],
-      threshold: 0.9, // Extremely lenient for multi-word queries
+      threshold: config.threshold,
       ignoreLocation: true, // Don't penalize matches later in text
       includeScore: true,
       includeMatches: true,
-      minMatchCharLength: 1, // Allow single character matches
-      useExtendedSearch: false, // Disable - causing issues with OR syntax
-      distance: 1000 // Allow matches far apart in text
+      minMatchCharLength: config.minMatchCharLength,
+      useExtendedSearch: config.useExtendedSearch,
+      distance: config.distance
     };
 
     // Prepare searchable content with better text extraction
@@ -130,6 +186,77 @@ export class SearchEngine {
         return originalMemory!;
       })
       .slice(0, limit);
+  }
+
+  /**
+   * Perform auto-escalation search: strict -> normal -> fuzzy
+   */
+  private async performAutoEscalationSearch(query: string, filteredMemories: GoldfishMemory[], limit: number): Promise<GoldfishMemory[]> {
+    const escalationModes: SearchMode[] = ['strict', 'normal', 'fuzzy'];
+    
+    for (const escalationMode of escalationModes) {
+      const config = this.searchConfigs[escalationMode];
+      
+      const fuseOptions = {
+        keys: [
+          { name: 'content', weight: config.weights.content },
+          { name: 'highlights', weight: config.weights.highlights },
+          { name: 'tags', weight: config.weights.tags },
+          { name: 'workspace', weight: config.weights.workspace },
+          { name: 'type', weight: config.weights.type }
+        ],
+        threshold: config.threshold,
+        ignoreLocation: true,
+        includeScore: true,
+        includeMatches: true,
+        minMatchCharLength: config.minMatchCharLength,
+        useExtendedSearch: config.useExtendedSearch,
+        distance: config.distance
+      };
+
+      // Prepare searchable content
+      const searchableMemories = filteredMemories.map(memory => {
+        let contentText = '';
+        let highlightsText = '';
+        
+        if (typeof memory.content === 'string') {
+          contentText = memory.content;
+        } else if (memory.content && typeof memory.content === 'object') {
+          if ('description' in memory.content && typeof memory.content.description === 'string') {
+            contentText = memory.content.description;
+          }
+          if ('highlights' in memory.content && Array.isArray(memory.content.highlights)) {
+            highlightsText = memory.content.highlights.join(' ');
+          }
+          if ('workContext' in memory.content && typeof memory.content.workContext === 'string') {
+            contentText += ' ' + memory.content.workContext;
+          }
+        }
+        
+        return {
+          ...memory,
+          content: contentText,
+          highlights: highlightsText,
+          tags: memory.tags?.join(' ') || ''
+        };
+      });
+
+      const fuse = new Fuse(searchableMemories, fuseOptions);
+      const results = fuse.search(query);
+
+      // If we got good results, return them
+      if (results.length >= Math.min(3, limit)) {
+        return results
+          .map(result => {
+            const originalMemory = filteredMemories.find(m => m.id === result.item.id);
+            return originalMemory!;
+          })
+          .slice(0, limit);
+      }
+    }
+
+    // If all modes failed, return empty results
+    return [];
   }
 
   /**
@@ -191,9 +318,11 @@ export class SearchEngine {
     score: number;
     matches: Array<{ key: string; value: string; indices: [number, number][] }>;
   }>> {
-    const memories = await this.searchMemories({ ...options, query, limit: 20 });
+    const mode = options.mode || 'normal';
+    const memories = await this.searchMemories({ ...options, query, limit: 20, mode });
     
-    // Re-run Fuse search to get match details
+    // Re-run Fuse search to get match details using same mode
+    const config = this.searchConfigs[mode];
     const searchableMemories = memories.map(memory => ({
       ...memory,
       content: typeof memory.content === 'string' ? memory.content : JSON.stringify(memory.content),
@@ -202,15 +331,17 @@ export class SearchEngine {
 
     const fuse = new Fuse(searchableMemories, {
       keys: [
-        { name: 'content', weight: 0.7 },
-        { name: 'tags', weight: 0.5 },
-        { name: 'workspace', weight: 0.3 }
+        { name: 'content', weight: config.weights.content },
+        { name: 'highlights', weight: config.weights.highlights },
+        { name: 'tags', weight: config.weights.tags },
+        { name: 'workspace', weight: config.weights.workspace }
       ],
-      threshold: 0.9, // Very lenient like the main search
+      threshold: config.threshold,
       ignoreLocation: true,
       includeScore: true,
       includeMatches: true,
-      minMatchCharLength: 1
+      minMatchCharLength: config.minMatchCharLength,
+      useExtendedSearch: config.useExtendedSearch
     });
 
     const results = fuse.search(query);

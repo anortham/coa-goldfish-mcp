@@ -1,5 +1,8 @@
 # COA Goldfish MCP - Developer Instructions
 
+## ⚠️ IMPORTANT: Testing Changes
+**CRITICAL**: After making code changes, user must restart Claude Code before testing MCP tools. Changes to TypeScript files are not reflected in the running MCP server until restart.
+
 ## Core Architecture
 - **TypeScript/Node.js** project with MCP SDK
 - **JSON file storage** - no database overhead
