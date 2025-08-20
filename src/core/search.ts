@@ -99,15 +99,15 @@ export class SearchEngine {
         contentText = memory.content;
       } else if (memory.content && typeof memory.content === 'object') {
         // Extract description and other text fields
-        if (memory.content.description) {
+        if ('description' in memory.content && typeof memory.content.description === 'string') {
           contentText = memory.content.description;
         }
         // Extract highlights for searching
-        if (memory.content.highlights && Array.isArray(memory.content.highlights)) {
+        if ('highlights' in memory.content && Array.isArray(memory.content.highlights)) {
           highlightsText = memory.content.highlights.join(' ');
         }
         // Add work context if available
-        if (memory.content.workContext) {
+        if ('workContext' in memory.content && typeof memory.content.workContext === 'string') {
           contentText += ' ' + memory.content.workContext;
         }
       }

@@ -67,11 +67,12 @@ export class SearchTools {
 
         output.push(`💾 ${age}${workspace} - Score: ${(1 - score).toFixed(2)}`);
         
-        if (typeof memory.content === 'object' && memory.content.description) {
-          output.push(`   ${memory.content.description}`);
+        if (typeof memory.content === 'object' && memory.content && 'description' in memory.content) {
+          const contentObj = memory.content as { description?: string; highlights?: string[] };
+          output.push(`   ${contentObj.description}`);
           
-          if (memory.content.highlights && memory.content.highlights.length > 0) {
-            output.push(`   ✨ ${memory.content.highlights.slice(0, 2).join(', ')}`);
+          if (contentObj.highlights && Array.isArray(contentObj.highlights) && contentObj.highlights.length > 0) {
+            output.push(`   ✨ ${contentObj.highlights.slice(0, 2).join(', ')}`);
           }
         } else {
           output.push(`   ${memory.content}`);
@@ -101,7 +102,7 @@ export class SearchTools {
         query,
         resultsFound: results.length,
         matches: results.slice(0, 10).map(result => ({
-          memory: result.memory,
+          memory: result.memory as Record<string, unknown>,
           score: 1 - result.score,
           snippet: result.matches.length > 0 && result.matches[0] ? 
             this.getMatchSnippet(result.matches[0].value, result.matches[0].indices) : undefined
@@ -188,8 +189,11 @@ export class SearchTools {
         wsData.count++;
         
         // Extract highlights
-        if (typeof memory.content === 'object' && memory.content.highlights) {
-          wsData.highlights.push(...memory.content.highlights);
+        if (typeof memory.content === 'object' && memory.content && 'highlights' in memory.content) {
+          const contentObj = memory.content as { highlights?: string[] };
+          if (Array.isArray(contentObj.highlights)) {
+            wsData.highlights.push(...contentObj.highlights);
+          }
         }
       }
 
@@ -233,7 +237,10 @@ export class SearchTools {
         workspacesFound: new Set(memories.map(m => m.workspace || 'unknown')).size,
         checkpointsFound: memories.filter(m => m.type === 'checkpoint').length,
         data: {
-          byDate: Object.fromEntries(timelineMap),
+          byDate: Object.fromEntries(Array.from(timelineMap.entries()).map(([date, wsMap]) => [
+            date, 
+            Object.fromEntries(wsMap.entries())
+          ])),
           byWorkspace: {}  // Could organize by workspace if needed
         },
         meta: {
@@ -330,8 +337,9 @@ export class SearchTools {
 
         output.push(`${typeIcon} [${memory.id.slice(-6)}] ${age}${workspaceInfo}`);
         
-        if (typeof memory.content === 'object' && memory.content.description) {
-          output.push(`   ${memory.content.description}`);
+        if (typeof memory.content === 'object' && memory.content && 'description' in memory.content) {
+          const contentObj = memory.content as { description?: string };
+          output.push(`   ${contentObj.description}`);
         } else {
           const contentStr = typeof memory.content === 'string' 
             ? memory.content 

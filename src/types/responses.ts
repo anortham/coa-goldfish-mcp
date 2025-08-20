@@ -7,7 +7,7 @@ export interface FormattedResponse {
   success: boolean;
   operation: string;
   formattedOutput?: string;  // Key: dedicated formatted text field
-  data?: any;
+  data?: Record<string, unknown>;
   meta?: {
     mode: string;
     tokens?: number;
@@ -20,7 +20,7 @@ export interface SearchHistoryResponse extends FormattedResponse {
   query: string;
   resultsFound: number;
   matches?: Array<{
-    memory: any;
+    memory: Record<string, unknown>;
     score: number;
     snippet?: string;
   }>;
@@ -49,8 +49,8 @@ export interface TimelineResponse extends FormattedResponse {
   workspacesFound: number;
   checkpointsFound: number;
   data?: {
-    byDate: Record<string, any>;
-    byWorkspace: Record<string, any>;
+    byDate: Record<string, Record<string, unknown>>;
+    byWorkspace: Record<string, Record<string, unknown>>;
   };
 }
 

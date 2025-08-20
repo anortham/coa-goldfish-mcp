@@ -259,7 +259,7 @@ export class Storage {
                 ...data,
                 timestamp: new Date(data.timestamp)
               });
-            } catch (error) {
+            } catch (_error) {
               // Skip corrupted files
               console.warn(`Skipping corrupted file: ${file}`);
             }
@@ -343,10 +343,10 @@ export class Storage {
               ...data,
               createdAt: new Date(data.createdAt),
               updatedAt: new Date(data.updatedAt),
-              items: data.items.map((item: any) => ({
+              items: data.items.map((item: Record<string, unknown>) => ({
                 ...item,
-                createdAt: new Date(item.createdAt),
-                updatedAt: item.updatedAt ? new Date(item.updatedAt) : undefined
+                createdAt: new Date(item.createdAt as string),
+                updatedAt: item.updatedAt ? new Date(item.updatedAt as string) : undefined
               }))
             };
           } catch {

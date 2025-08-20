@@ -144,10 +144,10 @@ COA Goldfish MCP/
 │   ├── types/                  # TypeScript type definitions
 │   │   └── index.ts            # Shared interfaces and types
 │   ├── __tests__/              # Comprehensive test suite
-│   │   ├── core.test.test.ts   # Core functionality tests
-│   │   ├── tools.test.test.ts  # Tool handler tests
-│   │   ├── integration.test.test.ts # Integration workflows
-│   │   └── edge-cases.test.test.ts  # Error handling tests
+│   │   ├── core.test.ts        # Core functionality tests
+│   │   ├── tools.test.ts       # Tool handler tests
+│   │   ├── integration.test.ts # Integration workflows
+│   │   └── edge-cases.test.ts  # Error handling tests
 │   └── index.ts                # Main MCP server entry point
 ├── .claude/                    # Claude Code integration
 │   ├── commands/               # Custom slash commands
@@ -256,10 +256,10 @@ npm test
 npm run test -- --coverage
 
 # Run specific test files
-npm test core.test.test.ts
-npm test tools.test.test.ts
-npm test integration.test.test.ts
-npm test edge-cases.test.test.ts
+npm test core.test.ts
+npm test tools.test.ts
+npm test integration.test.ts
+npm test edge-cases.test.ts
 ```
 
 **Test Categories:**

@@ -2,16 +2,16 @@
  * Type definitions for Goldfish MCP
  */
 
-export interface GoldfishMemory {
+export interface GoldfishMemory extends Record<string, unknown> {
   id: string;
   timestamp: Date;
   workspace: string;
   sessionId?: string;
   type: 'general' | 'todo' | 'checkpoint' | 'context';
-  content: any;
+  content: string | Record<string, unknown>;
   ttlHours: number;
   tags?: string[];
-  metadata?: Record<string, any>;
+  metadata?: Record<string, unknown>;
 }
 
 export interface TodoItem {
@@ -47,7 +47,7 @@ export interface SessionManifest {
   activeFiles?: string[];
 }
 
-export interface CheckpointContent {
+export interface CheckpointContent extends Record<string, unknown> {
   description: string;
   highlights?: string[];
   activeFiles?: string[];

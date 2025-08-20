@@ -1,54 +1,29 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuites name="jest tests" tests="51" failures="0" errors="0" time="3.005">
-  <testsuite name="Goldfish Edge Cases and Error Handling" errors="0" failures="0" skipped="1" timestamp="2025-08-20T16:56:54" time="0.753" tests="11">
-    <testcase classname="Goldfish Edge Cases and Error Handling Corrupted File Handling should handle corrupted JSON memory files gracefully" name="Goldfish Edge Cases and Error Handling Corrupted File Handling should handle corrupted JSON memory files gracefully" time="0.029">
+<testsuites name="jest tests" tests="51" failures="0" errors="0" time="3.154">
+  <testsuite name="Goldfish Tool Handlers" errors="0" failures="0" skipped="0" timestamp="2025-08-20T17:30:34" time="0.683" tests="26">
+    <testcase classname="Goldfish Tool Handlers Parameter Validation remember tool should require content parameter" name="Goldfish Tool Handlers Parameter Validation remember tool should require content parameter" time="0.02">
     </testcase>
-    <testcase classname="Goldfish Edge Cases and Error Handling Corrupted File Handling should handle missing workspace directories" name="Goldfish Edge Cases and Error Handling Corrupted File Handling should handle missing workspace directories" time="0.009">
-    </testcase>
-    <testcase classname="Goldfish Edge Cases and Error Handling Corrupted File Handling should handle filesystem permission errors" name="Goldfish Edge Cases and Error Handling Corrupted File Handling should handle filesystem permission errors" time="0.008">
-    </testcase>
-    <testcase classname="Goldfish Edge Cases and Error Handling Concurrent Operations should handle concurrent memory writes safely" name="Goldfish Edge Cases and Error Handling Concurrent Operations should handle concurrent memory writes safely" time="0.014">
-    </testcase>
-    <testcase classname="Goldfish Edge Cases and Error Handling Concurrent Operations should handle concurrent cleanup operations" name="Goldfish Edge Cases and Error Handling Concurrent Operations should handle concurrent cleanup operations" time="0.029">
-    </testcase>
-    <testcase classname="Goldfish Edge Cases and Error Handling Network Failures should handle ProjectKnowledge promotion failures gracefully" name="Goldfish Edge Cases and Error Handling Network Failures should handle ProjectKnowledge promotion failures gracefully" time="0.009">
-    </testcase>
-    <testcase classname="Goldfish Edge Cases and Error Handling Network Failures should handle AbortSignal timeout" name="Goldfish Edge Cases and Error Handling Network Failures should handle AbortSignal timeout" time="0">
-      <skipped/>
-    </testcase>
-    <testcase classname="Goldfish Edge Cases and Error Handling Memory Limit Edge Cases should handle workspace with exactly max memories" name="Goldfish Edge Cases and Error Handling Memory Limit Edge Cases should handle workspace with exactly max memories" time="0.017">
-    </testcase>
-    <testcase classname="Goldfish Edge Cases and Error Handling Memory Limit Edge Cases should handle empty workspace gracefully" name="Goldfish Edge Cases and Error Handling Memory Limit Edge Cases should handle empty workspace gracefully" time="0.011">
-    </testcase>
-    <testcase classname="Goldfish Edge Cases and Error Handling Time and Date Edge Cases should handle timezone differences correctly" name="Goldfish Edge Cases and Error Handling Time and Date Edge Cases should handle timezone differences correctly" time="0.009">
-    </testcase>
-    <testcase classname="Goldfish Edge Cases and Error Handling Time and Date Edge Cases should handle memory expiration at exact TTL boundary" name="Goldfish Edge Cases and Error Handling Time and Date Edge Cases should handle memory expiration at exact TTL boundary" time="0.009">
-    </testcase>
-  </testsuite>
-  <testsuite name="Goldfish Tool Handlers" errors="0" failures="0" skipped="0" timestamp="2025-08-20T16:56:54" time="0.751" tests="26">
-    <testcase classname="Goldfish Tool Handlers Parameter Validation remember tool should require content parameter" name="Goldfish Tool Handlers Parameter Validation remember tool should require content parameter" time="0.031">
-    </testcase>
-    <testcase classname="Goldfish Tool Handlers Parameter Validation recall tool should validate limit parameter" name="Goldfish Tool Handlers Parameter Validation recall tool should validate limit parameter" time="0.005">
+    <testcase classname="Goldfish Tool Handlers Parameter Validation recall tool should validate limit parameter" name="Goldfish Tool Handlers Parameter Validation recall tool should validate limit parameter" time="0.002">
     </testcase>
     <testcase classname="Goldfish Tool Handlers Parameter Validation snapshot tool should require label parameter" name="Goldfish Tool Handlers Parameter Validation snapshot tool should require label parameter" time="0.002">
     </testcase>
-    <testcase classname="Goldfish Tool Handlers Parameter Validation create_todo_list should require title and items" name="Goldfish Tool Handlers Parameter Validation create_todo_list should require title and items" time="0.003">
+    <testcase classname="Goldfish Tool Handlers Parameter Validation create_todo_list should require title and items" name="Goldfish Tool Handlers Parameter Validation create_todo_list should require title and items" time="0.002">
     </testcase>
     <testcase classname="Goldfish Tool Handlers Parameter Validation save_session should require sessionId and description" name="Goldfish Tool Handlers Parameter Validation save_session should require sessionId and description" time="0.003">
     </testcase>
-    <testcase classname="Goldfish Tool Handlers Parameter Validation restore_session should require sessionId" name="Goldfish Tool Handlers Parameter Validation restore_session should require sessionId" time="0.003">
+    <testcase classname="Goldfish Tool Handlers Parameter Validation restore_session should require sessionId" name="Goldfish Tool Handlers Parameter Validation restore_session should require sessionId" time="0.001">
     </testcase>
-    <testcase classname="Goldfish Tool Handlers Parameter Validation update_todo should require listId" name="Goldfish Tool Handlers Parameter Validation update_todo should require listId" time="0.002">
+    <testcase classname="Goldfish Tool Handlers Parameter Validation update_todo should require listId" name="Goldfish Tool Handlers Parameter Validation update_todo should require listId" time="0.001">
     </testcase>
-    <testcase classname="Goldfish Tool Handlers Tool Response Formats remember tool should return success message with memory ID" name="Goldfish Tool Handlers Tool Response Formats remember tool should return success message with memory ID" time="0.002">
+    <testcase classname="Goldfish Tool Handlers Tool Response Formats remember tool should return success message with memory ID" name="Goldfish Tool Handlers Tool Response Formats remember tool should return success message with memory ID" time="0.001">
     </testcase>
-    <testcase classname="Goldfish Tool Handlers Tool Response Formats recall tool should format memories with icons and timestamps" name="Goldfish Tool Handlers Tool Response Formats recall tool should format memories with icons and timestamps" time="0.003">
+    <testcase classname="Goldfish Tool Handlers Tool Response Formats recall tool should format memories with icons and timestamps" name="Goldfish Tool Handlers Tool Response Formats recall tool should format memories with icons and timestamps" time="0.001">
     </testcase>
-    <testcase classname="Goldfish Tool Handlers Tool Response Formats view_todos should show progress and status counts" name="Goldfish Tool Handlers Tool Response Formats view_todos should show progress and status counts" time="0.02">
+    <testcase classname="Goldfish Tool Handlers Tool Response Formats view_todos should show progress and status counts" name="Goldfish Tool Handlers Tool Response Formats view_todos should show progress and status counts" time="0.015">
     </testcase>
     <testcase classname="Goldfish Tool Handlers Error Handling should handle missing memory file gracefully" name="Goldfish Tool Handlers Error Handling should handle missing memory file gracefully" time="0.002">
     </testcase>
-    <testcase classname="Goldfish Tool Handlers Error Handling should handle corrupted JSON files" name="Goldfish Tool Handlers Error Handling should handle corrupted JSON files" time="0.006">
+    <testcase classname="Goldfish Tool Handlers Error Handling should handle corrupted JSON files" name="Goldfish Tool Handlers Error Handling should handle corrupted JSON files" time="0.005">
     </testcase>
     <testcase classname="Goldfish Tool Handlers Error Handling should handle network failures for ProjectKnowledge promotion" name="Goldfish Tool Handlers Error Handling should handle network failures for ProjectKnowledge promotion" time="0.002">
     </testcase>
@@ -56,53 +31,78 @@
     </testcase>
     <testcase classname="Goldfish Tool Handlers Memory Type Handling should validate memory types in enum" name="Goldfish Tool Handlers Memory Type Handling should validate memory types in enum" time="0.002">
     </testcase>
-    <testcase classname="Goldfish Tool Handlers Updated Todo System Tests view_todos single-list format should display most recently updated list only" name="Goldfish Tool Handlers Updated Todo System Tests view_todos single-list format should display most recently updated list only" time="0.003">
+    <testcase classname="Goldfish Tool Handlers Updated Todo System Tests view_todos single-list format should display most recently updated list only" name="Goldfish Tool Handlers Updated Todo System Tests view_todos single-list format should display most recently updated list only" time="0.002">
     </testcase>
-    <testcase classname="Goldfish Tool Handlers Updated Todo System Tests view_todos single-list format should sort items by ID number regardless of status" name="Goldfish Tool Handlers Updated Todo System Tests view_todos single-list format should sort items by ID number regardless of status" time="0.002">
+    <testcase classname="Goldfish Tool Handlers Updated Todo System Tests view_todos single-list format should sort items by ID number regardless of status" name="Goldfish Tool Handlers Updated Todo System Tests view_todos single-list format should sort items by ID number regardless of status" time="0.003">
     </testcase>
-    <testcase classname="Goldfish Tool Handlers Updated Todo System Tests view_todos single-list format should return separate content blocks for each item" name="Goldfish Tool Handlers Updated Todo System Tests view_todos single-list format should return separate content blocks for each item" time="0.003">
+    <testcase classname="Goldfish Tool Handlers Updated Todo System Tests view_todos single-list format should return separate content blocks for each item" name="Goldfish Tool Handlers Updated Todo System Tests view_todos single-list format should return separate content blocks for each item" time="0.002">
     </testcase>
-    <testcase classname="Goldfish Tool Handlers Updated Todo System Tests update_todo enhanced functionality should update task description when itemId and newTask provided" name="Goldfish Tool Handlers Updated Todo System Tests update_todo enhanced functionality should update task description when itemId and newTask provided" time="0.002">
+    <testcase classname="Goldfish Tool Handlers Updated Todo System Tests update_todo enhanced functionality should update task description when itemId and newTask provided" name="Goldfish Tool Handlers Updated Todo System Tests update_todo enhanced functionality should update task description when itemId and newTask provided" time="0.001">
     </testcase>
     <testcase classname="Goldfish Tool Handlers Updated Todo System Tests update_todo enhanced functionality should delete item when delete parameter is true" name="Goldfish Tool Handlers Updated Todo System Tests update_todo enhanced functionality should delete item when delete parameter is true" time="0.002">
     </testcase>
     <testcase classname="Goldfish Tool Handlers Updated Todo System Tests update_todo enhanced functionality should update both task and status simultaneously" name="Goldfish Tool Handlers Updated Todo System Tests update_todo enhanced functionality should update both task and status simultaneously" time="0.002">
     </testcase>
-    <testcase classname="Goldfish Tool Handlers Updated Todo System Tests update_todo enhanced functionality should prioritize update over create when itemId provided" name="Goldfish Tool Handlers Updated Todo System Tests update_todo enhanced functionality should prioritize update over create when itemId provided" time="0.002">
+    <testcase classname="Goldfish Tool Handlers Updated Todo System Tests update_todo enhanced functionality should prioritize update over create when itemId provided" name="Goldfish Tool Handlers Updated Todo System Tests update_todo enhanced functionality should prioritize update over create when itemId provided" time="0.001">
     </testcase>
     <testcase classname="Goldfish Tool Handlers Updated Todo System Tests update_todo enhanced functionality should track changes for update feedback" name="Goldfish Tool Handlers Updated Todo System Tests update_todo enhanced functionality should track changes for update feedback" time="0.002">
     </testcase>
-    <testcase classname="Goldfish Tool Handlers Updated Todo System Tests Todo system integration should handle empty todo lists gracefully" name="Goldfish Tool Handlers Updated Todo System Tests Todo system integration should handle empty todo lists gracefully" time="0.002">
+    <testcase classname="Goldfish Tool Handlers Updated Todo System Tests Todo system integration should handle empty todo lists gracefully" name="Goldfish Tool Handlers Updated Todo System Tests Todo system integration should handle empty todo lists gracefully" time="0.001">
     </testcase>
-    <testcase classname="Goldfish Tool Handlers Updated Todo System Tests Todo system integration should truncate long task descriptions" name="Goldfish Tool Handlers Updated Todo System Tests Todo system integration should truncate long task descriptions" time="0.001">
+    <testcase classname="Goldfish Tool Handlers Updated Todo System Tests Todo system integration should truncate long task descriptions" name="Goldfish Tool Handlers Updated Todo System Tests Todo system integration should truncate long task descriptions" time="0.002">
     </testcase>
     <testcase classname="Goldfish Tool Handlers Updated Todo System Tests Todo system integration should maintain proper status icons" name="Goldfish Tool Handlers Updated Todo System Tests Todo system integration should maintain proper status icons" time="0.002">
     </testcase>
   </testsuite>
-  <testsuite name="Goldfish Integration Tests" errors="0" failures="0" skipped="0" timestamp="2025-08-20T16:56:54" time="0.773" tests="7">
-    <testcase classname="Goldfish Integration Tests Memory Cleanup and Promotion should cleanup expired memories and enforce limits" name="Goldfish Integration Tests Memory Cleanup and Promotion should cleanup expired memories and enforce limits" time="0.041">
+  <testsuite name="Goldfish Integration Tests" errors="0" failures="0" skipped="0" timestamp="2025-08-20T17:30:34" time="0.694" tests="7">
+    <testcase classname="Goldfish Integration Tests Memory Cleanup and Promotion should cleanup expired memories and enforce limits" name="Goldfish Integration Tests Memory Cleanup and Promotion should cleanup expired memories and enforce limits" time="0.032">
     </testcase>
-    <testcase classname="Goldfish Integration Tests Memory Cleanup and Promotion should identify memories for promotion to ProjectKnowledge" name="Goldfish Integration Tests Memory Cleanup and Promotion should identify memories for promotion to ProjectKnowledge" time="0.01">
+    <testcase classname="Goldfish Integration Tests Memory Cleanup and Promotion should identify memories for promotion to ProjectKnowledge" name="Goldfish Integration Tests Memory Cleanup and Promotion should identify memories for promotion to ProjectKnowledge" time="0.006">
     </testcase>
-    <testcase classname="Goldfish Integration Tests Session Save and Restore Workflow should save session with all context" name="Goldfish Integration Tests Session Save and Restore Workflow should save session with all context" time="0.016">
+    <testcase classname="Goldfish Integration Tests Session Save and Restore Workflow should save session with all context" name="Goldfish Integration Tests Session Save and Restore Workflow should save session with all context" time="0.013">
     </testcase>
-    <testcase classname="Goldfish Integration Tests Session Save and Restore Workflow should restore most recent session by sessionId" name="Goldfish Integration Tests Session Save and Restore Workflow should restore most recent session by sessionId" time="0.029">
+    <testcase classname="Goldfish Integration Tests Session Save and Restore Workflow should restore most recent session by sessionId" name="Goldfish Integration Tests Session Save and Restore Workflow should restore most recent session by sessionId" time="0.02">
     </testcase>
-    <testcase classname="Goldfish Integration Tests TODO List Lifecycle should create, update, and promote TODO lists" name="Goldfish Integration Tests TODO List Lifecycle should create, update, and promote TODO lists" time="0.016">
+    <testcase classname="Goldfish Integration Tests TODO List Lifecycle should create, update, and promote TODO lists" name="Goldfish Integration Tests TODO List Lifecycle should create, update, and promote TODO lists" time="0.01">
     </testcase>
-    <testcase classname="Goldfish Integration Tests TODO List Lifecycle should cleanup expired TODO lists" name="Goldfish Integration Tests TODO List Lifecycle should cleanup expired TODO lists" time="0.013">
+    <testcase classname="Goldfish Integration Tests TODO List Lifecycle should cleanup expired TODO lists" name="Goldfish Integration Tests TODO List Lifecycle should cleanup expired TODO lists" time="0.015">
     </testcase>
-    <testcase classname="Goldfish Integration Tests Cross-workspace Operations should handle multiple workspaces correctly" name="Goldfish Integration Tests Cross-workspace Operations should handle multiple workspaces correctly" time="0.014">
+    <testcase classname="Goldfish Integration Tests Cross-workspace Operations should handle multiple workspaces correctly" name="Goldfish Integration Tests Cross-workspace Operations should handle multiple workspaces correctly" time="0.022">
     </testcase>
   </testsuite>
-  <testsuite name="Goldfish Core Functionality" errors="0" failures="0" skipped="0" timestamp="2025-08-20T16:56:54" time="2.023" tests="7">
-    <testcase classname="Goldfish Core Functionality Workspace Detection should detect workspace from git root" name="Goldfish Core Functionality Workspace Detection should detect workspace from git root" time="0.384">
+  <testsuite name="Goldfish Edge Cases and Error Handling" errors="0" failures="0" skipped="1" timestamp="2025-08-20T17:30:34" time="0.72" tests="11">
+    <testcase classname="Goldfish Edge Cases and Error Handling Corrupted File Handling should handle corrupted JSON memory files gracefully" name="Goldfish Edge Cases and Error Handling Corrupted File Handling should handle corrupted JSON memory files gracefully" time="0.027">
+    </testcase>
+    <testcase classname="Goldfish Edge Cases and Error Handling Corrupted File Handling should handle missing workspace directories" name="Goldfish Edge Cases and Error Handling Corrupted File Handling should handle missing workspace directories" time="0.008">
+    </testcase>
+    <testcase classname="Goldfish Edge Cases and Error Handling Corrupted File Handling should handle filesystem permission errors" name="Goldfish Edge Cases and Error Handling Corrupted File Handling should handle filesystem permission errors" time="0.006">
+    </testcase>
+    <testcase classname="Goldfish Edge Cases and Error Handling Concurrent Operations should handle concurrent memory writes safely" name="Goldfish Edge Cases and Error Handling Concurrent Operations should handle concurrent memory writes safely" time="0.011">
+    </testcase>
+    <testcase classname="Goldfish Edge Cases and Error Handling Concurrent Operations should handle concurrent cleanup operations" name="Goldfish Edge Cases and Error Handling Concurrent Operations should handle concurrent cleanup operations" time="0.025">
+    </testcase>
+    <testcase classname="Goldfish Edge Cases and Error Handling Network Failures should handle ProjectKnowledge promotion failures gracefully" name="Goldfish Edge Cases and Error Handling Network Failures should handle ProjectKnowledge promotion failures gracefully" time="0.009">
+    </testcase>
+    <testcase classname="Goldfish Edge Cases and Error Handling Network Failures should handle AbortSignal timeout" name="Goldfish Edge Cases and Error Handling Network Failures should handle AbortSignal timeout" time="0">
+      <skipped/>
+    </testcase>
+    <testcase classname="Goldfish Edge Cases and Error Handling Memory Limit Edge Cases should handle workspace with exactly max memories" name="Goldfish Edge Cases and Error Handling Memory Limit Edge Cases should handle workspace with exactly max memories" time="0.011">
+    </testcase>
+    <testcase classname="Goldfish Edge Cases and Error Handling Memory Limit Edge Cases should handle empty workspace gracefully" name="Goldfish Edge Cases and Error Handling Memory Limit Edge Cases should handle empty workspace gracefully" time="0.005">
+    </testcase>
+    <testcase classname="Goldfish Edge Cases and Error Handling Time and Date Edge Cases should handle timezone differences correctly" name="Goldfish Edge Cases and Error Handling Time and Date Edge Cases should handle timezone differences correctly" time="0.006">
+    </testcase>
+    <testcase classname="Goldfish Edge Cases and Error Handling Time and Date Edge Cases should handle memory expiration at exact TTL boundary" name="Goldfish Edge Cases and Error Handling Time and Date Edge Cases should handle memory expiration at exact TTL boundary" time="0.005">
+    </testcase>
+  </testsuite>
+  <testsuite name="Goldfish Core Functionality" errors="0" failures="0" skipped="0" timestamp="2025-08-20T17:30:34" time="2.019" tests="7">
+    <testcase classname="Goldfish Core Functionality Workspace Detection should detect workspace from git root" name="Goldfish Core Functionality Workspace Detection should detect workspace from git root" time="0.388">
     </testcase>
     <testcase classname="Goldfish Core Functionality Workspace Detection should fallback to directory name when not in git repo" name="Goldfish Core Functionality Workspace Detection should fallback to directory name when not in git repo" time="0.002">
     </testcase>
-    <testcase classname="Goldfish Core Functionality Chronological ID Generation should generate valid hex chronological IDs" name="Goldfish Core Functionality Chronological ID Generation should generate valid hex chronological IDs" time="0.002">
+    <testcase classname="Goldfish Core Functionality Chronological ID Generation should generate valid hex chronological IDs" name="Goldfish Core Functionality Chronological ID Generation should generate valid hex chronological IDs" time="0.001">
     </testcase>
-    <testcase classname="Goldfish Core Functionality Chronological ID Generation should generate sortable hex chronological IDs" name="Goldfish Core Functionality Chronological ID Generation should generate sortable hex chronological IDs" time="1.005">
+    <testcase classname="Goldfish Core Functionality Chronological ID Generation should generate sortable hex chronological IDs" name="Goldfish Core Functionality Chronological ID Generation should generate sortable hex chronological IDs" time="1.017">
     </testcase>
     <testcase classname="Goldfish Core Functionality Memory Storage should create memory directories" name="Goldfish Core Functionality Memory Storage should create memory directories" time="0.007">
     </testcase>

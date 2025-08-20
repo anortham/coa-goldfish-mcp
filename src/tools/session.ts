@@ -35,12 +35,9 @@ export class SessionTools {
 
     try {
       let targetMemories: GoldfishMemory[] = [];
-      let sessionInfo = '';
-
       if (sessionId) {
         // Restore specific session
         targetMemories = await this.getSessionMemories(sessionId, workspace);
-        sessionInfo = `Session: ${sessionId}`;
       } else {
         // Get latest checkpoint
         const recentMemories = await this.searchEngine.searchMemories({
@@ -98,11 +95,11 @@ export class SessionTools {
           output.push(this.formatCheckpoint(latest, true));
           
           // Get session highlights
-          if (typeof latest.content === 'object' && latest.content.highlights) {
-            const highlights = latest.content.highlights;
-            if (highlights.length > 0) {
+          if (typeof latest.content === 'object' && latest.content && 'highlights' in latest.content) {
+            const contentObj = latest.content as { highlights?: string[] };
+            if (Array.isArray(contentObj.highlights) && contentObj.highlights.length > 0) {
               output.push('\n🌟 **Session Highlights:**');
-              highlights.slice(-5).forEach((highlight: string) => {
+              contentObj.highlights.slice(-5).forEach((highlight: string) => {
                 output.push(`   ✨ ${highlight}`);
               });
             }
@@ -139,11 +136,13 @@ export class SessionTools {
         sessionId: sessionId || 'latest',
         depth,
         checkpointsFound: targetMemories.length,
-        highlightsFound: targetMemories.filter((m: any) => 
-          typeof m.content === 'object' && m.content.highlights?.length > 0
+        highlightsFound: targetMemories.filter((m: GoldfishMemory) => 
+          typeof m.content === 'object' && m.content && 'highlights' in m.content &&
+          Array.isArray((m.content as { highlights?: string[] }).highlights) &&
+          (m.content as { highlights?: string[] }).highlights!.length > 0
         ).length,
         workspace,
-        data: targetMemories.slice(0, 3), // Sample data for debugging
+        data: targetMemories.slice(0, 3) as unknown as Record<string, unknown>, // Sample data for debugging
         meta: {
           mode: 'formatted',
           lines: output.length
@@ -224,8 +223,14 @@ export class SessionTools {
       const activeFiles = new Set<string>();
       
       for (const memory of memories) {
-        if (typeof memory.content === 'object') {
-          const content = memory.content;
+        if (typeof memory.content === 'object' && memory.content) {
+          const content = memory.content as { 
+            description?: string; 
+            workContext?: string; 
+            gitBranch?: string; 
+            activeFiles?: string[]; 
+            highlights?: string[] 
+          };
           
           // Collect work areas from descriptions
           if (content.description) {
@@ -234,7 +239,7 @@ export class SessionTools {
           }
           
           // Collect highlights
-          if (content.highlights) {
+          if (Array.isArray(content.highlights)) {
             allHighlights.push(...content.highlights);
           }
           
@@ -244,7 +249,7 @@ export class SessionTools {
           }
           
           // Collect files
-          if (content.activeFiles) {
+          if (Array.isArray(content.activeFiles)) {
             content.activeFiles.forEach((file: string) => activeFiles.add(file));
           }
         }
@@ -285,8 +290,9 @@ export class SessionTools {
         output.push('🔄 **Recent Progress:**');
         memories.slice(0, 5).forEach(memory => {
           const age = this.formatAge(memory.timestamp);
-          if (typeof memory.content === 'object' && memory.content.description) {
-            output.push(`   • ${age}: ${memory.content.description}`);
+          if (typeof memory.content === 'object' && memory.content && 'description' in memory.content) {
+            const contentObj = memory.content as { description?: string };
+            output.push(`   • ${age}: ${contentObj.description}`);
           }
         });
         output.push('');
@@ -370,8 +376,14 @@ export class SessionTools {
   private formatCheckpoint(memory: GoldfishMemory, detailed: boolean): string {
     const output: string[] = [];
     
-    if (typeof memory.content === 'object') {
-      const content = memory.content;
+    if (typeof memory.content === 'object' && memory.content) {
+      const content = memory.content as { 
+        description?: string; 
+        workContext?: string; 
+        gitBranch?: string; 
+        activeFiles?: string[]; 
+        highlights?: string[] 
+      };
       
       output.push(`📝 **Description:** ${content.description || 'No description'}`);
       
@@ -384,7 +396,7 @@ export class SessionTools {
           output.push(`🌿 **Branch:** ${content.gitBranch}`);
         }
         
-        if (content.activeFiles && content.activeFiles.length > 0) {
+        if (Array.isArray(content.activeFiles) && content.activeFiles.length > 0) {
           output.push(`📁 **Files:** ${content.activeFiles.slice(0, 5).join(', ')}`);
         }
       }

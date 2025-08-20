@@ -34,7 +34,35 @@ import { SearchTools } from './tools/search.js';
 import { SessionTools } from './tools/session.js';
 
 // Legacy tools (TODO management)
-import { GoldfishMemory, TodoItem, TodoList } from './types/index.js';
+import { GoldfishMemory, TodoItem, TodoList, CheckpointContent } from './types/index.js';
+
+// Tool argument interfaces
+interface RememberArgs {
+  content: string;
+  type?: 'general' | 'todo' | 'context';
+  ttlHours?: number;
+  tags?: string[];
+}
+
+interface CreateTodoListArgs {
+  title: string;
+  items: string[];
+  tags?: string[];
+}
+
+interface ViewTodosArgs {
+  listId?: string;
+  showCompleted?: boolean;
+}
+
+interface UpdateTodoArgs {
+  listId?: string;
+  itemId?: string;
+  status?: 'pending' | 'active' | 'done';
+  newTask?: string;
+  priority?: 'low' | 'normal' | 'high';
+  delete?: boolean;
+}
 
 class GoldfishMCPServer {
   private server: Server;
@@ -203,13 +231,13 @@ class GoldfishMCPServer {
             if (!args || typeof args !== 'object' || !args.description) {
               throw new Error('checkpoint requires description parameter');
             }
-            return await this.checkpointTool.createCheckpoint(args as any);
+            return await this.checkpointTool.createCheckpoint(args as unknown as CheckpointContent);
           
           case 'search_history':
             if (!args || typeof args !== 'object' || !args.query) {
               throw new Error('search_history requires query parameter');
             }
-            return await this.searchTools.searchHistory(args as any);
+            return await this.searchTools.searchHistory(args as { query: string; since?: string; workspace?: string; scope?: 'current' | 'all'; limit?: number });
           
           case 'timeline':
             return await this.searchTools.timeline(args || {});
@@ -225,16 +253,16 @@ class GoldfishMCPServer {
           
           // Legacy tools
           case 'remember':
-            return await this.handleRemember(args);
+            return await this.handleRemember(args as unknown as RememberArgs);
           
           case 'create_todo_list':
-            return await this.handleCreateTodoList(args);
+            return await this.handleCreateTodoList(args as unknown as CreateTodoListArgs);
           
           case 'view_todos':
-            return await this.handleViewTodos(args);
+            return await this.handleViewTodos(args as unknown as ViewTodosArgs);
           
           case 'update_todo':
-            return await this.handleUpdateTodo(args);
+            return await this.handleUpdateTodo(args as unknown as UpdateTodoArgs);
           
           default:
             throw new Error(`Unknown tool: ${name}`);
@@ -256,7 +284,7 @@ class GoldfishMCPServer {
   /**
    * Legacy remember tool - simple note storage
    */
-  private async handleRemember(args: any) {
+  private async handleRemember(args: RememberArgs) {
     const { 
       content, 
       type = 'general', 
@@ -290,7 +318,7 @@ class GoldfishMCPServer {
   /**
    * Legacy TODO management
    */
-  private async handleCreateTodoList(args: any) {
+  private async handleCreateTodoList(args: CreateTodoListArgs) {
     const { title, items, tags } = args;
     
     const todoList: TodoList = {
@@ -320,8 +348,8 @@ class GoldfishMCPServer {
     };
   }
 
-  private async handleViewTodos(args: any) {
-    const { listId, showCompleted = true } = args;
+  private async handleViewTodos(args: ViewTodosArgs) {
+    const { listId } = args;
 
     if (listId) {
       // View specific list - need to implement loadTodoList method
@@ -425,7 +453,7 @@ class GoldfishMCPServer {
     };
   }
 
-  private async handleUpdateTodo(args: any) {
+  private async handleUpdateTodo(args: UpdateTodoArgs) {
     const { listId, itemId, status, newTask, priority, delete: deleteItem } = args;
 
     const todoLists = await this.storage.loadAllTodoLists();
@@ -506,13 +534,13 @@ class GoldfishMCPServer {
       
       // Update status if provided
       if (status) {
-        item.status = status as any;
+        item.status = status;
       }
       
       item.updatedAt = new Date();
       
       if (priority) {
-        item.priority = priority as any;
+        item.priority = priority;
       }
       
       todoList.updatedAt = new Date();
@@ -546,7 +574,7 @@ class GoldfishMCPServer {
         id: (todoList.items.length + 1).toString(),
         task: newTask,
         status: 'pending',
-        priority: priority as any,
+        priority: priority,
         createdAt: new Date()
       };
       
