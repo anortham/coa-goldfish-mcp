@@ -186,7 +186,7 @@ class GoldfishMCPServer {
                   description: 'Delete the specified item (requires itemId)'
                 }
               },
-              required: ['listId']
+              required: []
             }
           }
         ],
@@ -411,6 +411,8 @@ class GoldfishMCPServer {
     const completedCount = listItems.filter(i => i.status === 'done').length;
     const activeCount = listItems.filter(i => i.status === 'active').length;
     
+    // Metadata available via smart defaulting in update_todo (no visible block needed)
+    
     // List header as first block
     contentBlocks.push({
       type: 'text',
@@ -436,22 +438,44 @@ class GoldfishMCPServer {
     const { listId, itemId, status, newTask, priority, delete: deleteItem } = args;
 
     const todoLists = await this.storage.loadAllTodoLists();
-    const todoList = todoLists.find(list => list.id === listId || list.id.endsWith(listId));
-
-    if (!todoList) {
-      return {
-        content: [
-          {
-            type: 'text',
-            text: `❓ TODO list "${listId}" not found`
-          }
-        ]
-      };
+    
+    let todoList: TodoList | undefined;
+    
+    if (listId) {
+      // Find by explicit list ID
+      todoList = todoLists.find(list => list.id === listId || list.id.endsWith(listId));
+      
+      if (!todoList) {
+        return {
+          content: [
+            {
+              type: 'text',
+              text: `❓ TODO list "${listId}" not found`
+            }
+          ]
+        };
+      }
+    } else {
+      // No listId provided - use most recently updated list
+      todoList = todoLists.sort((a, b) => 
+        new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime()
+      )[0];
+      
+      if (!todoList) {
+        return {
+          content: [
+            {
+              type: 'text',
+              text: `❓ No TODO lists found. Create one first with create_todo_list.`
+            }
+          ]
+        };
+      }
     }
 
     if (itemId) {
       // Find the item first
-      const item = todoList.items.find(i => i.id === itemId);
+      const item = todoList.items.find((i: TodoItem) => i.id === itemId);
       
       if (!item) {
         return {
@@ -467,7 +491,7 @@ class GoldfishMCPServer {
       // Handle delete operation
       if (deleteItem) {
         const taskText = item.task.length > 40 ? item.task.slice(0, 40) + '...' : item.task;
-        todoList.items = todoList.items.filter(i => i.id !== itemId);
+        todoList.items = todoList.items.filter((i: TodoItem) => i.id !== itemId);
         todoList.updatedAt = new Date();
         await this.storage.saveTodoList(todoList);
 
