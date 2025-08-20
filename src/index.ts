@@ -180,6 +180,10 @@ class GoldfishMCPServer {
                   type: 'string',
                   enum: ['low', 'normal', 'high'],
                   description: 'Priority level'
+                },
+                delete: {
+                  type: 'boolean',
+                  description: 'Delete the specified item (requires itemId)'
                 }
               },
               required: ['listId']
@@ -344,7 +348,10 @@ class GoldfishMCPServer {
       };
     }
 
-    const output = ['📝 **Active TODO Lists**', ''];
+    const output = [
+      '## 📋 Active TODO Lists',
+      ''
+    ];
 
     for (const list of todoLists.slice(0, 5)) {
       const filteredItems = showCompleted 
@@ -358,23 +365,75 @@ class GoldfishMCPServer {
       const percentage = total > 0 ? Math.round((progress / total) * 100) : 0;
       const active = list.items.filter(i => i.status === 'active').length;
 
-      output.push(`**${list.title}** [${list.id.slice(-6)}] - ${this.formatAge(list.updatedAt)}`);
-      output.push(`   Progress: ${percentage}% (${progress}/${total}) | Active: ${active}`);
+      output.push(`### 📝 ${list.title} [${list.id.slice(-6)}] - ${this.formatAge(list.updatedAt)}`);
+      output.push(`*Progress: ${percentage}% (${progress}/${total}) • Active: ${active}*`);
+      output.push('');
+
+      // Show actual todo items as markdown list with IDs
+      for (const item of filteredItems) {
+        let icon = '⏳';  // pending
+        if (item.status === 'done') icon = '✅';
+        else if (item.status === 'active') icon = '🔄';
+        
+        const priorityMark = item.priority === 'high' ? ' 🔥' : '';
+        
+        output.push(`- ${icon} **[${item.id}]** ${item.task}${priorityMark}`);
+      }
+      
       output.push('');
     }
 
+    // Focus on the most recently updated list (most likely to be active)
+    const sortedLists = todoLists.sort((a, b) => 
+      new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime()
+    );
+    const currentList = sortedLists[0];
+    
+    if (!currentList) {
+      return {
+        content: [
+          {
+            type: 'text',
+            text: '📝 No active TODO lists found. Use create_todo_list to start tracking your work!'
+          }
+        ]
+      };
+    }
+    
+    // Sort items by ID number (1,2,3,4,5,6,7) regardless of status
+    const listItems = [...currentList.items].sort((a, b) => {
+      return parseInt(a.id) - parseInt(b.id);
+    });
+
+    // Return single list view with separate content blocks
+    const contentBlocks = [];
+    
+    const completedCount = listItems.filter(i => i.status === 'done').length;
+    const activeCount = listItems.filter(i => i.status === 'active').length;
+    
+    // List header as first block
+    contentBlocks.push({
+      type: 'text',
+      text: `📋 ${currentList.title} (${listItems.length} tasks, ${completedCount} done, ${activeCount} active)`
+    });
+    
+    // Each todo item as a separate content block
+    for (const item of listItems) {
+      const icon = item.status === 'done' ? '✅' : item.status === 'active' ? '🔄' : '⏳';
+      const taskText = item.task.length > 80 ? item.task.slice(0, 80) + '...' : item.task;
+      contentBlocks.push({
+        type: 'text',
+        text: `${icon} [${item.id}] ${taskText}`
+      });
+    }
+
     return {
-      content: [
-        {
-          type: 'text',
-          text: output.join('\n')
-        }
-      ]
+      content: contentBlocks
     };
   }
 
   private async handleUpdateTodo(args: any) {
-    const { listId, itemId, status, newTask, priority } = args;
+    const { listId, itemId, status, newTask, priority, delete: deleteItem } = args;
 
     const todoLists = await this.storage.loadAllTodoLists();
     const todoList = todoLists.find(list => list.id === listId || list.id.endsWith(listId));
@@ -390,8 +449,84 @@ class GoldfishMCPServer {
       };
     }
 
+    if (itemId) {
+      // Find the item first
+      const item = todoList.items.find(i => i.id === itemId);
+      
+      if (!item) {
+        return {
+          content: [
+            {
+              type: 'text',
+              text: `❓ Task ${itemId} not found in list "${todoList.title}"`
+            }
+          ]
+        };
+      }
+
+      // Handle delete operation
+      if (deleteItem) {
+        const taskText = item.task.length > 40 ? item.task.slice(0, 40) + '...' : item.task;
+        todoList.items = todoList.items.filter(i => i.id !== itemId);
+        todoList.updatedAt = new Date();
+        await this.storage.saveTodoList(todoList);
+
+        return {
+          content: [
+            {
+              type: 'text',
+              text: `🗑️ Deleted [${itemId}] ${taskText}`
+            }
+          ]
+        };
+      }
+
+      const oldStatus = item.status;
+      const oldTask = item.task;
+      
+      // Update task description if provided
+      if (newTask) {
+        item.task = newTask;
+      }
+      
+      // Update status if provided
+      if (status) {
+        item.status = status as any;
+      }
+      
+      item.updatedAt = new Date();
+      
+      if (priority) {
+        item.priority = priority as any;
+      }
+      
+      todoList.updatedAt = new Date();
+      await this.storage.saveTodoList(todoList);
+
+      const changes = [];
+      if (newTask && newTask !== oldTask) changes.push(`task: "${newTask}"`);
+      if (status && status !== oldStatus) changes.push(`status: ${status}`);
+      if (priority) changes.push(`priority: ${priority}`);
+      
+      const statusIcon: Record<string, string> = {
+        pending: '⏳',
+        active: '🔄',
+        done: '✅'
+      };
+      const icon = statusIcon[item.status] || '❓';
+
+      return {
+        content: [
+          {
+            type: 'text',
+            text: `${icon} Updated [${itemId}] ${changes.join(', ')}`
+          }
+        ]
+      };
+    }
+
     if (newTask) {
-      // Add new task
+      // Add new task (only if no itemId provided)
       const newItem: TodoItem = {
         id: (todoList.items.length + 1).toString(),
         task: newTask,
@@ -414,48 +549,6 @@ class GoldfishMCPServer {
       };
     }
 
-    if (itemId && status) {
-      // Update existing task
-      const item = todoList.items.find(i => i.id === itemId);
-      
-      if (!item) {
-        return {
-          content: [
-            {
-              type: 'text',
-              text: `❓ Task ${itemId} not found in list "${todoList.title}"`
-            }
-          ]
-        };
-      }
-
-      const oldStatus = item.status;
-      item.status = status as any;
-      item.updatedAt = new Date();
-      
-      if (priority) {
-        item.priority = priority as any;
-      }
-      
-      todoList.updatedAt = new Date();
-      await this.storage.saveTodoList(todoList);
-
-      const statusIcon: Record<string, string> = {
-        pending: '⏳',
-        active: '🔄',
-        done: '✅'
-      };
-      const icon = statusIcon[status] || '❓';
-
-      return {
-        content: [
-          {
-            type: 'text',
-            text: `${icon} Updated "${item.task}" from ${oldStatus} to ${status}`
-          }
-        ]
-      };
-    }
 
     return {
       content: [

@@ -5,7 +5,7 @@
 import { Storage } from '../core/storage.js';
 import { SessionManager } from '../core/session-manager.js';
 import { SearchEngine } from '../core/search.js';
-import { GoldfishMemory, SessionManifest } from '../types/index.js';
+import { GoldfishMemory } from '../types/index.js';
 
 export class SessionTools {
   private storage: Storage;
@@ -61,7 +61,7 @@ export class SessionTools {
         }
 
         targetMemories = recentMemories;
-        sessionInfo = 'Latest checkpoint';
+        // Using latest checkpoint
       }
 
       if (targetMemories.length === 0) {
@@ -76,7 +76,12 @@ export class SessionTools {
       }
 
       // Format output based on depth
-      const output = [`💾 **Restored ${sessionInfo}**\n`];
+      const output = [
+        '═══════════════════════════════════════════════════════════',
+        '📍 RESUMING FROM CHECKPOINT',
+        '═══════════════════════════════════════════════════════════',
+        ''
+      ];
 
       if (depth === 'minimal') {
         // Just the latest checkpoint
@@ -118,7 +123,12 @@ export class SessionTools {
         }
       }
 
-      output.push('\n✅ Ready to continue where you left off!');
+      output.push('');
+      output.push('═══════════════════════════════════════════════════════════');
+      output.push('✅ Session restored successfully');
+      output.push('📝 Ready to continue where you left off!');
+      output.push('🚀 What would you like to work on?');
+      output.push('═══════════════════════════════════════════════════════════');
 
       return {
         content: [

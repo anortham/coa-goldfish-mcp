@@ -12,22 +12,23 @@ Goldfish is a simple, lightweight MCP server designed specifically for short-ter
 - **Cross-session** - Can bridge multiple conversation sessions
 - **Self-cleaning** - Automatically removes old memories
 
-## 🛠 Tools
+## 🛠 Tools (10 Total)
 
 ### Core Memory Tools
 - **`remember`** - ALWAYS store working context when starting tasks, discovering issues, or making decisions
-- **`recall`** - Proactively restore context at session start and check recent memories 
-- **`forget`** - Remove specific memories or clear memory types
-- **`snapshot`** - Create checkpoints automatically after completing significant work
+- **`recall`** - Enhanced memory recall with fuzzy search - check recent work proactively at session start
+- **`search_history`** - Search work history across all projects with fuzzy matching
+- **`timeline`** - Show chronological timeline of work sessions for standups and activity review
 
-### Session Management
-- **`save_session`** - ALWAYS save session state before ending work or switching tasks
-- **`restore_session`** - IMMEDIATELY use at conversation start if resuming previous work
+### Session Management  
+- **`checkpoint`** - Create crash-safe checkpoints to save current progress (required: description only)
+- **`restore_session`** - IMMEDIATELY restore session state after /clear or long breaks
+- **`summarize_session`** - AI-condensed summary of session or recent work
 
-### Task Tracking  
-- **`create_todo_list`** - Proactively create when users mention multiple tasks or work planning
-- **`view_todos`** - Check automatically at session start for current work status
-- **`update_todo`** - Update task status immediately upon completion or progress
+### Task Tracking
+- **`create_todo_list`** - Create TODO lists tied to current session when users mention multiple tasks
+- **`view_todos`** - View active TODO lists with markdown table display (no collapse issues)
+- **`update_todo`** - Update task status or add new tasks to existing lists
 
 ### Quick Reference
 ```typescript
@@ -40,6 +41,40 @@ create_todo_list({ title: "API Updates", items: ["Update docs", "Add tests"] }) 
 ```
 
 ## 🏗 Architecture
+
+### Project Structure
+```
+COA Goldfish MCP/
+├── src/
+│   ├── core/                    # Core functionality modules
+│   │   ├── storage.ts          # JSON file storage and workspace detection
+│   │   ├── session-manager.ts  # Session state management
+│   │   └── search.ts           # Memory search and filtering
+│   ├── tools/                  # MCP tool implementations
+│   │   ├── checkpoint.ts       # Checkpoint and snapshot tools
+│   │   ├── session.ts          # Session management tools
+│   │   └── search.ts           # Memory recall and search tools
+│   ├── types/                  # TypeScript type definitions
+│   │   └── index.ts            # Shared interfaces and types
+│   ├── __tests__/              # Comprehensive test suite
+│   │   ├── core.test.test.ts   # Core functionality tests
+│   │   ├── tools.test.test.ts  # Tool handler tests
+│   │   ├── integration.test.test.ts # Integration workflows
+│   │   └── edge-cases.test.test.ts  # Error handling tests
+│   └── index.ts                # Main MCP server entry point
+├── .claude/                    # Claude Code integration
+│   ├── commands/               # Custom slash commands
+│   │   ├── checkpoint.md       # /checkpoint command
+│   │   └── resume.md          # /resume command
+│   ├── hooks/                  # Automation hooks (PS1 & Python)
+│   │   ├── session_start.*    # Auto-restore on session start
+│   │   ├── user_prompt_submit.*# Auto-checkpoint on prompts
+│   │   ├── pre_compact.*      # Save before context clearing
+│   │   └── post_commit.*      # Save after git commits
+│   └── settings.local.json    # MCP server configuration
+├── dist/                      # Compiled JavaScript output
+└── package.json              # Dependencies and build scripts
+```
 
 ### Workspace-Aware Storage (like CodeSearch pattern)
 ```
@@ -74,24 +109,28 @@ Each memory is a simple JSON file with workspace context:
 
 ## 📦 Installation
 
+### Basic Setup
 ```bash
 # Install dependencies
 npm install
 
-# Build
+# Build the project
 npm run build
 
-# Run in development
+# Run in development (with live reload)
 npm run dev
 
 # Run built version
 npm start
+
+# Run tests
+npm test
 ```
 
-## 🔧 Configuration
+### Claude Code Integration
+The project includes full Claude Code integration with:
 
-Add to Claude Code `.claude/settings.json`:
-
+1. **MCP Server Configuration** - Add to your `.claude/settings.json`:
 ```json
 {
   "mcp": {
@@ -105,6 +144,42 @@ Add to Claude Code `.claude/settings.json`:
   }
 }
 ```
+
+2. **Custom Commands** - Copy commands to your global Claude directory:
+```bash
+# Copy custom commands (optional - for global use)
+cp .claude/commands/* ~/.claude/commands/
+```
+
+3. **Hooks Integration** - The `.claude/hooks/` folder contains automation scripts that:
+   - Auto-restore sessions on startup
+   - Auto-checkpoint on user prompts  
+   - Save state before context clearing
+   - Capture git commits automatically
+
+## 🧪 Testing
+
+The project includes comprehensive test coverage:
+
+```bash
+# Run all tests
+npm test
+
+# Run tests with coverage
+npm run test -- --coverage
+
+# Run specific test files
+npm test core.test.test.ts
+npm test tools.test.test.ts
+npm test integration.test.test.ts
+npm test edge-cases.test.test.ts
+```
+
+**Test Categories:**
+- **Core Tests** - Storage, workspace detection, memory management
+- **Tool Tests** - All 10 MCP tool implementations
+- **Integration Tests** - Cross-workspace queries, session workflows
+- **Edge Case Tests** - Error handling, concurrent operations, corrupted files
 
 ## 🤖 AI Agent Integration
 
@@ -124,19 +199,20 @@ Important memories automatically get promoted to long-term storage:
 - Long context (200+ characters) that may contain valuable insights
 
 ### Custom Commands (Included)
-This project includes two powerful custom commands that provide structured workflows:
+The `.claude/commands/` folder contains powerful structured workflows:
 
 - **`/checkpoint`** - Creates structured session snapshots 
-  - Uses `snapshot` + `save_session` + `remember` tools
+  - Uses `checkpoint` + `restore_session` + `remember` tools
   - Captures accomplished work, current state, next steps, and blockers
   - Perfect for end-of-day or milestone checkpoints
 
-- **`/resume`** - Restores session context seamlessly
-  - Uses `restore_session` + `recall` + `view_todos` tools  
+- **`/resume`** - Restores session context seamlessly  
+  - Uses `restore_session` + `view_todos` + `timeline` + `recall` tools
   - Shows recent activity timeline and active work items
+  - Enhanced display with `hide-output: true` to prevent tool output duplication
   - Perfect for morning startup or continuing previous work
 
-**Command Location**: `~/.claude/commands/` (installed with project setup)
+**Commands auto-install** when using this project's `.claude/` integration
 
 ## 💡 Use Cases & AI Agent Patterns
 

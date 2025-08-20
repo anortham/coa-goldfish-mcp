@@ -3,8 +3,6 @@
  * Replaces both snapshot and save_session with flexible parameters
  */
 
-import fs from 'fs-extra';
-import { join } from 'path';
 import { GoldfishMemory, CheckpointContent } from '../types/index.js';
 import { Storage } from '../core/storage.js';
 import { SessionManager } from '../core/session-manager.js';

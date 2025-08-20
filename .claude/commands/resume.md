@@ -1,66 +1,75 @@
 ---
 allowed-tools: ["mcp__goldfish__restore_session", "mcp__goldfish__view_todos", "mcp__goldfish__timeline", "mcp__goldfish__recall"]
-description: "Resume work from the most recent checkpoint with progressive depth"
+hide-output: true
+description: "Resume work from the most recent checkpoint with enhanced display"
 ---
 
-Resume work from checkpoints with smart depth control for different scenarios.
+Load the most recent checkpoint and continue work from where we left off.
 
 $ARGUMENTS
 
 ## Resume Process:
 
-### 1. Default Resume (Post-/clear)
-For continuing after /clear:
+### 1. Gather Session Data
 ```
-restore_session()  # or restore_session({ depth: "highlights" })
-```
-- Shows last checkpoint + accumulated session highlights
-- ~500-1000 tokens - perfect for continuing work
-- Preserves benefits of context clearing
-
-### 2. Deep Resume (Back from Break)
-For returning after days away:
-```
-restore_session({ depth: "full" })
-```
-- Shows complete session with all checkpoints
-- Full context for major context switches
-- Use when you need to understand everything that happened
-
-### 3. Specific Session Resume
-For restoring particular session:
-```
-restore_session({ sessionId: "specific-session-id" })
+restore_session({ depth: "highlights" })
+view_todos()
 ```
 
-### 4. Quick Status Check
+### 2. Format and Display Results Manually
+**IMPORTANT**: Extract data from tool responses and format it yourself - DO NOT just show tool output.
+
+Display format:
 ```
-timeline({ since: "1d" })  # See recent work across projects
-view_todos()              # Check active tasks
+═══════════════════════════════════════════════════════════
+📍 RESUMING FROM CHECKPOINT: {CHECKPOINT_ID}
+═══════════════════════════════════════════════════════════
+
+📝 **Last Work:** {description}
+🎯 **Context:** {work_context}
+🌿 **Branch:** {git_branch}
+📁 **Files:** {active_files}
+
+🌟 **Session Highlights:**
+   ✨ {highlight1}
+   ✨ {highlight2}
+   ✨ {highlight3}
+
+═══════════════════════════════════════════════════════════
+📋 ACTIVE TODO LISTS
+═══════════════════════════════════════════════════════════
+
+📝 **{list_title}** - {progress}% ({completed}/{total})
+   ✅ {completed_task}
+   🔄 {active_task}
+   ⏳ {pending_task}
+
+═══════════════════════════════════════════════════════════
+✅ Session restored successfully
+📝 {todo_count} pending tasks ready
+🚀 Ready to continue. What would you like to work on?
+═══════════════════════════════════════════════════════════
 ```
 
-### 5. Display Results
-Show restored session with:
-- Session summary and key highlights
-- Active TODOs and progress
-- Git branch and active files (if available)
-- Timeline of recent work (if requested)
+### 3. Implementation Notes
 
-### 6. Ready Message
-End with: "✅ Session restored. Ready to continue!"
+**Key Pattern**: 
+- Call tools to get data
+- Parse the responses 
+- Display formatted information in YOUR message
+- This prevents CLI collapse since it's your direct output
 
-## Progressive Depth Strategy:
-- **minimal**: Just last checkpoint
-- **highlights**: Last checkpoint + session highlights (DEFAULT)
-- **full**: Entire session history
+**Data Extraction**:
+- Parse checkpoint: description, context, branch, files, highlights
+- Parse todos: list titles, progress stats, individual items with status
+- Format with proper icons: ✅ ⏳ 🔄
 
-## Use Cases:
-- After `/clear`: Default depth (highlights)
-- After reboot/crash: Full depth for complete context
-- Cross-project standup: `timeline({ scope: "all" })`
-- Specific debugging: `restore_session({ sessionId: "target-session" })`
+### 4. Fallback (No Checkpoint)
+If no checkpoint found:
+```
+⚠️ No recent checkpoint found. Showing recent activity:
 
-## Fallback (No Session):
-If no checkpoints found:
-- Show recent memories with `recall()`
-- Suggest creating first checkpoint with `/checkpoint`
+[Use recall() and format the results manually]
+
+💡 **Tip:** Create your first checkpoint with `/checkpoint`
+```

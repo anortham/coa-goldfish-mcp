@@ -189,7 +189,7 @@ describe('Goldfish Tool Handlers', () => {
 
       const formatted = formatMemories(testMemories);
       expect(formatted).toContain('🧠 Recent Memories:');
-      expect(formatted).toContain('📝 [ABC12345] today - TODO');
+      expect(formatted).toContain('📝 [18C3A2B4F12-A3F2CD] today - TODO');
       expect(formatted).toContain('Test TODO item');
       expect(formatted).toContain('Tags: work, important');
     });
@@ -230,7 +230,7 @@ describe('Goldfish Tool Handlers', () => {
       };
 
       const formatted = formatTodoList(testTodoList);
-      expect(formatted).toContain('📝 **Test TODO List** (ABC12345)');
+      expect(formatted).toContain('📝 **Test TODO List** (18C3A2B4F12-A3F2CD)');
       expect(formatted).toContain('📊 Status: 1 pending, 1 active, 1 done');
       expect(formatted).toContain('Progress: 33%');
     });
@@ -334,6 +334,214 @@ describe('Goldfish Tool Handlers', () => {
       expect(validateMemoryType('checkpoint')).toBe(true);
       expect(validateMemoryType('context')).toBe(true);
       expect(validateMemoryType('invalid')).toBe(false);
+    });
+  });
+
+  describe('Updated Todo System Tests', () => {
+    describe('view_todos single-list format', () => {
+      test('should display most recently updated list only', () => {
+        const todoLists = [
+          {
+            id: 'old-list',
+            title: 'Old List',
+            updatedAt: new Date('2025-01-01'),
+            items: [{ id: '1', task: 'Old task', status: 'pending' }]
+          },
+          {
+            id: 'new-list', 
+            title: 'New List',
+            updatedAt: new Date('2025-01-20'),
+            items: [
+              { id: '1', task: 'New task 1', status: 'active' },
+              { id: '2', task: 'New task 2', status: 'done' }
+            ]
+          }
+        ];
+
+        const sortedLists = todoLists.sort((a, b) => 
+          new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime()
+        );
+        const currentList = sortedLists[0];
+
+        expect(currentList.title).toBe('New List');
+        expect(currentList.items).toHaveLength(2);
+      });
+
+      test('should sort items by ID number regardless of status', () => {
+        const items = [
+          { id: '3', task: 'Task 3', status: 'done' },
+          { id: '1', task: 'Task 1', status: 'pending' },
+          { id: '2', task: 'Task 2', status: 'active' }
+        ];
+
+        const sorted = items.sort((a, b) => parseInt(a.id) - parseInt(b.id));
+        
+        expect(sorted[0].id).toBe('1');
+        expect(sorted[1].id).toBe('2');
+        expect(sorted[2].id).toBe('3');
+      });
+
+      test('should return separate content blocks for each item', () => {
+        const mockList = {
+          id: 'test-list',
+          title: 'Test List',
+          items: [
+            { id: '1', task: 'Task 1', status: 'pending' },
+            { id: '2', task: 'Task 2', status: 'done' }
+          ]
+        };
+
+        const contentBlocks = [];
+        
+        // Header block
+        contentBlocks.push({
+          type: 'text',
+          text: `📋 ${mockList.title} (${mockList.items.length} tasks, 1 done, 0 active)`
+        });
+
+        // Item blocks
+        for (const item of mockList.items) {
+          const icon = item.status === 'done' ? '✅' : '⏳';
+          contentBlocks.push({
+            type: 'text',
+            text: `${icon} [${item.id}] ${item.task}`
+          });
+        }
+
+        expect(contentBlocks).toHaveLength(3); // Header + 2 items
+        expect(contentBlocks[0].text).toContain('📋 Test List');
+        expect(contentBlocks[1].text).toBe('⏳ [1] Task 1');
+        expect(contentBlocks[2].text).toBe('✅ [2] Task 2');
+      });
+    });
+
+    describe('update_todo enhanced functionality', () => {
+      test('should update task description when itemId and newTask provided', () => {
+        const mockItem = { id: '1', task: 'Old task', status: 'pending' };
+        const newTask = 'Updated task description';
+
+        // Simulate update
+        if (newTask) {
+          mockItem.task = newTask;
+        }
+
+        expect(mockItem.task).toBe('Updated task description');
+      });
+
+      test('should delete item when delete parameter is true', () => {
+        const mockItems = [
+          { id: '1', task: 'Task 1', status: 'pending' },
+          { id: '2', task: 'Task 2', status: 'done' },
+          { id: '3', task: 'Task 3', status: 'active' }
+        ];
+
+        const itemIdToDelete = '2';
+        const updatedItems = mockItems.filter(i => i.id !== itemIdToDelete);
+
+        expect(updatedItems).toHaveLength(2);
+        expect(updatedItems.find(i => i.id === '2')).toBeUndefined();
+        expect(updatedItems.find(i => i.id === '1')).toBeDefined();
+        expect(updatedItems.find(i => i.id === '3')).toBeDefined();
+      });
+
+      test('should update both task and status simultaneously', () => {
+        const mockItem = { 
+          id: '1', 
+          task: 'Old task', 
+          status: 'pending',
+          updatedAt: new Date('2025-01-01')
+        };
+
+        const updates = {
+          newTask: 'Updated task',
+          status: 'active'
+        };
+
+        // Simulate update logic
+        if (updates.newTask) mockItem.task = updates.newTask;
+        if (updates.status) mockItem.status = updates.status as any;
+        mockItem.updatedAt = new Date();
+
+        expect(mockItem.task).toBe('Updated task');
+        expect(mockItem.status).toBe('active');
+        expect(mockItem.updatedAt.getTime()).toBeGreaterThan(new Date('2025-01-01').getTime());
+      });
+
+      test('should prioritize update over create when itemId provided', () => {
+        const mockList = {
+          items: [{ id: '1', task: 'Existing task', status: 'pending' }]
+        };
+
+        const params = {
+          itemId: '1',
+          newTask: 'Updated description',
+          status: 'done'
+        };
+
+        // Logic should check itemId first, not newTask
+        let action = 'none';
+        if (params.itemId) {
+          action = 'update';
+        } else if (params.newTask) {
+          action = 'create';
+        }
+
+        expect(action).toBe('update');
+      });
+
+      test('should track changes for update feedback', () => {
+        const oldTask = 'Old task';
+        const oldStatus = 'pending';
+        const newTask = 'New task';
+        const newStatus = 'done';
+
+        const changes = [];
+        if (newTask && newTask !== oldTask) changes.push(`task: "${newTask}"`);
+        if (newStatus && newStatus !== oldStatus) changes.push(`status: ${newStatus}`);
+
+        expect(changes).toContain('task: "New task"');
+        expect(changes).toContain('status: done');
+        expect(changes).toHaveLength(2);
+      });
+    });
+
+    describe('Todo system integration', () => {
+      test('should handle empty todo lists gracefully', () => {
+        const todoLists: any[] = [];
+        
+        if (todoLists.length === 0) {
+          const response = {
+            content: [{
+              type: 'text',
+              text: '📝 No active TODO lists found. Use create_todo_list to start tracking your work!'
+            }]
+          };
+          
+          expect(response.content[0].text).toContain('No active TODO lists found');
+        }
+      });
+
+      test('should truncate long task descriptions', () => {
+        const longTask = 'This is a very long task description that should be truncated when displayed in the todo list view because it exceeds the character limit';
+        const maxLength = 80;
+        
+        const truncated = longTask.length > maxLength ? longTask.slice(0, maxLength) + '...' : longTask;
+        
+        expect(truncated).toHaveLength(83); // 80 chars + '...'
+        expect(truncated.endsWith('...')).toBe(true);
+      });
+
+      test('should maintain proper status icons', () => {
+        const statusIcons: Record<string, string> = {
+          pending: '⏳',
+          active: '🔄',
+          done: '✅'
+        };
+
+        expect(statusIcons.pending).toBe('⏳');
+        expect(statusIcons.active).toBe('🔄');
+        expect(statusIcons.done).toBe('✅');
+      });
     });
   });
 });

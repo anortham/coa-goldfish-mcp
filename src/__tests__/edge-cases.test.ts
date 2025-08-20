@@ -378,9 +378,9 @@ describe('Goldfish Edge Cases and Error Handling', () => {
         await fs.writeJson(join(memoriesDir, `${memory.id}.json`), memory);
       }
 
-      // Add one more (should trigger cleanup)
+      // Add one more with a more recent chronological ID (should trigger cleanup)
       const extraMemory = {
-        id: '18C3A2B4F21-EXTRA1',
+        id: '20250119123999-EXTRA1',
         timestamp: new Date(),
         workspace: 'test-workspace',
         type: 'general',
@@ -412,7 +412,7 @@ describe('Goldfish Edge Cases and Error Handling', () => {
       expect(remainingFiles.length).toBe(MAX_MEMORIES);
       
       // The extra memory (most recent) should be kept
-      expect(remainingFiles).toContain('18C3A2B4F21-EXTRA1.json');
+      expect(remainingFiles).toContain('20250119123999-EXTRA1.json');
     });
 
     test('should handle empty workspace gracefully', async () => {

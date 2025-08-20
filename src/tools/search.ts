@@ -5,7 +5,6 @@
 import { SearchEngine } from '../core/search.js';
 import { Storage } from '../core/storage.js';
 import { SessionManager } from '../core/session-manager.js';
-import { TimelineEntry } from '../types/index.js';
 
 export class SearchTools {
   private searchEngine: SearchEngine;

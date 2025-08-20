@@ -4,8 +4,6 @@
  */
 
 import fs from 'fs-extra';
-import { join } from 'path';
-import { homedir } from 'os';
 import { Storage } from './storage.js';
 
 export class SessionManager {
