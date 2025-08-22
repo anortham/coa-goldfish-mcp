@@ -183,7 +183,7 @@ class GoldfishMCPServer {
           },
           {
             name: 'update_todo',
-            description: 'Update task status or add new tasks to existing lists. Mark tasks done as you work.',
+            description: 'Update task status immediately as you complete work. ALWAYS mark tasks done when finished, add new tasks as discovered.',
             inputSchema: {
               type: 'object',
               properties: {
