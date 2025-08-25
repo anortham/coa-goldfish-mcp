@@ -75,3 +75,13 @@ export interface TimelineEntry {
   checkpointCount: number;
   highlights: string[];
 }
+
+/**
+ * Common interface for MCP tool responses
+ */
+export interface ToolResponse {
+  content: Array<{
+    type: 'text';
+    text: string;
+  }>;
+}
