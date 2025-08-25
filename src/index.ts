@@ -53,6 +53,7 @@ interface CreateTodoListArgs {
 interface ViewTodosArgs {
   listId?: string;
   showCompleted?: boolean;
+  scope?: 'current' | 'all';
 }
 
 interface UpdateTodoArgs {
@@ -177,6 +178,11 @@ class GoldfishMCPServer {
                 showCompleted: {
                   type: 'boolean',
                   description: 'Include completed items (default: true)'
+                },
+                scope: {
+                  type: 'string',
+                  enum: ['current', 'all'],
+                  description: 'Search scope: current workspace or all workspaces (default: current)'
                 }
               }
             }
@@ -349,7 +355,7 @@ class GoldfishMCPServer {
   }
 
   private async handleViewTodos(args: ViewTodosArgs) {
-    const { listId } = args;
+    const { listId, scope = 'current' } = args;
 
     if (listId) {
       // View specific list - need to implement loadTodoList method
@@ -363,14 +369,42 @@ class GoldfishMCPServer {
       };
     }
 
-    const todoLists = await this.storage.loadAllTodoLists();
+    let todoLists: any[] = [];
+
+    if (scope === 'all') {
+      // Load todos from all workspaces
+      try {
+        const { homedir } = await import('os');
+        const { join } = await import('path');
+        const basePath = join(homedir(), '.coa', 'goldfish');
+        const fs = await import('fs-extra');
+        
+        const workspaces = await fs.readdir(basePath);
+        
+        for (const workspace of workspaces) {
+          try {
+            const workspaceTodos = await this.storage.loadAllTodoLists(workspace);
+            todoLists.push(...workspaceTodos);
+          } catch {
+            // Skip workspaces that can't be read
+          }
+        }
+      } catch {
+        // Fallback to current workspace only
+        todoLists = await this.storage.loadAllTodoLists();
+      }
+    } else {
+      // Load todos from current workspace only
+      todoLists = await this.storage.loadAllTodoLists();
+    }
     
     if (todoLists.length === 0) {
+      const scopeText = scope === 'all' ? ' across all workspaces' : '';
       return {
         content: [
           {
             type: 'text',
-            text: '📝 No active TODO lists found. Use create_todo_list to start tracking your work!'
+            text: `📝 No active TODO lists found${scopeText}. Use create_todo_list to start tracking your work!`
           }
         ]
       };
@@ -406,7 +440,10 @@ class GoldfishMCPServer {
     const percentage = listItems.length > 0 ? Math.round((completedCount / listItems.length) * 100) : 0;
     
     // Build formatted todo list
-    output.push(`📋 ${currentList.title}`);
+    const workspaceLabel = scope === 'all' && currentList.workspace !== this.storage.getCurrentWorkspace() 
+      ? ` [${currentList.workspace}]` 
+      : '';
+    output.push(`📋 ${currentList.title}${workspaceLabel}`);
     output.push(`━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━`);
     output.push(`📊 Progress: ${percentage}% (${completedCount}/${listItems.length}) • Active: ${activeCount}`);
     output.push(``);

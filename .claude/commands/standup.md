@@ -12,8 +12,8 @@ $ARGUMENTS
 ### 1. Gather Data
 ```
 timeline({ since: "24h", scope: "all" })
-view_todos()
-recall({ since: "24h" })
+view_todos({ scope: "all" })
+recall({ since: "24h", scope: "all" })
 ```
 
 ### 2. Format Standup Report

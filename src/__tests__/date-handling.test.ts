@@ -26,7 +26,7 @@ describe('Date Handling', () => {
       twoDaysAgo.setDate(twoDaysAgo.getDate() - 2);
 
       // Add test checkpoints for each day
-      await storage.store({
+      await storage.saveMemory({
         id: 'test-today',
         workspace: 'test-workspace',
         type: 'checkpoint',
@@ -39,7 +39,7 @@ describe('Date Handling', () => {
         ttlHours: 24
       });
 
-      await storage.store({
+      await storage.saveMemory({
         id: 'test-yesterday',
         workspace: 'test-workspace',
         type: 'checkpoint',
@@ -52,7 +52,7 @@ describe('Date Handling', () => {
         ttlHours: 24
       });
 
-      await storage.store({
+      await storage.saveMemory({
         id: 'test-two-days-ago',
         workspace: 'test-workspace',
         type: 'checkpoint',
@@ -111,7 +111,7 @@ describe('Date Handling', () => {
       const nearMidnight = new Date();
       nearMidnight.setHours(23, 59, 59);
       
-      await storage.store({
+      await storage.saveMemory({
         id: 'test-midnight',
         workspace: 'test-workspace', 
         type: 'checkpoint',

@@ -244,14 +244,28 @@ export class SearchEngine {
       const fuse = new Fuse(searchableMemories, fuseOptions);
       const results = fuse.search(query);
 
-      // If we got good results, return them
-      if (results.length >= Math.min(3, limit)) {
-        return results
-          .map(result => {
-            const originalMemory = filteredMemories.find(m => m.id === result.item.id);
-            return originalMemory!;
-          })
-          .slice(0, limit);
+      // Only return results if we have adequate matches for the escalation level
+      if (escalationMode === 'strict' || escalationMode === 'normal') {
+        // For strict/normal modes, require at least 2 good matches or stop escalating
+        if (results.length >= Math.min(2, limit)) {
+          return results
+            .map(result => {
+              const originalMemory = filteredMemories.find(m => m.id === result.item.id);
+              return originalMemory!;
+            })
+            .slice(0, limit);
+        }
+      } else if (escalationMode === 'fuzzy') {
+        // For fuzzy mode, filter by score to maintain reasonable precision
+        const goodResults = results.filter(r => r.score !== undefined && r.score <= 0.4);
+        if (goodResults.length >= 1) {
+          return goodResults
+            .map(result => {
+              const originalMemory = filteredMemories.find(m => m.id === result.item.id);
+              return originalMemory!;
+            })
+            .slice(0, limit);
+        }
       }
     }
 
