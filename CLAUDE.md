@@ -137,13 +137,16 @@ checkpoint({ description: "End of day - completed tool schema, ready for testing
 
 #### Enhanced TODO System
 ```typescript
-// The TODO system now supports full CRUD operations:
+// The TODO system now supports full CRUD operations with MULTI-LIST VISIBILITY:
 
 // Create new lists
 create_todo_list({ title: "Bug Fixes", items: ["Fix auth", "Update tests"] })
 
-// View with clean single-list display (no collapse issues)
-view_todos()  // Shows most recently updated list only
+// View ALL active lists (FIXED: No more disappearing lists!)
+view_todos()  // Shows ALL todo lists with summary and progress
+
+// View specific list details
+view_todos({ listId: "20250825-121102-401-190D" })  // Shows detailed view of specific list
 
 // Update task descriptions
 update_todo({ listId: "...", itemId: "2", newTask: "Updated task description" })
@@ -153,6 +156,21 @@ update_todo({ listId: "...", itemId: "2", status: "active" })
 
 // Delete unwanted tasks
 update_todo({ listId: "...", itemId: "3", delete: true })
+```
+
+#### Multi-List Display Format
+```
+📋 Active TODO Lists (2 found)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+1️⃣ COA Goldfish MCP Codebase Audit - Critical Issues Found
+   ID: 20250825-121102-401-190D
+   📊 20% (2/10) • 8 pending tasks
+   
+2️⃣ TDD Security & Architecture Fixes  
+   ID: 20250825-123218-389-6379
+   📊 100% (10/10) • ✅ Complete
+
+💡 Use view_todos({ listId: "..." }) to see specific list details
 ```
 
 ### Error Handling Philosophy
@@ -200,10 +218,14 @@ COA Goldfish MCP/
 │   │   ├── storage.ts          # JSON file storage and workspace detection
 │   │   ├── session-manager.ts  # Session state management
 │   │   └── search.ts           # Memory search and filtering
-│   ├── tools/                  # MCP tool implementations
+│   ├── tools/                  # MCP tool implementations (one per file)
 │   │   ├── checkpoint.ts       # Checkpoint and snapshot tools
 │   │   ├── session.ts          # Session management tools
-│   │   └── search.ts           # Memory recall and search tools
+│   │   ├── search.ts           # Memory recall and search tools
+│   │   ├── remember.ts         # Simple memory storage tool
+│   │   ├── create-todo-list.ts # Create new TODO lists
+│   │   ├── view-todos.ts       # View TODO lists (multi-list support)
+│   │   └── update-todo.ts      # Update TODO list items
 │   ├── types/                  # TypeScript type definitions
 │   │   └── index.ts            # Shared interfaces and types
 │   ├── __tests__/              # Comprehensive test suite

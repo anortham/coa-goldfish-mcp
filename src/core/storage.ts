@@ -6,7 +6,7 @@
 import fs from 'fs-extra';
 import { join } from 'path';
 import { homedir } from 'os';
-import { execSync } from 'child_process';
+import { spawn } from 'child_process';
 import { GoldfishMemory, TodoList } from '../types/index.js';
 
 export class Storage {
@@ -20,22 +20,49 @@ export class Storage {
 
   /**
    * Detect current workspace from git or directory name
+   * Uses spawn instead of execSync for better security
    */
   private detectWorkspace(): string {
     try {
-      // Try git root first
-      const gitRoot = execSync('git rev-parse --show-toplevel', { 
-        encoding: 'utf8', 
-        stdio: 'pipe' 
-      }).trim();
+      // Try git root first using safer spawn approach
+      const gitRoot = this.safeGitCommand('rev-parse', ['--show-toplevel']);
       
-      const projectName = gitRoot.split(/[/\\]/).pop() || 'unknown-project';
-      return projectName.toLowerCase().replace(/[^a-z0-9]/g, '-');
+      if (gitRoot) {
+        const projectName = gitRoot.split(/[/\\]/).pop() || 'unknown-project';
+        return projectName.toLowerCase().replace(/[^a-z0-9]/g, '-');
+      }
     } catch {
-      // Fall back to current directory name
-      const cwd = process.cwd();
-      const dirName = cwd.split(/[/\\]/).pop() || 'unknown-workspace';
-      return dirName.toLowerCase().replace(/[^a-z0-9]/g, '-');
+      // Fall through to fallback
+    }
+    
+    // Fall back to current directory name
+    const cwd = process.cwd();
+    const dirName = cwd.split(/[/\\]/).pop() || 'unknown-workspace';
+    return dirName.toLowerCase().replace(/[^a-z0-9]/g, '-');
+  }
+
+  /**
+   * Safely execute git commands using spawn instead of execSync
+   * This prevents command injection vulnerabilities
+   */
+  private safeGitCommand(command: string, args: string[]): string | null {
+    try {
+      const { spawnSync } = require('child_process');
+      
+      const result = spawnSync('git', [command, ...args], {
+        encoding: 'utf8',
+        stdio: 'pipe',
+        timeout: 5000, // 5 second timeout
+        windowsHide: true
+      });
+      
+      if (result.status === 0 && result.stdout) {
+        return result.stdout.trim();
+      }
+      
+      return null;
+    } catch {
+      return null;
     }
   }
 
@@ -44,8 +71,9 @@ export class Storage {
   }
 
   /**
-   * Generate chronological filename with collision safety
-   * Format: YYYYMMDD-HHMMSS-MMM-XXXX.json
+   * Generate chronological filename with improved collision safety
+   * Format: YYYYMMDD-HHMMSS-MMM-XXXX-YYYY.json
+   * Uses process ID and higher entropy random number
    */
   generateChronologicalFilename(): string {
     const now = new Date();
@@ -57,11 +85,22 @@ export class Storage {
     const seconds = now.getSeconds().toString().padStart(2, '0');
     const milliseconds = now.getMilliseconds().toString().padStart(3, '0');
     
-    // Add random hex for collision safety
-    const counter = Math.floor(Math.random() * 0xFFFF);
-    const counterHex = counter.toString(16).toUpperCase().padStart(4, '0');
+    // Add process ID for multi-process safety
+    const processId = process.pid.toString(16).toUpperCase().padStart(4, '0');
     
-    return `${year}${month}${day}-${hours}${minutes}${seconds}-${milliseconds}-${counterHex}.json`;
+    // Use crypto-grade randomness if available, fall back to Math.random
+    let randomPart: string;
+    try {
+      const crypto = require('crypto');
+      const randomBytes = crypto.randomBytes(2);
+      randomPart = randomBytes.toString('hex').toUpperCase();
+    } catch {
+      // Fallback to Math.random with higher entropy
+      const counter = Math.floor(Math.random() * 0xFFFF);
+      randomPart = counter.toString(16).toUpperCase().padStart(4, '0');
+    }
+    
+    return `${year}${month}${day}-${hours}${minutes}${seconds}-${milliseconds}-${processId}-${randomPart}.json`;
   }
 
   /**
@@ -95,6 +134,7 @@ export class Storage {
 
   /**
    * Save memory to appropriate directory based on type
+   * Uses atomic write operations to prevent data corruption
    */
   async saveMemory(memory: GoldfishMemory): Promise<void> {
     let targetDir: string;
@@ -119,7 +159,32 @@ export class Storage {
       timestamp: memory.timestamp.toISOString()
     };
     
-    await fs.writeJson(filepath, serializable, { spaces: 2 });
+    // Use atomic write operation to prevent corruption
+    await this.atomicWriteJson(filepath, serializable);
+  }
+
+  /**
+   * Atomic write operation using write-then-rename pattern
+   * This prevents partial writes that could corrupt data
+   */
+  private async atomicWriteJson(filepath: string, data: any): Promise<void> {
+    const tempFilepath = filepath + '.tmp';
+    
+    try {
+      // Write to temporary file first
+      await fs.writeJson(tempFilepath, data, { spaces: 2 });
+      
+      // Atomically move temp file to final location
+      await fs.move(tempFilepath, filepath, { overwrite: true });
+    } catch (error) {
+      // Clean up temp file if it exists
+      if (await fs.pathExists(tempFilepath)) {
+        await fs.unlink(tempFilepath).catch(() => {
+          // Ignore cleanup errors
+        });
+      }
+      throw error;
+    }
   }
 
   /**
@@ -302,7 +367,7 @@ export class Storage {
   }
 
   /**
-   * Save TODO list
+   * Save TODO list using atomic operations
    */
   async saveTodoList(todoList: TodoList): Promise<void> {
     const todosDir = this.getTodosDir(todoList.workspace);
@@ -323,7 +388,8 @@ export class Storage {
       }))
     };
     
-    await fs.writeJson(filepath, serializable, { spaces: 2 });
+    // Use atomic write operation
+    await this.atomicWriteJson(filepath, serializable);
   }
 
   /**

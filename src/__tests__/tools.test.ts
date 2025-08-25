@@ -2,6 +2,7 @@ import { describe, test, expect, beforeEach, afterEach, jest } from '@jest/globa
 import fs from 'fs-extra';
 import { join } from 'path';
 import { tmpdir } from 'os';
+import { handleViewTodos } from '../tools/view-todos.js';
 
 // Mock the MCP SDK
 jest.mock('@modelcontextprotocol/sdk/server/index.js', () => ({
@@ -541,6 +542,128 @@ describe('Goldfish Tool Handlers', () => {
         expect(statusIcons.pending).toBe('⏳');
         expect(statusIcons.active).toBe('🔄');
         expect(statusIcons.done).toBe('✅');
+      });
+    });
+
+    describe('Multiple TODO Lists Visibility (TDD)', () => {
+      test('should show all TODO lists when no listId specified', async () => {
+        // This test should FAIL initially - view_todos currently only shows most recent
+        const mockStorage = {
+          loadAllTodoLists: jest.fn(),
+          getCurrentWorkspace: jest.fn().mockReturnValue('test-workspace')
+        };
+        
+        // Mock multiple lists with different completion states
+        const mockLists = [
+          {
+            id: 'audit-list',
+            title: 'Audit Findings',
+            updatedAt: new Date('2025-01-15T10:00:00Z'),
+            items: [
+              { id: '1', task: 'Task 1', status: 'done' },
+              { id: '2', task: 'Task 2', status: 'pending' },
+              { id: '3', task: 'Task 3', status: 'pending' }
+            ]
+          },
+          {
+            id: 'fixes-list', 
+            title: 'TDD Fixes',
+            updatedAt: new Date('2025-01-20T15:30:00Z'),
+            items: [
+              { id: '1', task: 'Fix 1', status: 'done' },
+              { id: '2', task: 'Fix 2', status: 'done' }
+            ]
+          }
+        ];
+        
+        mockStorage.loadAllTodoLists = jest.fn().mockResolvedValue(mockLists);
+        
+        const result = await handleViewTodos(mockStorage as any, {});
+        
+        // Should show BOTH lists, not just most recent
+        expect(result.content).toEqual(
+          expect.arrayContaining([
+            expect.objectContaining({
+              text: expect.stringContaining('Audit Findings')
+            }),
+            expect.objectContaining({
+              text: expect.stringContaining('TDD Fixes') 
+            }),
+            expect.objectContaining({
+              text: expect.stringContaining('2 found')
+            })
+          ])
+        );
+      });
+
+      test('should show specific list when listId provided', async () => {
+        const mockStorage = {
+          loadAllTodoLists: jest.fn(),
+          getCurrentWorkspace: jest.fn().mockReturnValue('test-workspace')
+        };
+        
+        const mockLists = [
+          {
+            id: 'audit-list',
+            title: 'Audit Findings', 
+            items: [
+              { id: '1', task: 'Audit task', status: 'pending' }
+            ]
+          }
+        ];
+        
+        mockStorage.loadAllTodoLists = jest.fn().mockResolvedValue(mockLists);
+        
+        const result = await handleViewTodos(mockStorage as any, { listId: 'audit-list' });
+        
+        // Should show just the specific list details
+        expect(result.content).toEqual(
+          expect.arrayContaining([
+            expect.objectContaining({
+              text: expect.stringContaining('Audit Findings')
+            }),
+            expect.objectContaining({
+              text: expect.stringContaining('Audit task')
+            })
+          ])
+        );
+      });
+
+      test('should prioritize incomplete lists in summary view', async () => {
+        const mockStorage = {
+          loadAllTodoLists: jest.fn(),
+          getCurrentWorkspace: jest.fn().mockReturnValue('test-workspace')
+        };
+        
+        const mockLists = [
+          {
+            id: 'complete-list',
+            title: 'Completed Work',
+            updatedAt: new Date('2025-01-20'),
+            items: [
+              { id: '1', task: 'Done task', status: 'done' }
+            ]
+          },
+          {
+            id: 'incomplete-list',
+            title: 'Pending Work', 
+            updatedAt: new Date('2025-01-15'),
+            items: [
+              { id: '1', task: 'Pending task', status: 'pending' }
+            ]
+          }
+        ];
+        
+        mockStorage.loadAllTodoLists = jest.fn().mockResolvedValue(mockLists);
+        
+        const result = await handleViewTodos(mockStorage as any, {});
+        const textContent = result.content.map(c => c.text).join('\n');
+        
+        // Incomplete list should appear before complete list
+        const pendingIndex = textContent.indexOf('Pending Work');
+        const completeIndex = textContent.indexOf('Completed Work');
+        
+        expect(pendingIndex).toBeLessThan(completeIndex);
       });
     });
   });
