@@ -281,6 +281,7 @@ export class SearchTools {
     workspace?: string;
     scope?: 'current' | 'all';
     type?: string;
+    tags?: string[];
     limit?: number;
   }) {
     const {
@@ -289,6 +290,7 @@ export class SearchTools {
       workspace,
       scope = 'current',
       type,
+      tags,
       limit = 10
     } = args;
 
@@ -303,6 +305,7 @@ export class SearchTools {
           workspace,
           scope,
           type,
+          tags,
           limit
         });
       } else {
@@ -312,6 +315,7 @@ export class SearchTools {
           workspace,
           scope,
           type,
+          tags,
           limit
         });
       }
@@ -550,6 +554,11 @@ export class SearchTools {
               type: 'string',
               enum: ['general', 'todo', 'checkpoint', 'context'],
               description: 'Memory type filter (optional)'
+            },
+            tags: {
+              type: 'array',
+              items: { type: 'string' },
+              description: 'Filter by exact tags (all tags must match)'
             },
             limit: {
               type: 'number',

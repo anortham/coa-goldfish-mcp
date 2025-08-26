@@ -13,9 +13,9 @@ export class Storage {
   private basePath: string;
   private currentWorkspace: string;
 
-  constructor() {
-    this.basePath = join(homedir(), '.coa', 'goldfish');
-    this.currentWorkspace = this.detectWorkspace();
+  constructor(customWorkspace?: string, customBasePath?: string) {
+    this.basePath = customBasePath || join(homedir(), '.coa', 'goldfish');
+    this.currentWorkspace = customWorkspace || this.detectWorkspace();
   }
 
   /**

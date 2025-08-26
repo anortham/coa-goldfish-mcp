@@ -63,6 +63,7 @@ export interface SearchOptions {
   since?: string;
   workspace?: string;
   type?: string;
+  tags?: string[];
   scope?: 'current' | 'global' | 'all';
   limit?: number;
   mode?: SearchMode;

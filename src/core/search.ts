@@ -68,6 +68,7 @@ export class SearchEngine {
       query = '',
       workspace,
       type,
+      tags,
       scope = 'current',
       limit = 50,
       since,
@@ -106,6 +107,12 @@ export class SearchEngine {
 
     if (type) {
       filteredMemories = filteredMemories.filter(m => m.type === type);
+    }
+
+    if (tags && tags.length > 0) {
+      filteredMemories = filteredMemories.filter(m => 
+        m.tags && tags.every(tag => m.tags!.includes(tag))
+      );
     }
 
     if (since) {
