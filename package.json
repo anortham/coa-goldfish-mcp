@@ -10,7 +10,9 @@
     "dev": "tsx src/index.ts",
     "test": "jest",
     "lint": "eslint src/**/*.ts",
-    "clean": "rm -rf dist"
+    "clean": "rm -rf dist",
+    "migrate:storage": "tsx scripts/migrate-storage.ts",
+    "cleanup:memory": "tsx scripts/cleanup-memory-files.ts"
   },
   "keywords": [
     "mcp",

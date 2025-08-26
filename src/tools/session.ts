@@ -128,7 +128,7 @@ export class SessionTools {
       output.push('🚀 What would you like to work on?');
       output.push('═══════════════════════════════════════════════════════════');
 
-      // Create structured response following ProjectKnowledge pattern
+      // Create structured response with proper formatting
       const response: SessionRestoreResponse = {
         success: true,
         operation: 'session-restore',
@@ -309,7 +309,7 @@ export class SessionTools {
         }
       }
 
-      // Create structured response following ProjectKnowledge pattern
+      // Create structured response with proper formatting
       const response: SessionSummaryResponse = {
         success: true,
         operation: 'session-summary',

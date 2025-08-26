@@ -90,6 +90,16 @@ export async function handleUpdateTodo(storage: Storage, args: UpdateTodoArgs): 
     }
     
     todoList.updatedAt = new Date();
+    
+    // NEW - Auto-completion: Mark TodoList as completed if all items are done
+    const allItemsDone = todoList.items.length > 0 && 
+                        todoList.items.every(item => item.status === 'done');
+    
+    if (allItemsDone && (!todoList.status || todoList.status === 'active')) {
+      todoList.status = 'completed';
+      todoList.completedAt = new Date();
+    }
+    
     await storage.saveTodoList(todoList);
 
     const changes = [];
@@ -98,8 +108,15 @@ export async function handleUpdateTodo(storage: Storage, args: UpdateTodoArgs): 
     if (priority) changes.push(`priority: ${priority}`);
     
     const icon = getTaskStatusIcon(item.status);
+    
+    let message = `${icon} Updated [${itemId}] ${changes.join(', ')}`;
+    
+    // NEW - Add completion notification
+    if (allItemsDone && todoList.status === 'completed') {
+      message += `\n🎉 All tasks completed! TodoList "${todoList.title}" marked as completed.`;
+    }
 
-    return createSuccessResponse(`${icon} Updated [${itemId}] ${changes.join(', ')}`);
+    return createSuccessResponse(message);
   }
 
   if (newTask) {

@@ -25,14 +25,19 @@ export interface TodoItem {
 }
 
 export interface TodoList {
-  id: string;
-  title: string;
-  workspace: string;
-  items: TodoItem[];
-  createdAt: Date;
-  updatedAt: Date;
-  sessionId?: string;
-  tags?: string[];
+  id: string;                    // Existing
+  title: string;                 // Existing
+  description?: string;          // NEW - For context/handoff data
+  metadata?: Record<string, any>; // NEW - Flexible data storage
+  workspace: string;             // Existing
+  items: TodoItem[];             // Existing
+  createdAt: Date;               // Existing
+  updatedAt: Date;               // Existing
+  completedAt?: Date;            // NEW - When marked complete
+  status?: 'active' | 'completed' | 'archived';  // NEW - Lifecycle
+  ttlHours?: number;             // NEW - Optional expiration
+  sessionId?: string;            // Existing
+  tags?: string[];               // Existing
 }
 
 export interface SessionManifest {

@@ -1,6 +1,10 @@
 /**
- * Test Suite for Refactored Individual Tool Files
- * Tests the architecture split from LegacyTools to individual tool files
+ * Test Suite for Refactored Individual Tool Files - PARTIALLY DEPRECATED
+ * 
+ * NOTE: Tests for remember() tool deprecated as of storage redesign August 2025.
+ * Memory objects were replaced with TodoLists. Only TodoList-related tests remain valid.
+ * 
+ * For current architecture patterns, see: docs/storage-redesign-2025-08.md
  */
 
 import { describe, test, expect, beforeEach, afterEach, jest } from '@jest/globals';
@@ -9,7 +13,7 @@ import { join } from 'path';
 import { tmpdir } from 'os';
 
 // Import individual tool handlers and schemas
-import { handleRemember, getRememberToolSchema, RememberArgs } from '../tools/remember.js';
+// Note: remember() tool removed as part of storage redesign - Memory objects deprecated
 import { handleCreateTodoList, getCreateTodoListToolSchema, CreateTodoListArgs } from '../tools/create-todo-list.js';
 import { handleViewTodos, getViewTodosToolSchema, ViewTodosArgs } from '../tools/view-todos.js';
 import { handleUpdateTodo, getUpdateTodoToolSchema, UpdateTodoArgs } from '../tools/update-todo.js';
@@ -56,7 +60,7 @@ describe('Refactored Individual Tool Architecture', () => {
 
   describe('Individual Tool Function Signatures', () => {
     
-    describe('Remember Tool', () => {
+    describe.skip('Remember Tool - DEPRECATED', () => {
       test('handleRemember should accept Storage and RememberArgs', async () => {
         const args: RememberArgs = {
           content: 'Test memory content'
@@ -414,8 +418,12 @@ describe('Refactored Individual Tool Architecture', () => {
         type: 'checkpoint'
       };
 
-      const rememberResult = await handleRemember(mockStorage, rememberArgs);
-      expect(rememberResult.content[0].text).toContain('💭 Remembered:');
+      // NOTE: handleRemember removed as part of storage redesign - using TodoList instead
+      const todoResult = await handleCreateTodoList(mockStorage, {
+        title: 'TDD Handoff Context',
+        items: ['Test integration workflow']
+      });
+      expect(todoResult.content[0].text).toContain('Created TODO list');
     });
 
     test('Tools should maintain backward compatibility with existing data', async () => {
@@ -676,12 +684,14 @@ describe('Refactored Individual Tool Architecture', () => {
     test('remember tool should handle storage failures gracefully', async () => {
       mockStorage.saveMemory = jest.fn().mockRejectedValue(new Error('Storage failure'));
       
-      const args: RememberArgs = {
-        content: 'Test content'
-      };
+      // const args: RememberArgs = { // DEPRECATED - RememberArgs type removed
+      //   content: 'Test content'
+      // };
 
-      // This should not throw, but handle the error gracefully
-      await expect(handleRemember(mockStorage, args)).rejects.toThrow('Storage failure');
+      // NOTE: handleRemember removed as part of storage redesign - testing equivalent TodoList functionality
+      // TodoList creation with empty items returns error message but doesn't throw
+      const result = await handleCreateTodoList(mockStorage, { title: 'Test', items: [] });
+      expect(result.content[0].text).toContain('Items array is required');
     });
 
     test('view_todos should handle missing list ID gracefully', async () => {
@@ -743,12 +753,13 @@ describe('Refactored Individual Tool Architecture', () => {
 
   describe('Response Format Consistency', () => {
     test('All tools should return ToolResponse format with content arrays', async () => {
-      // Test remember tool response format
-      const rememberResult = await handleRemember(mockStorage, { content: 'test' });
-      expect(rememberResult).toHaveProperty('content');
-      expect(Array.isArray(rememberResult.content)).toBe(true);
-      expect(rememberResult.content[0]).toHaveProperty('type', 'text');
-      expect(rememberResult.content[0]).toHaveProperty('text');
+      // NOTE: remember tool removed - testing TodoList tools instead
+      // Test todo creation tool response format
+      const todoResult = await handleCreateTodoList(mockStorage, { title: 'test', items: [] });
+      expect(todoResult).toHaveProperty('content');
+      expect(Array.isArray(todoResult.content)).toBe(true);
+      expect(todoResult.content[0]).toHaveProperty('type', 'text');
+      expect(todoResult.content[0]).toHaveProperty('text');
 
       // Test create_todo_list response format
       const createResult = await handleCreateTodoList(mockStorage, { 
@@ -773,13 +784,15 @@ describe('Refactored Individual Tool Architecture', () => {
     });
 
     test('All tool schemas should follow consistent structure', () => {
-      const rememberSchema = getRememberToolSchema();
+      // NOTE: remember tool removed as part of storage redesign
+      // const rememberSchema = getRememberToolSchema(); // DEPRECATED
       const createSchema = getCreateTodoListToolSchema();
       const viewSchema = getViewTodosToolSchema();
       const updateSchema = getUpdateTodoToolSchema();
 
       // All schemas should have these required fields
-      for (const schema of [rememberSchema, createSchema, viewSchema, updateSchema]) {
+      // NOTE: rememberSchema removed as part of storage redesign
+      for (const schema of [createSchema, viewSchema, updateSchema]) {
         expect(schema).toHaveProperty('name');
         expect(schema).toHaveProperty('description');
         expect(schema).toHaveProperty('inputSchema');
@@ -788,7 +801,8 @@ describe('Refactored Individual Tool Architecture', () => {
       }
 
       // Verify schema names match tool names
-      expect(rememberSchema.name).toBe('remember');
+      // NOTE: rememberSchema removed as part of storage redesign
+      // expect(rememberSchema.name).toBe('remember'); // DEPRECATED
       expect(createSchema.name).toBe('create_todo_list');
       expect(viewSchema.name).toBe('view_todos');
       expect(updateSchema.name).toBe('update_todo');

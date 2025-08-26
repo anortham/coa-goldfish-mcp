@@ -1,8 +1,11 @@
 /**
- * Tests for TDD Agent Handoff Mechanism
+ * Tests for TDD Agent Handoff Mechanism - DEPRECATED
  * 
- * Ensures reliable data passing between TDD phases:
- * test-designer → test-implementer → refactoring-expert → test-reviewer
+ * NOTE: These tests are deprecated as of storage redesign August 2025.
+ * The remember() tool and Memory objects were removed in favor of TodoLists.
+ * Agent handoffs now use TodoList metadata for structured data passing.
+ * 
+ * For current handoff patterns, see: docs/storage-redesign-2025-08.md
  */
 
 import { describe, test, expect, beforeEach, afterEach } from '@jest/globals';
@@ -13,10 +16,10 @@ import { Storage } from '../core/storage.js';
 import { SearchEngine } from '../core/search.js';
 import { SearchTools } from '../tools/search.js';
 import { SessionManager } from '../core/session-manager.js';
-import { handleRemember } from '../tools/remember.js';
-import { GoldfishMemory } from '../types/index.js';
+import { handleCreateTodoList } from '../tools/create-todo-list.js';
+import { TodoList } from '../types/index.js';
 
-describe('TDD Agent Handoff Mechanism', () => {
+describe.skip('TDD Agent Handoff Mechanism - DEPRECATED', () => {
   let storage: Storage;
   let searchEngine: SearchEngine;
   let searchTools: SearchTools;

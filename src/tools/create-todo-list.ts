@@ -12,6 +12,10 @@ export interface CreateTodoListArgs {
   title: string;
   items: string[];
   tags?: string[];
+  description?: string;          // NEW - For context/handoff data
+  metadata?: Record<string, any>; // NEW - Flexible data storage
+  status?: 'active' | 'completed' | 'archived';  // NEW - Lifecycle status
+  ttlHours?: number;             // NEW - Optional expiration
 }
 
 
@@ -33,11 +37,13 @@ export async function handleCreateTodoList(storage: Storage, args: CreateTodoLis
     return createErrorResponse('Items array is required and must contain at least one item', 'create_todo_list');
   }
 
-  const { title, items, tags } = args;
+  const { title, items, tags, description, metadata, status, ttlHours } = args;
   
   const todoList: TodoList = {
     id: storage.generateChronologicalFilename().replace('.json', ''),
     title,
+    description,              // NEW - Optional description
+    metadata,                 // NEW - Optional metadata
     workspace: storage.getCurrentWorkspace(),
     items: items.map((task: string, index: number) => ({
       id: `${index + 1}`,
@@ -47,6 +53,8 @@ export async function handleCreateTodoList(storage: Storage, args: CreateTodoLis
     })),
     createdAt: new Date(),
     updatedAt: new Date(),
+    status: status || 'active', // NEW - Default to 'active'
+    ttlHours,                 // NEW - Optional TTL
     tags
   };
 
@@ -78,6 +86,23 @@ export function getCreateTodoListToolSchema() {
           type: 'array',
           items: { type: 'string' },
           description: 'Optional tags for categorization'
+        },
+        description: {
+          type: 'string',
+          description: 'Optional description providing context for the TODO list'
+        },
+        metadata: {
+          type: 'object',
+          description: 'Optional metadata for flexible data storage (e.g., agent handoff data)'
+        },
+        status: {
+          type: 'string',
+          enum: ['active', 'completed', 'archived'],
+          description: 'Lifecycle status (defaults to active)'
+        },
+        ttlHours: {
+          type: 'number',
+          description: 'Time-to-live in hours for automatic expiration'
         }
       },
       required: ['title', 'items']

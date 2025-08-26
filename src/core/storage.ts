@@ -381,6 +381,7 @@ export class Storage {
       ...todoList,
       createdAt: todoList.createdAt.toISOString(),
       updatedAt: todoList.updatedAt.toISOString(),
+      completedAt: todoList.completedAt?.toISOString(), // NEW - Handle completedAt
       items: todoList.items.map(item => ({
         ...item,
         createdAt: item.createdAt.toISOString(),
@@ -409,6 +410,7 @@ export class Storage {
               ...data,
               createdAt: new Date(data.createdAt),
               updatedAt: new Date(data.updatedAt),
+              completedAt: data.completedAt ? new Date(data.completedAt) : undefined, // NEW - Handle completedAt
               items: data.items.map((item: Record<string, unknown>) => ({
                 ...item,
                 createdAt: new Date(item.createdAt as string),

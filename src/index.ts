@@ -32,7 +32,7 @@ import { SessionManager } from './core/session-manager.js';
 import { CheckpointTool } from './tools/checkpoint.js';
 import { SearchTools } from './tools/search.js';
 import { SessionTools } from './tools/session.js';
-import { handleRemember, getRememberToolSchema } from './tools/remember.js';
+// Removed: handleRemember, getRememberToolSchema - Memory objects deprecated in favor of TodoLists
 import { handleCreateTodoList, getCreateTodoListToolSchema } from './tools/create-todo-list.js';
 import { handleViewTodos, getViewTodosToolSchema } from './tools/view-todos.js';
 import { handleUpdateTodo, getUpdateTodoToolSchema } from './tools/update-todo.js';
@@ -87,8 +87,7 @@ class GoldfishMCPServer {
           // Session management tools
           ...SessionTools.getToolSchemas(),
           
-          // Individual tools (memory and TODO management)
-          getRememberToolSchema(),
+          // Individual tools (TODO management only - Memory objects deprecated)
           getCreateTodoListToolSchema(),
           getViewTodosToolSchema(),
           getUpdateTodoToolSchema()
@@ -131,10 +130,7 @@ class GoldfishMCPServer {
           case 'summarize_session':
             return await this.sessionTools.summarizeSession(args || {});
           
-          // Individual tools (memory and TODO management)
-          case 'remember':
-            return await handleRemember(this.storage, args as any);
-          
+          // Individual tools (TODO management only)
           case 'create_todo_list':
             return await handleCreateTodoList(this.storage, args as any);
           

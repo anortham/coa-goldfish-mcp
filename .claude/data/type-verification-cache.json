@@ -1,6 +1,6 @@
 {
   "created_at": "2025-08-25T21:30:30.5038372-05:00",
-  "last_updated": "2025-08-26T07:54:52.0506000-05:00",
+  "last_updated": "2025-08-26T10:48:02.6480237-05:00",
   "session_verifications": {},
   "types": {
     "RememberArgs": {
@@ -15,136 +15,136 @@
       "properties": {}
     },
     "SearchTools": {
-      "ttl_days": 7,
-      "methods": {},
-      "verified_at": "2025-08-25T22:07:31.9683403-05:00",
       "properties": {},
-      "kind": "class",
+      "file": "C:\\source\\COA Goldfish MCP\\src\\tools\\search.ts",
+      "ttl_days": 7,
       "extractedFrom": "source_file",
-      "mtime": 134006510560245687,
-      "constructors": [],
-      "file": "C:\\source\\COA Goldfish MCP\\src\\tools\\search.ts"
+      "kind": "class",
+      "verified_at": "2025-08-26T10:24:28.8244326-05:00",
+      "methods": {},
+      "mtime": 134006951531367358,
+      "constructors": []
     },
     "SearchEngine": {
       "methods": {},
-      "verified_at": "2025-08-25T21:31:46.8578922-05:00",
-      "file": "C:\\source\\COA Goldfish MCP\\src\\core\\search.ts",
       "properties": {},
+      "ttl_days": 7,
+      "file": "C:\\source\\COA Goldfish MCP\\src\\core\\search.ts",
       "extractedFrom": "source_file",
-      "kind": "class",
-      "mtime": 134006048346688313,
+      "verified_at": "2025-08-26T10:48:02.6386287-05:00",
       "constructors": [],
-      "ttl_days": 7
+      "kind": "class",
+      "mtime": 134006961049827507
     },
     "GoldfishMemory": {
-      "verified_at": "2025-08-25T21:32:04.9178262-05:00",
-      "extractedFrom": "source_file",
-      "file": "C:\\source\\COA Goldfish MCP\\src\\types\\index.ts",
       "kind": "interface",
-      "methods": {},
-      "constructors": [],
-      "mtime": 134006358628922257,
-      "properties": {},
-      "ttl_days": 7
-    },
-    "TodoItem": {
-      "verified_at": "2025-08-25T21:32:04.9290378-05:00",
-      "extractedFrom": "source_file",
-      "file": "C:\\source\\COA Goldfish MCP\\src\\types\\index.ts",
-      "kind": "interface",
-      "methods": {},
-      "constructors": [],
-      "mtime": 134006358628922257,
-      "properties": {},
-      "ttl_days": 7
-    },
-    "TodoList": {
-      "verified_at": "2025-08-25T21:32:04.929929-05:00",
-      "extractedFrom": "source_file",
-      "file": "C:\\source\\COA Goldfish MCP\\src\\types\\index.ts",
-      "kind": "interface",
-      "methods": {},
-      "constructors": [],
-      "mtime": 134006358628922257,
-      "properties": {},
-      "ttl_days": 7
-    },
-    "SessionManifest": {
-      "verified_at": "2025-08-25T21:32:04.9306513-05:00",
-      "extractedFrom": "source_file",
-      "file": "C:\\source\\COA Goldfish MCP\\src\\types\\index.ts",
-      "kind": "interface",
-      "methods": {},
-      "constructors": [],
-      "mtime": 134006358628922257,
-      "properties": {},
-      "ttl_days": 7
-    },
-    "CheckpointContent": {
-      "verified_at": "2025-08-25T21:32:04.9314195-05:00",
-      "extractedFrom": "source_file",
-      "file": "C:\\source\\COA Goldfish MCP\\src\\types\\index.ts",
-      "kind": "interface",
-      "methods": {},
-      "constructors": [],
-      "mtime": 134006358628922257,
-      "properties": {},
-      "ttl_days": 7
-    },
-    "SearchOptions": {
-      "verified_at": "2025-08-25T21:32:04.932112-05:00",
-      "extractedFrom": "source_file",
-      "file": "C:\\source\\COA Goldfish MCP\\src\\types\\index.ts",
-      "kind": "interface",
-      "methods": {},
-      "constructors": [],
-      "mtime": 134006358628922257,
-      "properties": {},
-      "ttl_days": 7
-    },
-    "TimelineEntry": {
-      "verified_at": "2025-08-25T21:32:04.9330078-05:00",
-      "extractedFrom": "source_file",
-      "file": "C:\\source\\COA Goldfish MCP\\src\\types\\index.ts",
-      "kind": "interface",
-      "methods": {},
-      "constructors": [],
-      "mtime": 134006358628922257,
-      "properties": {},
-      "ttl_days": 7
-    },
-    "for": {
-      "verified_at": "2025-08-25T21:32:04.9335397-05:00",
-      "extractedFrom": "source_file",
-      "file": "C:\\source\\COA Goldfish MCP\\src\\types\\index.ts",
-      "kind": "interface",
-      "methods": {},
-      "constructors": [],
-      "mtime": 134006358628922257,
-      "properties": {},
-      "ttl_days": 7
-    },
-    "ToolResponse": {
-      "verified_at": "2025-08-25T21:32:04.9339766-05:00",
-      "extractedFrom": "source_file",
-      "file": "C:\\source\\COA Goldfish MCP\\src\\types\\index.ts",
-      "kind": "interface",
-      "methods": {},
-      "constructors": [],
-      "mtime": 134006358628922257,
-      "properties": {},
-      "ttl_days": 7
-    },
-    "Storage": {
-      "kind": "class",
-      "methods": {},
-      "extractedFrom": "source_file",
       "constructors": [],
       "ttl_days": 7,
-      "mtime": 134006358628902268,
+      "methods": {},
+      "extractedFrom": "source_file",
+      "properties": {},
+      "file": "C:\\source\\COA Goldfish MCP\\src\\types\\index.ts",
+      "mtime": 134006491298542976,
+      "verified_at": "2025-08-26T10:24:08.8296081-05:00"
+    },
+    "TodoItem": {
+      "kind": "interface",
+      "constructors": [],
+      "ttl_days": 7,
+      "methods": {},
+      "extractedFrom": "source_file",
+      "properties": {},
+      "file": "C:\\source\\COA Goldfish MCP\\src\\types\\index.ts",
+      "mtime": 134006491298542976,
+      "verified_at": "2025-08-26T10:24:08.8365727-05:00"
+    },
+    "TodoList": {
+      "kind": "interface",
+      "constructors": [],
+      "ttl_days": 7,
+      "methods": {},
+      "extractedFrom": "source_file",
+      "properties": {},
+      "file": "C:\\source\\COA Goldfish MCP\\src\\types\\index.ts",
+      "mtime": 134006491298542976,
+      "verified_at": "2025-08-26T10:24:08.8370725-05:00"
+    },
+    "SessionManifest": {
+      "kind": "interface",
+      "constructors": [],
+      "ttl_days": 7,
+      "methods": {},
+      "extractedFrom": "source_file",
+      "properties": {},
+      "file": "C:\\source\\COA Goldfish MCP\\src\\types\\index.ts",
+      "mtime": 134006491298542976,
+      "verified_at": "2025-08-26T10:24:08.8374372-05:00"
+    },
+    "CheckpointContent": {
+      "kind": "interface",
+      "constructors": [],
+      "ttl_days": 7,
+      "methods": {},
+      "extractedFrom": "source_file",
+      "properties": {},
+      "file": "C:\\source\\COA Goldfish MCP\\src\\types\\index.ts",
+      "mtime": 134006491298542976,
+      "verified_at": "2025-08-26T10:24:08.8378936-05:00"
+    },
+    "SearchOptions": {
+      "kind": "interface",
+      "constructors": [],
+      "ttl_days": 7,
+      "methods": {},
+      "extractedFrom": "source_file",
+      "properties": {},
+      "file": "C:\\source\\COA Goldfish MCP\\src\\types\\index.ts",
+      "mtime": 134006491298542976,
+      "verified_at": "2025-08-26T10:24:08.8382381-05:00"
+    },
+    "TimelineEntry": {
+      "kind": "interface",
+      "constructors": [],
+      "ttl_days": 7,
+      "methods": {},
+      "extractedFrom": "source_file",
+      "properties": {},
+      "file": "C:\\source\\COA Goldfish MCP\\src\\types\\index.ts",
+      "mtime": 134006491298542976,
+      "verified_at": "2025-08-26T10:24:08.8385891-05:00"
+    },
+    "for": {
+      "methods": {},
+      "ttl_days": 7,
+      "kind": "class",
+      "extractedFrom": "source_file",
+      "verified_at": "2025-08-26T10:24:38.8634311-05:00",
+      "properties": {},
+      "constructors": [],
+      "mtime": 134001853932032923,
+      "file": "C:\\source\\COA Goldfish MCP\\src\\__tests__\\mock-storage.ts"
+    },
+    "ToolResponse": {
+      "kind": "interface",
+      "constructors": [],
+      "ttl_days": 7,
+      "methods": {},
+      "extractedFrom": "source_file",
+      "properties": {},
+      "file": "C:\\source\\COA Goldfish MCP\\src\\types\\index.ts",
+      "mtime": 134006491298542976,
+      "verified_at": "2025-08-26T10:24:08.8393342-05:00"
+    },
+    "Storage": {
+      "constructors": [],
       "properties": {},
       "file": "C:\\source\\COA Goldfish MCP\\src\\core\\storage.ts",
-      "verified_at": "2025-08-25T21:39:21.1794924-05:00"
+      "kind": "class",
+      "ttl_days": 7,
+      "verified_at": "2025-08-26T10:31:37.4286025-05:00",
+      "mtime": 134006495667531162,
+      "methods": {},
+      "extractedFrom": "source_file"
     },
     "CheckpointTool": {
       "constructors": [],
@@ -156,6 +156,28 @@
       "verified_at": "2025-08-26T07:54:52.0377449-05:00",
       "kind": "class",
       "properties": {}
+    },
+    "SessionTools": {
+      "mtime": 134006951618842768,
+      "properties": {},
+      "extractedFrom": "source_file",
+      "file": "C:\\source\\COA Goldfish MCP\\src\\tools\\session.ts",
+      "kind": "class",
+      "constructors": [],
+      "methods": {},
+      "ttl_days": 7,
+      "verified_at": "2025-08-26T10:24:20.1589228-05:00"
+    },
+    "MockStorage": {
+      "methods": {},
+      "ttl_days": 7,
+      "kind": "class",
+      "extractedFrom": "source_file",
+      "verified_at": "2025-08-26T10:24:38.871103-05:00",
+      "properties": {},
+      "constructors": [],
+      "mtime": 134001853932032923,
+      "file": "C:\\source\\COA Goldfish MCP\\src\\__tests__\\mock-storage.ts"
     }
   },
   "version": 3

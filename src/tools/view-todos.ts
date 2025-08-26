@@ -157,7 +157,7 @@ export async function handleViewTodos(storage: Storage, args: ViewTodosArgs): Pr
   output.push(``);
   output.push(`💡 Use view_todos({ listId: "..." }) to see specific list details`);
   
-  // Create structured response following ProjectKnowledge pattern
+  // Create structured response with proper formatting
   const data = {
     totalLists: todoLists.length,
     lists: sortedLists.map(list => {

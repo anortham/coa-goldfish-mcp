@@ -20,12 +20,13 @@ export async function loadTodoListsWithScope(
 
   // Load from all workspaces
   try {
-    const { homedir } = await import('os');
-    const { join } = await import('path');
     const fs = await import('fs-extra');
     
-    const basePath = join(homedir(), '.coa', 'goldfish');
-    const workspaces = await fs.readdir(basePath);
+    // Use the storage instance's basePath instead of hardcoding
+    const basePath = storage.getBasePath();
+    
+    // Use the storage's discoverWorkspaces method for proper workspace detection
+    const workspaces = await storage.discoverWorkspaces();
     
     let allTodoLists: any[] = [];
     

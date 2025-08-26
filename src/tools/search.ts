@@ -95,7 +95,7 @@ export class SearchTools {
         output.push(`... and ${results.length - 10} more results`);
       }
 
-      // Create structured response following ProjectKnowledge pattern
+      // Create structured response with proper formatting
       const response: SearchHistoryResponse = {
         success: true,
         operation: 'search-history',
@@ -151,18 +151,38 @@ export class SearchTools {
     try {
       const memories = await this.searchEngine.searchMemories({
         since,
-        workspace,
+        workspace: scope === 'all' ? undefined : workspace,
         scope,
         type: 'checkpoint',
         limit: 200
       });
 
       if (memories.length === 0) {
+        const response: TimelineResponse = {
+          success: true,
+          operation: 'timeline',
+          formattedOutput: `📅 No work sessions found in the last ${since}\n\nTry extending the time range or checking other workspaces.`,
+          scope,
+          since,
+          workspace,
+          totalItems: 0,
+          workspacesFound: 0,
+          checkpointsFound: 0,
+          data: {
+            byDate: {},
+            byWorkspace: {}
+          },
+          meta: {
+            mode: 'formatted',
+            lines: 2
+          }
+        };
+
         return {
           content: [
             {
               type: 'text',
-              text: `📅 No work sessions found in the last ${since}\n\nTry extending the time range or checking other workspaces.`
+              text: JSON.stringify(response, null, 2)
             }
           ]
         };
@@ -228,7 +248,7 @@ export class SearchTools {
         }
       }
 
-      // Create structured response following ProjectKnowledge pattern
+      // Create structured response with proper formatting
       const response: TimelineResponse = {
         success: true,
         operation: 'timeline',
@@ -361,7 +381,7 @@ export class SearchTools {
         output.push('');
       }
 
-      // Create structured response following ProjectKnowledge pattern
+      // Create structured response with proper formatting
       const response: RecallResponse = {
         success: true,
         operation: 'recall',
@@ -427,9 +447,7 @@ export class SearchTools {
   private getTypeIcon(type: string): string {
     const icons = {
       checkpoint: '💾',
-      general: '💭',
-      todo: '📝',
-      context: '🧭'
+      // Deprecated: general, todo, context (now handled by TodoLists)
     };
     return icons[type as keyof typeof icons] || '📄';
   }
@@ -534,8 +552,8 @@ export class SearchTools {
             },
             type: {
               type: 'string',
-              enum: ['general', 'todo', 'checkpoint', 'context'],
-              description: 'Memory type filter (optional)'
+              enum: ['checkpoint'],
+              description: 'Content type filter - only checkpoints available (Memory objects deprecated)'
             },
             tags: {
               type: 'array',

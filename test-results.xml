@@ -1,13 +1,559 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuites name="jest tests" tests="4" failures="0" errors="0" time="0.669">
-  <testsuite name="MCP Server Parameter Conversion" errors="0" failures="0" skipped="0" timestamp="2025-08-26T12:57:59" time="0.364" tests="4">
-    <testcase classname="MCP Server Parameter Conversion should convert string highlights to array format" name="MCP Server Parameter Conversion should convert string highlights to array format" time="0.016">
+<testsuites name="jest tests" tests="248" failures="0" errors="0" time="4.34">
+  <testsuite name="Date Utils" errors="0" failures="0" skipped="0" timestamp="2025-08-26T23:27:59" time="1.219" tests="21">
+    <testcase classname="Date Utils getUTCDateKey should extract UTC date string in YYYY-MM-DD format" name="Date Utils getUTCDateKey should extract UTC date string in YYYY-MM-DD format" time="0.005">
     </testcase>
-    <testcase classname="MCP Server Parameter Conversion should preserve array highlights unchanged" name="MCP Server Parameter Conversion should preserve array highlights unchanged" time="0.002">
+    <testcase classname="Date Utils getUTCDateKey should handle timezone edge cases consistently" name="Date Utils getUTCDateKey should handle timezone edge cases consistently" time="0.001">
     </testcase>
-    <testcase classname="MCP Server Parameter Conversion should handle undefined highlights" name="MCP Server Parameter Conversion should handle undefined highlights" time="0.003">
+    <testcase classname="Date Utils getUTCDateKey should handle invalid dates gracefully" name="Date Utils getUTCDateKey should handle invalid dates gracefully" time="0.031">
     </testcase>
-    <testcase classname="MCP Server Parameter Conversion should handle empty string highlights" name="MCP Server Parameter Conversion should handle empty string highlights" time="0.003">
+    <testcase classname="Date Utils getLocalDateKey should extract local date string in YYYY-MM-DD format" name="Date Utils getLocalDateKey should extract local date string in YYYY-MM-DD format" time="0.001">
+    </testcase>
+    <testcase classname="Date Utils getLocalDateKey should handle timezone edge cases by using local date" name="Date Utils getLocalDateKey should handle timezone edge cases by using local date" time="0.001">
+    </testcase>
+    <testcase classname="Date Utils getLocalDateKey should handle invalid dates gracefully" name="Date Utils getLocalDateKey should handle invalid dates gracefully" time="0">
+    </testcase>
+    <testcase classname="Date Utils getTodayUTCDateKey should return today&apos;s date in YYYY-MM-DD format" name="Date Utils getTodayUTCDateKey should return today&apos;s date in YYYY-MM-DD format" time="0.001">
+    </testcase>
+    <testcase classname="Date Utils getTodayLocalDateKey should return today&apos;s local date in YYYY-MM-DD format" name="Date Utils getTodayLocalDateKey should return today&apos;s local date in YYYY-MM-DD format" time="0.001">
+    </testcase>
+    <testcase classname="Date Utils formatDateName should format today as &quot;Today&quot;" name="Date Utils formatDateName should format today as &quot;Today&quot;" time="0.001">
+    </testcase>
+    <testcase classname="Date Utils formatDateName should format yesterday as &quot;Yesterday&quot;" name="Date Utils formatDateName should format yesterday as &quot;Yesterday&quot;" time="0">
+    </testcase>
+    <testcase classname="Date Utils formatDateName should format other dates as weekday names" name="Date Utils formatDateName should format other dates as weekday names" time="0.02">
+    </testcase>
+    <testcase classname="Date Utils formatDateName should handle invalid date keys gracefully" name="Date Utils formatDateName should handle invalid date keys gracefully" time="0">
+    </testcase>
+    <testcase classname="Date Utils isSameUTCDay should return true for dates on the same UTC day" name="Date Utils isSameUTCDay should return true for dates on the same UTC day" time="0">
+    </testcase>
+    <testcase classname="Date Utils isSameUTCDay should return false for dates on different UTC days" name="Date Utils isSameUTCDay should return false for dates on different UTC days" time="0">
+    </testcase>
+    <testcase classname="Date Utils isSameUTCDay should handle timezone edge cases correctly" name="Date Utils isSameUTCDay should handle timezone edge cases correctly" time="0">
+    </testcase>
+    <testcase classname="Date Utils safeParseDate should parse valid ISO date strings" name="Date Utils safeParseDate should parse valid ISO date strings" time="0.001">
+    </testcase>
+    <testcase classname="Date Utils safeParseDate should parse valid date strings" name="Date Utils safeParseDate should parse valid date strings" time="0.001">
+    </testcase>
+    <testcase classname="Date Utils safeParseDate should return current date for invalid strings" name="Date Utils safeParseDate should return current date for invalid strings" time="0.003">
+    </testcase>
+    <testcase classname="Date Utils isValidUTCDateKey should validate correct YYYY-MM-DD format" name="Date Utils isValidUTCDateKey should validate correct YYYY-MM-DD format" time="0">
+    </testcase>
+    <testcase classname="Date Utils isValidUTCDateKey should reject invalid formats" name="Date Utils isValidUTCDateKey should reject invalid formats" time="0.001">
+    </testcase>
+    <testcase classname="Date Utils Real-world timezone scenarios should handle memories created at different times on same local day" name="Date Utils Real-world timezone scenarios should handle memories created at different times on same local day" time="0.001">
+    </testcase>
+  </testsuite>
+  <testsuite name="Improved Search Engine - Mode Testing" errors="0" failures="0" skipped="0" timestamp="2025-08-26T23:27:59" time="1.384" tests="18">
+    <testcase classname="Improved Search Engine - Mode Testing Strict Mode Tests Strict Mode - Case 1: Should find all authentication-related memories" name="Improved Search Engine - Mode Testing Strict Mode Tests Strict Mode - Case 1: Should find all authentication-related memories" time="0.029">
+    </testcase>
+    <testcase classname="Improved Search Engine - Mode Testing Strict Mode Tests Strict Mode - Case 2: Should find auth as partial match of authentication" name="Improved Search Engine - Mode Testing Strict Mode Tests Strict Mode - Case 2: Should find auth as partial match of authentication" time="0.004">
+    </testcase>
+    <testcase classname="Improved Search Engine - Mode Testing Strict Mode Tests Strict Mode - Case 3: Should find bug-related memories" name="Improved Search Engine - Mode Testing Strict Mode Tests Strict Mode - Case 3: Should find bug-related memories" time="0.004">
+    </testcase>
+    <testcase classname="Improved Search Engine - Mode Testing Strict Mode Tests Strict Mode - Case 4: Should find user-related memories" name="Improved Search Engine - Mode Testing Strict Mode Tests Strict Mode - Case 4: Should find user-related memories" time="0.004">
+    </testcase>
+    <testcase classname="Improved Search Engine - Mode Testing Strict Mode Tests Strict Mode - Case 5: Should handle typo in database" name="Improved Search Engine - Mode Testing Strict Mode Tests Strict Mode - Case 5: Should handle typo in database" time="0.004">
+    </testcase>
+    <testcase classname="Improved Search Engine - Mode Testing Normal Mode Tests Normal Mode - Case 6: Should rank memory 2 highest (contains both terms)" name="Improved Search Engine - Mode Testing Normal Mode Tests Normal Mode - Case 6: Should rank memory 2 highest (contains both terms)" time="0.004">
+    </testcase>
+    <testcase classname="Improved Search Engine - Mode Testing Normal Mode Tests Normal Mode - Case 7: Should find memories with both user and authentication" name="Improved Search Engine - Mode Testing Normal Mode Tests Normal Mode - Case 7: Should find memories with both user and authentication" time="0.004">
+    </testcase>
+    <testcase classname="Improved Search Engine - Mode Testing Normal Mode Tests Normal Mode - Case 8: Should rank exact phrase match highest" name="Improved Search Engine - Mode Testing Normal Mode Tests Normal Mode - Case 8: Should rank exact phrase match highest" time="0.004">
+    </testcase>
+    <testcase classname="Improved Search Engine - Mode Testing Normal Mode Tests Normal Mode - Case 9: Should find exact phrase match" name="Improved Search Engine - Mode Testing Normal Mode Tests Normal Mode - Case 9: Should find exact phrase match" time="0.004">
+    </testcase>
+    <testcase classname="Improved Search Engine - Mode Testing Normal Mode Tests Normal Mode - Case 10: Should find exact phrase match" name="Improved Search Engine - Mode Testing Normal Mode Tests Normal Mode - Case 10: Should find exact phrase match" time="0.004">
+    </testcase>
+    <testcase classname="Improved Search Engine - Mode Testing Auto-Escalation Mode Tests Auto Mode - Should find exact matches first" name="Improved Search Engine - Mode Testing Auto-Escalation Mode Tests Auto Mode - Should find exact matches first" time="0.005">
+    </testcase>
+    <testcase classname="Improved Search Engine - Mode Testing Auto-Escalation Mode Tests Auto Mode - Should handle typos with escalation" name="Improved Search Engine - Mode Testing Auto-Escalation Mode Tests Auto Mode - Should handle typos with escalation" time="0.009">
+    </testcase>
+    <testcase classname="Improved Search Engine - Mode Testing Auto-Escalation Mode Tests Auto Mode - Should return empty for truly nonexistent" name="Improved Search Engine - Mode Testing Auto-Escalation Mode Tests Auto Mode - Should return empty for truly nonexistent" time="0.009">
+    </testcase>
+    <testcase classname="Improved Search Engine - Mode Testing Extended Search Operator Tests Extended - Case 19: Exact phrase only" name="Improved Search Engine - Mode Testing Extended Search Operator Tests Extended - Case 19: Exact phrase only" time="0.002">
+    </testcase>
+    <testcase classname="Improved Search Engine - Mode Testing Extended Search Operator Tests Extended - Case 20: Must include both terms" name="Improved Search Engine - Mode Testing Extended Search Operator Tests Extended - Case 20: Must include both terms" time="0.002">
+    </testcase>
+    <testcase classname="Improved Search Engine - Mode Testing Extended Search Operator Tests Extended - Case 21: Include authentication, exclude refactor" name="Improved Search Engine - Mode Testing Extended Search Operator Tests Extended - Case 21: Include authentication, exclude refactor" time="0.003">
+    </testcase>
+    <testcase classname="Improved Search Engine - Mode Testing Extended Search Operator Tests Extended - Case 22: Either bug OR issue" name="Improved Search Engine - Mode Testing Extended Search Operator Tests Extended - Case 22: Either bug OR issue" time="0.003">
+    </testcase>
+    <testcase classname="Improved Search Engine - Mode Testing Configuration Comparison Compare all modes for same query" name="Improved Search Engine - Mode Testing Configuration Comparison Compare all modes for same query" time="0.012">
+    </testcase>
+  </testsuite>
+  <testsuite name="TDD Agent Handoff Mechanism - DEPRECATED" errors="0" failures="0" skipped="14" timestamp="2025-08-26T23:28:00" time="1.354" tests="14">
+    <testcase classname="TDD Agent Handoff Mechanism - DEPRECATED Tag-Based Search Functionality should filter memories by exact tags" name="TDD Agent Handoff Mechanism - DEPRECATED Tag-Based Search Functionality should filter memories by exact tags" time="0">
+      <skipped/>
+    </testcase>
+    <testcase classname="TDD Agent Handoff Mechanism - DEPRECATED Tag-Based Search Functionality should require ALL specified tags to match" name="TDD Agent Handoff Mechanism - DEPRECATED Tag-Based Search Functionality should require ALL specified tags to match" time="0">
+      <skipped/>
+    </testcase>
+    <testcase classname="TDD Agent Handoff Mechanism - DEPRECATED Tag-Based Search Functionality should work with empty tag arrays" name="TDD Agent Handoff Mechanism - DEPRECATED Tag-Based Search Functionality should work with empty tag arrays" time="0">
+      <skipped/>
+    </testcase>
+    <testcase classname="TDD Agent Handoff Mechanism - DEPRECATED TDD Agent Handoff Patterns should support test-designer to test-implementer handoff" name="TDD Agent Handoff Mechanism - DEPRECATED TDD Agent Handoff Patterns should support test-designer to test-implementer handoff" time="0">
+      <skipped/>
+    </testcase>
+    <testcase classname="TDD Agent Handoff Mechanism - DEPRECATED TDD Agent Handoff Patterns should support test-implementer to refactoring-expert handoff" name="TDD Agent Handoff Mechanism - DEPRECATED TDD Agent Handoff Patterns should support test-implementer to refactoring-expert handoff" time="0">
+      <skipped/>
+    </testcase>
+    <testcase classname="TDD Agent Handoff Mechanism - DEPRECATED TDD Agent Handoff Patterns should support refactoring-expert to test-reviewer handoff" name="TDD Agent Handoff Mechanism - DEPRECATED TDD Agent Handoff Patterns should support refactoring-expert to test-reviewer handoff" time="0">
+      <skipped/>
+    </testcase>
+    <testcase classname="TDD Agent Handoff Mechanism - DEPRECATED Fallback Search Mechanism should find handoffs using query-based search when tag search fails" name="TDD Agent Handoff Mechanism - DEPRECATED Fallback Search Mechanism should find handoffs using query-based search when tag search fails" time="0">
+      <skipped/>
+    </testcase>
+    <testcase classname="TDD Agent Handoff Mechanism - DEPRECATED Fallback Search Mechanism should prioritize exact tag matches over fuzzy query matches" name="TDD Agent Handoff Mechanism - DEPRECATED Fallback Search Mechanism should prioritize exact tag matches over fuzzy query matches" time="0">
+      <skipped/>
+    </testcase>
+    <testcase classname="TDD Agent Handoff Mechanism - DEPRECATED Edge Cases and Error Handling should handle memories without tags gracefully" name="TDD Agent Handoff Mechanism - DEPRECATED Edge Cases and Error Handling should handle memories without tags gracefully" time="0">
+      <skipped/>
+    </testcase>
+    <testcase classname="TDD Agent Handoff Mechanism - DEPRECATED Edge Cases and Error Handling should handle empty handoff search results" name="TDD Agent Handoff Mechanism - DEPRECATED Edge Cases and Error Handling should handle empty handoff search results" time="0">
+      <skipped/>
+    </testcase>
+    <testcase classname="TDD Agent Handoff Mechanism - DEPRECATED Edge Cases and Error Handling should handle malformed handoff JSON gracefully" name="TDD Agent Handoff Mechanism - DEPRECATED Edge Cases and Error Handling should handle malformed handoff JSON gracefully" time="0">
+      <skipped/>
+    </testcase>
+    <testcase classname="TDD Agent Handoff Mechanism - DEPRECATED Edge Cases and Error Handling should respect time filters in handoff searches" name="TDD Agent Handoff Mechanism - DEPRECATED Edge Cases and Error Handling should respect time filters in handoff searches" time="0">
+      <skipped/>
+    </testcase>
+    <testcase classname="TDD Agent Handoff Mechanism - DEPRECATED Complete TDD Workflow Integration should support full workflow: designer → implementer → refactorer → reviewer" name="TDD Agent Handoff Mechanism - DEPRECATED Complete TDD Workflow Integration should support full workflow: designer → implementer → refactorer → reviewer" time="0">
+      <skipped/>
+    </testcase>
+    <testcase classname="TDD Agent Handoff Mechanism - DEPRECATED Complete TDD Workflow Integration should maintain handoff chain context across phases" name="TDD Agent Handoff Mechanism - DEPRECATED Complete TDD Workflow Integration should maintain handoff chain context across phases" time="0">
+      <skipped/>
+    </testcase>
+  </testsuite>
+  <testsuite name="MCP Server Parameter Conversion" errors="0" failures="0" skipped="0" timestamp="2025-08-26T23:28:00" time="1.367" tests="4">
+    <testcase classname="MCP Server Parameter Conversion should convert string highlights to array format" name="MCP Server Parameter Conversion should convert string highlights to array format" time="0.025">
+    </testcase>
+    <testcase classname="MCP Server Parameter Conversion should preserve array highlights unchanged" name="MCP Server Parameter Conversion should preserve array highlights unchanged" time="0.003">
+    </testcase>
+    <testcase classname="MCP Server Parameter Conversion should handle undefined highlights" name="MCP Server Parameter Conversion should handle undefined highlights" time="0.004">
+    </testcase>
+    <testcase classname="MCP Server Parameter Conversion should handle empty string highlights" name="MCP Server Parameter Conversion should handle empty string highlights" time="0.004">
+    </testcase>
+  </testsuite>
+  <testsuite name="Date Handling" errors="0" failures="0" skipped="0" timestamp="2025-08-26T23:28:00" time="1.412" tests="5">
+    <testcase classname="Date Handling Timeline Date Formatting should correctly identify today vs yesterday in timeline" name="Date Handling Timeline Date Formatting should correctly identify today vs yesterday in timeline" time="0.037">
+    </testcase>
+    <testcase classname="Date Handling Timeline Date Formatting should group memories by correct dates" name="Date Handling Timeline Date Formatting should group memories by correct dates" time="0.002">
+    </testcase>
+    <testcase classname="Date Handling Timeline Date Formatting should handle timezone edge cases correctly" name="Date Handling Timeline Date Formatting should handle timezone edge cases correctly" time="0.002">
+    </testcase>
+    <testcase classname="Date Handling Date Parsing Edge Cases should handle date strings without time correctly" name="Date Handling Date Parsing Edge Cases should handle date strings without time correctly" time="0">
+    </testcase>
+    <testcase classname="Date Handling Date Parsing Edge Cases should consistently format dates across timezone boundaries" name="Date Handling Date Parsing Edge Cases should consistently format dates across timezone boundaries" time="0.001">
+    </testcase>
+  </testsuite>
+  <testsuite name="Search Baseline - Current Performance" errors="0" failures="0" skipped="0" timestamp="2025-08-26T23:28:00" time="1.408" tests="21">
+    <testcase classname="Search Baseline - Current Performance Single Word Search Baseline Case 1: Should find all authentication-related memories" name="Search Baseline - Current Performance Single Word Search Baseline Case 1: Should find all authentication-related memories" time="0.017">
+    </testcase>
+    <testcase classname="Search Baseline - Current Performance Single Word Search Baseline Case 2: Should find auth as partial match of authentication" name="Search Baseline - Current Performance Single Word Search Baseline Case 2: Should find auth as partial match of authentication" time="0.004">
+    </testcase>
+    <testcase classname="Search Baseline - Current Performance Single Word Search Baseline Case 3: Should find bug-related memories" name="Search Baseline - Current Performance Single Word Search Baseline Case 3: Should find bug-related memories" time="0.003">
+    </testcase>
+    <testcase classname="Search Baseline - Current Performance Single Word Search Baseline Case 4: Should find user-related memories" name="Search Baseline - Current Performance Single Word Search Baseline Case 4: Should find user-related memories" time="0.003">
+    </testcase>
+    <testcase classname="Search Baseline - Current Performance Single Word Search Baseline Case 5: Should handle typo in database" name="Search Baseline - Current Performance Single Word Search Baseline Case 5: Should handle typo in database" time="0.003">
+    </testcase>
+    <testcase classname="Search Baseline - Current Performance Multi-Word Search Baseline (Critical) Case 6: Should rank memory 2 highest (contains both terms)" name="Search Baseline - Current Performance Multi-Word Search Baseline (Critical) Case 6: Should rank memory 2 highest (contains both terms)" time="0.005">
+    </testcase>
+    <testcase classname="Search Baseline - Current Performance Multi-Word Search Baseline (Critical) Case 7: Should find memories with both user and authentication" name="Search Baseline - Current Performance Multi-Word Search Baseline (Critical) Case 7: Should find memories with both user and authentication" time="0.005">
+    </testcase>
+    <testcase classname="Search Baseline - Current Performance Multi-Word Search Baseline (Critical) Case 8: Should rank exact phrase match highest" name="Search Baseline - Current Performance Multi-Word Search Baseline (Critical) Case 8: Should rank exact phrase match highest" time="0.005">
+    </testcase>
+    <testcase classname="Search Baseline - Current Performance Multi-Word Search Baseline (Critical) Case 9: Should find exact phrase match" name="Search Baseline - Current Performance Multi-Word Search Baseline (Critical) Case 9: Should find exact phrase match" time="0.005">
+    </testcase>
+    <testcase classname="Search Baseline - Current Performance Multi-Word Search Baseline (Critical) Case 10: Should find exact phrase match" name="Search Baseline - Current Performance Multi-Word Search Baseline (Critical) Case 10: Should find exact phrase match" time="0.003">
+    </testcase>
+    <testcase classname="Search Baseline - Current Performance Phrase Search Baseline Case 11: Should find exact phrase" name="Search Baseline - Current Performance Phrase Search Baseline Case 11: Should find exact phrase" time="0.005">
+    </testcase>
+    <testcase classname="Search Baseline - Current Performance Phrase Search Baseline Case 12: Should find exact phrase" name="Search Baseline - Current Performance Phrase Search Baseline Case 12: Should find exact phrase" time="0.004">
+    </testcase>
+    <testcase classname="Search Baseline - Current Performance Phrase Search Baseline Case 13: Should find phrase in content" name="Search Baseline - Current Performance Phrase Search Baseline Case 13: Should find phrase in content" time="0.004">
+    </testcase>
+    <testcase classname="Search Baseline - Current Performance Edge Cases Baseline Case 14: Should handle words in different order" name="Search Baseline - Current Performance Edge Cases Baseline Case 14: Should handle words in different order" time="0.002">
+    </testcase>
+    <testcase classname="Search Baseline - Current Performance Edge Cases Baseline Case 15: Should handle scrambled word order" name="Search Baseline - Current Performance Edge Cases Baseline Case 15: Should handle scrambled word order" time="0.002">
+    </testcase>
+    <testcase classname="Search Baseline - Current Performance Edge Cases Baseline Case 16: Should return no results for non-existent terms" name="Search Baseline - Current Performance Edge Cases Baseline Case 16: Should return no results for non-existent terms" time="0.003">
+    </testcase>
+    <testcase classname="Search Baseline - Current Performance Edge Cases Baseline Case 17: Empty query should return all memories" name="Search Baseline - Current Performance Edge Cases Baseline Case 17: Empty query should return all memories" time="0.001">
+    </testcase>
+    <testcase classname="Search Baseline - Current Performance Edge Cases Baseline Case 18: Should handle wildcard-like patterns" name="Search Baseline - Current Performance Edge Cases Baseline Case 18: Should handle wildcard-like patterns" time="0.002">
+    </testcase>
+    <testcase classname="Search Baseline - Current Performance Performance Baseline Search performance with 100 memories" name="Search Baseline - Current Performance Performance Baseline Search performance with 100 memories" time="0.004">
+    </testcase>
+    <testcase classname="Search Baseline - Current Performance Performance Baseline Memory usage baseline" name="Search Baseline - Current Performance Performance Baseline Memory usage baseline" time="0.016">
+    </testcase>
+    <testcase classname="Search Baseline - Current Performance Current Fuse.js Configuration Analysis Analyze current search settings" name="Search Baseline - Current Performance Current Fuse.js Configuration Analysis Analyze current search settings" time="0.003">
+    </testcase>
+  </testsuite>
+  <testsuite name="Search Validation - Success Criteria" errors="0" failures="0" skipped="0" timestamp="2025-08-26T23:28:00" time="1.435" tests="5">
+    <testcase classname="Search Validation - Success Criteria Precision Target: 80% Single word queries should achieve 80%+ precision" name="Search Validation - Success Criteria Precision Target: 80% Single word queries should achieve 80%+ precision" time="0.029">
+    </testcase>
+    <testcase classname="Search Validation - Success Criteria Precision Target: 80% Multi-word queries should achieve 75%+ precision" name="Search Validation - Success Criteria Precision Target: 80% Multi-word queries should achieve 75%+ precision" time="0.012">
+    </testcase>
+    <testcase classname="Search Validation - Success Criteria Recall Target: 90% All queries should achieve 90%+ recall" name="Search Validation - Success Criteria Recall Target: 90% All queries should achieve 90%+ recall" time="0.029">
+    </testcase>
+    <testcase classname="Search Validation - Success Criteria Overall Performance Metrics Complete performance analysis" name="Search Validation - Success Criteria Overall Performance Metrics Complete performance analysis" time="0.021">
+    </testcase>
+    <testcase classname="Search Validation - Success Criteria Comparison with Baseline Show improvement over baseline" name="Search Validation - Success Criteria Comparison with Baseline Show improvement over baseline" time="0.006">
+    </testcase>
+  </testsuite>
+  <testsuite name="BUG FIX VALIDATION: Date Handling Timeline Fixes" errors="0" failures="0" skipped="0" timestamp="2025-08-26T23:28:00" time="1.444" tests="5">
+    <testcase classname="BUG FIX VALIDATION: Date Handling Timeline Fixes FIXED: byDate Object Structure Creation NOW PASSES: byDate object correctly contains today&apos;s date key using local date format" name="BUG FIX VALIDATION: Date Handling Timeline Fixes FIXED: byDate Object Structure Creation NOW PASSES: byDate object correctly contains today&apos;s date key using local date format" time="0.036">
+    </testcase>
+    <testcase classname="BUG FIX VALIDATION: Date Handling Timeline Fixes FIXED: byDate Object Structure Creation NOW PASSES: nested workspace structure correctly exists with local date key" name="BUG FIX VALIDATION: Date Handling Timeline Fixes FIXED: byDate Object Structure Creation NOW PASSES: nested workspace structure correctly exists with local date key" time="0.002">
+    </testcase>
+    <testcase classname="BUG FIX VALIDATION: Date Handling Timeline Fixes FIXED: Date Format Consistency Issues NOW PASSES: date conversion logic creates consistent local date keys" name="BUG FIX VALIDATION: Date Handling Timeline Fixes FIXED: Date Format Consistency Issues NOW PASSES: date conversion logic creates consistent local date keys" time="0.002">
+    </testcase>
+    <testcase classname="BUG FIX VALIDATION: Date Handling Timeline Fixes FIXED: Timezone Edge Cases NOW PASSES: near-midnight timestamps correctly group by local date" name="BUG FIX VALIDATION: Date Handling Timeline Fixes FIXED: Timezone Edge Cases NOW PASSES: near-midnight timestamps correctly group by local date" time="0.001">
+    </testcase>
+    <testcase classname="BUG FIX VALIDATION: Date Handling Timeline Fixes FIXED: Expected vs Actual Behavior Documentation NOW PASSES: documents the correct behavior after timeline function bug fix" name="BUG FIX VALIDATION: Date Handling Timeline Fixes FIXED: Expected vs Actual Behavior Documentation NOW PASSES: documents the correct behavior after timeline function bug fix" time="0.002">
+    </testcase>
+  </testsuite>
+  <testsuite name="Goldfish Integration Tests" errors="0" failures="0" skipped="0" timestamp="2025-08-26T23:28:00" time="1.515" tests="7">
+    <testcase classname="Goldfish Integration Tests Memory Cleanup and Promotion should cleanup expired memories and enforce limits" name="Goldfish Integration Tests Memory Cleanup and Promotion should cleanup expired memories and enforce limits" time="0.094">
+    </testcase>
+    <testcase classname="Goldfish Integration Tests Memory Cleanup and Promotion should identify memories for promotion to ProjectKnowledge" name="Goldfish Integration Tests Memory Cleanup and Promotion should identify memories for promotion to ProjectKnowledge" time="0.021">
+    </testcase>
+    <testcase classname="Goldfish Integration Tests Session Save and Restore Workflow should save session with all context" name="Goldfish Integration Tests Session Save and Restore Workflow should save session with all context" time="0.034">
+    </testcase>
+    <testcase classname="Goldfish Integration Tests Session Save and Restore Workflow should restore most recent session by sessionId" name="Goldfish Integration Tests Session Save and Restore Workflow should restore most recent session by sessionId" time="0.068">
+    </testcase>
+    <testcase classname="Goldfish Integration Tests TODO List Lifecycle should create, update, and promote TODO lists" name="Goldfish Integration Tests TODO List Lifecycle should create, update, and promote TODO lists" time="0.033">
+    </testcase>
+    <testcase classname="Goldfish Integration Tests TODO List Lifecycle should cleanup expired TODO lists" name="Goldfish Integration Tests TODO List Lifecycle should cleanup expired TODO lists" time="0.026">
+    </testcase>
+    <testcase classname="Goldfish Integration Tests Cross-workspace Operations should handle multiple workspaces correctly" name="Goldfish Integration Tests Cross-workspace Operations should handle multiple workspaces correctly" time="0.036">
+    </testcase>
+  </testsuite>
+  <testsuite name="BUG ANALYSIS: Root Cause - Date Offset in Timeline Function" errors="0" failures="0" skipped="0" timestamp="2025-08-26T23:28:00" time="1.461" tests="5">
+    <testcase classname="BUG ANALYSIS: Root Cause - Date Offset in Timeline Function Root Cause Demonstration DEMONSTRATES: Timeline function creates wrong date keys due to timezone conversion bug" name="BUG ANALYSIS: Root Cause - Date Offset in Timeline Function Root Cause Demonstration DEMONSTRATES: Timeline function creates wrong date keys due to timezone conversion bug" time="0.041">
+    </testcase>
+    <testcase classname="BUG ANALYSIS: Root Cause - Date Offset in Timeline Function Root Cause Demonstration DEMONSTRATES: Multiple timestamps on same local day get scattered across dates" name="BUG ANALYSIS: Root Cause - Date Offset in Timeline Function Root Cause Demonstration DEMONSTRATES: Multiple timestamps on same local day get scattered across dates" time="0.024">
+    </testcase>
+    <testcase classname="BUG ANALYSIS: Root Cause - Date Offset in Timeline Function Expected Behavior Specification SPECIFICATION: Timeline should group by local calendar date, not UTC conversion artifacts" name="BUG ANALYSIS: Root Cause - Date Offset in Timeline Function Expected Behavior Specification SPECIFICATION: Timeline should group by local calendar date, not UTC conversion artifacts" time="0.005">
+    </testcase>
+    <testcase classname="BUG ANALYSIS: Root Cause - Date Offset in Timeline Function Edge Cases That Must Be Handled EDGE CASE: Timezone boundaries (near midnight)" name="BUG ANALYSIS: Root Cause - Date Offset in Timeline Function Edge Cases That Must Be Handled EDGE CASE: Timezone boundaries (near midnight)" time="0.002">
+    </testcase>
+    <testcase classname="BUG ANALYSIS: Root Cause - Date Offset in Timeline Function Edge Cases That Must Be Handled EDGE CASE: Multiple timezones (for reference)" name="BUG ANALYSIS: Root Cause - Date Offset in Timeline Function Edge Cases That Must Be Handled EDGE CASE: Multiple timezones (for reference)" time="0.003">
+    </testcase>
+  </testsuite>
+  <testsuite name="Refactored Individual Tool Architecture" errors="0" failures="0" skipped="3" timestamp="2025-08-26T23:27:59" time="1.59" tests="31">
+    <testcase classname="Refactored Individual Tool Architecture Individual Tool Function Signatures Remember Tool - DEPRECATED handleRemember should accept Storage and RememberArgs" name="Refactored Individual Tool Architecture Individual Tool Function Signatures Remember Tool - DEPRECATED handleRemember should accept Storage and RememberArgs" time="0">
+      <skipped/>
+    </testcase>
+    <testcase classname="Refactored Individual Tool Architecture Individual Tool Function Signatures Remember Tool - DEPRECATED getRememberToolSchema should return valid MCP tool schema" name="Refactored Individual Tool Architecture Individual Tool Function Signatures Remember Tool - DEPRECATED getRememberToolSchema should return valid MCP tool schema" time="0">
+      <skipped/>
+    </testcase>
+    <testcase classname="Refactored Individual Tool Architecture Individual Tool Function Signatures Remember Tool - DEPRECATED handleRemember should accept optional parameters" name="Refactored Individual Tool Architecture Individual Tool Function Signatures Remember Tool - DEPRECATED handleRemember should accept optional parameters" time="0">
+      <skipped/>
+    </testcase>
+    <testcase classname="Refactored Individual Tool Architecture Individual Tool Function Signatures Create TODO List Tool handleCreateTodoList should accept Storage and CreateTodoListArgs" name="Refactored Individual Tool Architecture Individual Tool Function Signatures Create TODO List Tool handleCreateTodoList should accept Storage and CreateTodoListArgs" time="0.015">
+    </testcase>
+    <testcase classname="Refactored Individual Tool Architecture Individual Tool Function Signatures Create TODO List Tool getCreateTodoListToolSchema should return valid schema" name="Refactored Individual Tool Architecture Individual Tool Function Signatures Create TODO List Tool getCreateTodoListToolSchema should return valid schema" time="0.005">
+    </testcase>
+    <testcase classname="Refactored Individual Tool Architecture Individual Tool Function Signatures Create TODO List Tool handleCreateTodoList should create properly structured TodoList" name="Refactored Individual Tool Architecture Individual Tool Function Signatures Create TODO List Tool handleCreateTodoList should create properly structured TodoList" time="0.004">
+    </testcase>
+    <testcase classname="Refactored Individual Tool Architecture Individual Tool Function Signatures View TODOs Tool handleViewTodos should accept Storage and ViewTodosArgs" name="Refactored Individual Tool Architecture Individual Tool Function Signatures View TODOs Tool handleViewTodos should accept Storage and ViewTodosArgs" time="0.01">
+    </testcase>
+    <testcase classname="Refactored Individual Tool Architecture Individual Tool Function Signatures View TODOs Tool getViewTodosToolSchema should return valid schema" name="Refactored Individual Tool Architecture Individual Tool Function Signatures View TODOs Tool getViewTodosToolSchema should return valid schema" time="0.003">
+    </testcase>
+    <testcase classname="Refactored Individual Tool Architecture Individual Tool Function Signatures View TODOs Tool handleViewTodos should show specific list when listId provided" name="Refactored Individual Tool Architecture Individual Tool Function Signatures View TODOs Tool handleViewTodos should show specific list when listId provided" time="0.003">
+    </testcase>
+    <testcase classname="Refactored Individual Tool Architecture Individual Tool Function Signatures View TODOs Tool handleViewTodos should handle empty todo list gracefully" name="Refactored Individual Tool Architecture Individual Tool Function Signatures View TODOs Tool handleViewTodos should handle empty todo list gracefully" time="0.002">
+    </testcase>
+    <testcase classname="Refactored Individual Tool Architecture Individual Tool Function Signatures Update TODO Tool handleUpdateTodo should accept Storage and UpdateTodoArgs" name="Refactored Individual Tool Architecture Individual Tool Function Signatures Update TODO Tool handleUpdateTodo should accept Storage and UpdateTodoArgs" time="0.003">
+    </testcase>
+    <testcase classname="Refactored Individual Tool Architecture Individual Tool Function Signatures Update TODO Tool getUpdateTodoToolSchema should return valid schema" name="Refactored Individual Tool Architecture Individual Tool Function Signatures Update TODO Tool getUpdateTodoToolSchema should return valid schema" time="0.003">
+    </testcase>
+    <testcase classname="Refactored Individual Tool Architecture Individual Tool Function Signatures Update TODO Tool handleUpdateTodo should support task description updates" name="Refactored Individual Tool Architecture Individual Tool Function Signatures Update TODO Tool handleUpdateTodo should support task description updates" time="0.003">
+    </testcase>
+    <testcase classname="Refactored Individual Tool Architecture Individual Tool Function Signatures Update TODO Tool handleUpdateTodo should support task deletion" name="Refactored Individual Tool Architecture Individual Tool Function Signatures Update TODO Tool handleUpdateTodo should support task deletion" time="0.002">
+    </testcase>
+    <testcase classname="Refactored Individual Tool Architecture Individual Tool Function Signatures Update TODO Tool handleUpdateTodo should add new tasks when no itemId provided" name="Refactored Individual Tool Architecture Individual Tool Function Signatures Update TODO Tool handleUpdateTodo should add new tasks when no itemId provided" time="0.006">
+    </testcase>
+    <testcase classname="Refactored Individual Tool Architecture Tool Integration Tests Tools should work together in complete workflow" name="Refactored Individual Tool Architecture Tool Integration Tests Tools should work together in complete workflow" time="0.003">
+    </testcase>
+    <testcase classname="Refactored Individual Tool Architecture Tool Integration Tests Tools should maintain backward compatibility with existing data" name="Refactored Individual Tool Architecture Tool Integration Tests Tools should maintain backward compatibility with existing data" time="0.002">
+    </testcase>
+    <testcase classname="Refactored Individual Tool Architecture Multi-List Visibility Bug Fix Validation view_todos should show ALL lists in summary view (not just most recent)" name="Refactored Individual Tool Architecture Multi-List Visibility Bug Fix Validation view_todos should show ALL lists in summary view (not just most recent)" time="0.004">
+    </testcase>
+    <testcase classname="Refactored Individual Tool Architecture Multi-List Visibility Bug Fix Validation view_todos should prioritize incomplete lists over completed ones" name="Refactored Individual Tool Architecture Multi-List Visibility Bug Fix Validation view_todos should prioritize incomplete lists over completed ones" time="0.006">
+    </testcase>
+    <testcase classname="Refactored Individual Tool Architecture Multi-List Visibility Bug Fix Validation view_todos should provide list selection guidance" name="Refactored Individual Tool Architecture Multi-List Visibility Bug Fix Validation view_todos should provide list selection guidance" time="0.003">
+    </testcase>
+    <testcase classname="Refactored Individual Tool Architecture Cross-Workspace TODO Functionality view_todos should accept scope parameter for cross-workspace queries" name="Refactored Individual Tool Architecture Cross-Workspace TODO Functionality view_todos should accept scope parameter for cross-workspace queries" time="0.002">
+    </testcase>
+    <testcase classname="Refactored Individual Tool Architecture Cross-Workspace TODO Functionality view_todos should show workspace labels when scope=all" name="Refactored Individual Tool Architecture Cross-Workspace TODO Functionality view_todos should show workspace labels when scope=all" time="0.004">
+    </testcase>
+    <testcase classname="Refactored Individual Tool Architecture Cross-Workspace TODO Functionality view_todos with listId should support cross-workspace searches" name="Refactored Individual Tool Architecture Cross-Workspace TODO Functionality view_todos with listId should support cross-workspace searches" time="0.003">
+    </testcase>
+    <testcase classname="Refactored Individual Tool Architecture Cross-Workspace TODO Functionality view_todos schema should include scope parameter for cross-workspace support" name="Refactored Individual Tool Architecture Cross-Workspace TODO Functionality view_todos schema should include scope parameter for cross-workspace support" time="0.002">
+    </testcase>
+    <testcase classname="Refactored Individual Tool Architecture Error Handling for Refactored Tools remember tool should handle storage failures gracefully" name="Refactored Individual Tool Architecture Error Handling for Refactored Tools remember tool should handle storage failures gracefully" time="0.002">
+    </testcase>
+    <testcase classname="Refactored Individual Tool Architecture Error Handling for Refactored Tools view_todos should handle missing list ID gracefully" name="Refactored Individual Tool Architecture Error Handling for Refactored Tools view_todos should handle missing list ID gracefully" time="0.002">
+    </testcase>
+    <testcase classname="Refactored Individual Tool Architecture Error Handling for Refactored Tools update_todo should handle missing list ID gracefully" name="Refactored Individual Tool Architecture Error Handling for Refactored Tools update_todo should handle missing list ID gracefully" time="0.002">
+    </testcase>
+    <testcase classname="Refactored Individual Tool Architecture Error Handling for Refactored Tools update_todo should handle missing item ID gracefully" name="Refactored Individual Tool Architecture Error Handling for Refactored Tools update_todo should handle missing item ID gracefully" time="0.002">
+    </testcase>
+    <testcase classname="Refactored Individual Tool Architecture Response Format Consistency All tools should return ToolResponse format with content arrays" name="Refactored Individual Tool Architecture Response Format Consistency All tools should return ToolResponse format with content arrays" time="0.004">
+    </testcase>
+    <testcase classname="Refactored Individual Tool Architecture Response Format Consistency All tool schemas should follow consistent structure" name="Refactored Individual Tool Architecture Response Format Consistency All tool schemas should follow consistent structure" time="0.004">
+    </testcase>
+    <testcase classname="Refactored Individual Tool Architecture Type Safety Verification Tool functions should enforce correct parameter types" name="Refactored Individual Tool Architecture Type Safety Verification Tool functions should enforce correct parameter types" time="0.002">
+    </testcase>
+  </testsuite>
+  <testsuite name="Goldfish Tool Handlers" errors="0" failures="0" skipped="0" timestamp="2025-08-26T23:28:00" time="1.511" tests="29">
+    <testcase classname="Goldfish Tool Handlers Parameter Validation remember tool should require content parameter" name="Goldfish Tool Handlers Parameter Validation remember tool should require content parameter" time="0.049">
+    </testcase>
+    <testcase classname="Goldfish Tool Handlers Parameter Validation recall tool should validate limit parameter" name="Goldfish Tool Handlers Parameter Validation recall tool should validate limit parameter" time="0.006">
+    </testcase>
+    <testcase classname="Goldfish Tool Handlers Parameter Validation snapshot tool should require label parameter" name="Goldfish Tool Handlers Parameter Validation snapshot tool should require label parameter" time="0.006">
+    </testcase>
+    <testcase classname="Goldfish Tool Handlers Parameter Validation create_todo_list should require title and items" name="Goldfish Tool Handlers Parameter Validation create_todo_list should require title and items" time="0.009">
+    </testcase>
+    <testcase classname="Goldfish Tool Handlers Parameter Validation save_session should require sessionId and description" name="Goldfish Tool Handlers Parameter Validation save_session should require sessionId and description" time="0.004">
+    </testcase>
+    <testcase classname="Goldfish Tool Handlers Parameter Validation restore_session should require sessionId" name="Goldfish Tool Handlers Parameter Validation restore_session should require sessionId" time="0.004">
+    </testcase>
+    <testcase classname="Goldfish Tool Handlers Parameter Validation update_todo should require listId" name="Goldfish Tool Handlers Parameter Validation update_todo should require listId" time="0.003">
+    </testcase>
+    <testcase classname="Goldfish Tool Handlers Tool Response Formats remember tool should return success message with memory ID" name="Goldfish Tool Handlers Tool Response Formats remember tool should return success message with memory ID" time="0.004">
+    </testcase>
+    <testcase classname="Goldfish Tool Handlers Tool Response Formats recall tool should format memories with icons and timestamps" name="Goldfish Tool Handlers Tool Response Formats recall tool should format memories with icons and timestamps" time="0.004">
+    </testcase>
+    <testcase classname="Goldfish Tool Handlers Tool Response Formats view_todos should show progress and status counts" name="Goldfish Tool Handlers Tool Response Formats view_todos should show progress and status counts" time="0.032">
+    </testcase>
+    <testcase classname="Goldfish Tool Handlers Error Handling should handle missing memory file gracefully" name="Goldfish Tool Handlers Error Handling should handle missing memory file gracefully" time="0.003">
+    </testcase>
+    <testcase classname="Goldfish Tool Handlers Error Handling should handle corrupted JSON files" name="Goldfish Tool Handlers Error Handling should handle corrupted JSON files" time="0.012">
+    </testcase>
+    <testcase classname="Goldfish Tool Handlers Error Handling should handle network failures for ProjectKnowledge promotion" name="Goldfish Tool Handlers Error Handling should handle network failures for ProjectKnowledge promotion" time="0.002">
+    </testcase>
+    <testcase classname="Goldfish Tool Handlers Memory Type Handling should assign correct icons for memory types" name="Goldfish Tool Handlers Memory Type Handling should assign correct icons for memory types" time="0.002">
+    </testcase>
+    <testcase classname="Goldfish Tool Handlers Memory Type Handling should validate memory types in enum" name="Goldfish Tool Handlers Memory Type Handling should validate memory types in enum" time="0.003">
+    </testcase>
+    <testcase classname="Goldfish Tool Handlers Updated Todo System Tests view_todos single-list format should display most recently updated list only" name="Goldfish Tool Handlers Updated Todo System Tests view_todos single-list format should display most recently updated list only" time="0.003">
+    </testcase>
+    <testcase classname="Goldfish Tool Handlers Updated Todo System Tests view_todos single-list format should sort items by ID number regardless of status" name="Goldfish Tool Handlers Updated Todo System Tests view_todos single-list format should sort items by ID number regardless of status" time="0.002">
+    </testcase>
+    <testcase classname="Goldfish Tool Handlers Updated Todo System Tests view_todos single-list format should return separate content blocks for each item" name="Goldfish Tool Handlers Updated Todo System Tests view_todos single-list format should return separate content blocks for each item" time="0.002">
+    </testcase>
+    <testcase classname="Goldfish Tool Handlers Updated Todo System Tests update_todo enhanced functionality should update task description when itemId and newTask provided" name="Goldfish Tool Handlers Updated Todo System Tests update_todo enhanced functionality should update task description when itemId and newTask provided" time="0.002">
+    </testcase>
+    <testcase classname="Goldfish Tool Handlers Updated Todo System Tests update_todo enhanced functionality should delete item when delete parameter is true" name="Goldfish Tool Handlers Updated Todo System Tests update_todo enhanced functionality should delete item when delete parameter is true" time="0.003">
+    </testcase>
+    <testcase classname="Goldfish Tool Handlers Updated Todo System Tests update_todo enhanced functionality should update both task and status simultaneously" name="Goldfish Tool Handlers Updated Todo System Tests update_todo enhanced functionality should update both task and status simultaneously" time="0.002">
+    </testcase>
+    <testcase classname="Goldfish Tool Handlers Updated Todo System Tests update_todo enhanced functionality should prioritize update over create when itemId provided" name="Goldfish Tool Handlers Updated Todo System Tests update_todo enhanced functionality should prioritize update over create when itemId provided" time="0.001">
+    </testcase>
+    <testcase classname="Goldfish Tool Handlers Updated Todo System Tests update_todo enhanced functionality should track changes for update feedback" name="Goldfish Tool Handlers Updated Todo System Tests update_todo enhanced functionality should track changes for update feedback" time="0.002">
+    </testcase>
+    <testcase classname="Goldfish Tool Handlers Updated Todo System Tests Todo system integration should handle empty todo lists gracefully" name="Goldfish Tool Handlers Updated Todo System Tests Todo system integration should handle empty todo lists gracefully" time="0.002">
+    </testcase>
+    <testcase classname="Goldfish Tool Handlers Updated Todo System Tests Todo system integration should truncate long task descriptions" name="Goldfish Tool Handlers Updated Todo System Tests Todo system integration should truncate long task descriptions" time="0.002">
+    </testcase>
+    <testcase classname="Goldfish Tool Handlers Updated Todo System Tests Todo system integration should maintain proper status icons" name="Goldfish Tool Handlers Updated Todo System Tests Todo system integration should maintain proper status icons" time="0.002">
+    </testcase>
+    <testcase classname="Goldfish Tool Handlers Updated Todo System Tests Multiple TODO Lists Visibility (TDD) should show all TODO lists when no listId specified" name="Goldfish Tool Handlers Updated Todo System Tests Multiple TODO Lists Visibility (TDD) should show all TODO lists when no listId specified" time="0.007">
+    </testcase>
+    <testcase classname="Goldfish Tool Handlers Updated Todo System Tests Multiple TODO Lists Visibility (TDD) should show specific list when listId provided" name="Goldfish Tool Handlers Updated Todo System Tests Multiple TODO Lists Visibility (TDD) should show specific list when listId provided" time="0.005">
+    </testcase>
+    <testcase classname="Goldfish Tool Handlers Updated Todo System Tests Multiple TODO Lists Visibility (TDD) should prioritize incomplete lists in summary view" name="Goldfish Tool Handlers Updated Todo System Tests Multiple TODO Lists Visibility (TDD) should prioritize incomplete lists in summary view" time="0.002">
+    </testcase>
+  </testsuite>
+  <testsuite name="Goldfish Edge Cases and Error Handling" errors="0" failures="0" skipped="1" timestamp="2025-08-26T23:28:00" time="1.535" tests="11">
+    <testcase classname="Goldfish Edge Cases and Error Handling Corrupted File Handling should handle corrupted JSON memory files gracefully" name="Goldfish Edge Cases and Error Handling Corrupted File Handling should handle corrupted JSON memory files gracefully" time="0.058">
+    </testcase>
+    <testcase classname="Goldfish Edge Cases and Error Handling Corrupted File Handling should handle missing workspace directories" name="Goldfish Edge Cases and Error Handling Corrupted File Handling should handle missing workspace directories" time="0.012">
+    </testcase>
+    <testcase classname="Goldfish Edge Cases and Error Handling Corrupted File Handling should handle filesystem permission errors" name="Goldfish Edge Cases and Error Handling Corrupted File Handling should handle filesystem permission errors" time="0.013">
+    </testcase>
+    <testcase classname="Goldfish Edge Cases and Error Handling Concurrent Operations should handle concurrent memory writes safely" name="Goldfish Edge Cases and Error Handling Concurrent Operations should handle concurrent memory writes safely" time="0.024">
+    </testcase>
+    <testcase classname="Goldfish Edge Cases and Error Handling Concurrent Operations should handle concurrent cleanup operations" name="Goldfish Edge Cases and Error Handling Concurrent Operations should handle concurrent cleanup operations" time="0.039">
+    </testcase>
+    <testcase classname="Goldfish Edge Cases and Error Handling Network Failures should handle ProjectKnowledge promotion failures gracefully" name="Goldfish Edge Cases and Error Handling Network Failures should handle ProjectKnowledge promotion failures gracefully" time="0.011">
+    </testcase>
+    <testcase classname="Goldfish Edge Cases and Error Handling Network Failures should handle AbortSignal timeout" name="Goldfish Edge Cases and Error Handling Network Failures should handle AbortSignal timeout" time="0">
+      <skipped/>
+    </testcase>
+    <testcase classname="Goldfish Edge Cases and Error Handling Memory Limit Edge Cases should handle workspace with exactly max memories" name="Goldfish Edge Cases and Error Handling Memory Limit Edge Cases should handle workspace with exactly max memories" time="0.022">
+    </testcase>
+    <testcase classname="Goldfish Edge Cases and Error Handling Memory Limit Edge Cases should handle empty workspace gracefully" name="Goldfish Edge Cases and Error Handling Memory Limit Edge Cases should handle empty workspace gracefully" time="0.013">
+    </testcase>
+    <testcase classname="Goldfish Edge Cases and Error Handling Time and Date Edge Cases should handle timezone differences correctly" name="Goldfish Edge Cases and Error Handling Time and Date Edge Cases should handle timezone differences correctly" time="0.011">
+    </testcase>
+    <testcase classname="Goldfish Edge Cases and Error Handling Time and Date Edge Cases should handle memory expiration at exact TTL boundary" name="Goldfish Edge Cases and Error Handling Time and Date Edge Cases should handle memory expiration at exact TTL boundary" time="0.012">
+    </testcase>
+  </testsuite>
+  <testsuite name="Storage Cross-Workspace Tests" errors="0" failures="0" skipped="0" timestamp="2025-08-26T23:28:00" time="1.691" tests="13">
+    <testcase classname="Storage Cross-Workspace Tests Workspace Directory Structure Tests should handle new directory structure correctly" name="Storage Cross-Workspace Tests Workspace Directory Structure Tests should handle new directory structure correctly" time="0.09">
+    </testcase>
+    <testcase classname="Storage Cross-Workspace Tests Workspace Directory Structure Tests should load memories from complex date directory structure" name="Storage Cross-Workspace Tests Workspace Directory Structure Tests should load memories from complex date directory structure" time="0.038">
+    </testcase>
+    <testcase classname="Storage Cross-Workspace Tests Cross-Workspace Loading Tests should load memories with correct workspace parameter handling" name="Storage Cross-Workspace Tests Cross-Workspace Loading Tests should load memories with correct workspace parameter handling" time="0.03">
+    </testcase>
+    <testcase classname="Storage Cross-Workspace Tests Cross-Workspace Loading Tests should handle default workspace parameter correctly" name="Storage Cross-Workspace Tests Cross-Workspace Loading Tests should handle default workspace parameter correctly" time="0.014">
+    </testcase>
+    <testcase classname="Storage Cross-Workspace Tests Cross-Workspace Loading Tests should handle non-existent workspaces gracefully" name="Storage Cross-Workspace Tests Cross-Workspace Loading Tests should handle non-existent workspaces gracefully" time="0.014">
+    </testcase>
+    <testcase classname="Storage Cross-Workspace Tests Memory Type and Structure Validation Tests should correctly load mixed memory types from todos and checkpoints" name="Storage Cross-Workspace Tests Memory Type and Structure Validation Tests should correctly load mixed memory types from todos and checkpoints" time="0.023">
+    </testcase>
+    <testcase classname="Storage Cross-Workspace Tests Memory Type and Structure Validation Tests should preserve timestamp and date information correctly" name="Storage Cross-Workspace Tests Memory Type and Structure Validation Tests should preserve timestamp and date information correctly" time="0.017">
+    </testcase>
+    <testcase classname="Storage Cross-Workspace Tests File System Integration Tests should handle concurrent access to workspace directories" name="Storage Cross-Workspace Tests File System Integration Tests should handle concurrent access to workspace directories" time="0.02">
+    </testcase>
+    <testcase classname="Storage Cross-Workspace Tests File System Integration Tests should handle corrupted files and skip them gracefully" name="Storage Cross-Workspace Tests File System Integration Tests should handle corrupted files and skip them gracefully" time="0.019">
+    </testcase>
+    <testcase classname="Storage Cross-Workspace Tests File System Integration Tests should handle workspace names with special characters" name="Storage Cross-Workspace Tests File System Integration Tests should handle workspace names with special characters" time="0.031">
+    </testcase>
+    <testcase classname="Storage Cross-Workspace Tests Workspace Detection and Path Resolution Tests should handle custom basePath parameter correctly" name="Storage Cross-Workspace Tests Workspace Detection and Path Resolution Tests should handle custom basePath parameter correctly" time="0.013">
+    </testcase>
+    <testcase classname="Storage Cross-Workspace Tests Workspace Detection and Path Resolution Tests should provide correct directory paths for workspaces" name="Storage Cross-Workspace Tests Workspace Detection and Path Resolution Tests should provide correct directory paths for workspaces" time="0.002">
+    </testcase>
+    <testcase classname="Storage Cross-Workspace Tests Workspace Detection and Path Resolution Tests should handle default workspace parameter in directory methods" name="Storage Cross-Workspace Tests Workspace Detection and Path Resolution Tests should handle default workspace parameter in directory methods" time="0.002">
+    </testcase>
+  </testsuite>
+  <testsuite name="Checkpoint Parameter Handling" errors="0" failures="0" skipped="0" timestamp="2025-08-26T23:28:00" time="1.912" tests="5">
+    <testcase classname="Checkpoint Parameter Handling should handle highlights as string parameter" name="Checkpoint Parameter Handling should handle highlights as string parameter" time="0.037">
+    </testcase>
+    <testcase classname="Checkpoint Parameter Handling should handle highlights as array parameter" name="Checkpoint Parameter Handling should handle highlights as array parameter" time="0.02">
+    </testcase>
+    <testcase classname="Checkpoint Parameter Handling should handle empty highlights array" name="Checkpoint Parameter Handling should handle empty highlights array" time="0.182">
+    </testcase>
+    <testcase classname="Checkpoint Parameter Handling should handle missing highlights parameter" name="Checkpoint Parameter Handling should handle missing highlights parameter" time="0.149">
+    </testcase>
+    <testcase classname="Checkpoint Parameter Handling should preserve checkpoint data in storage" name="Checkpoint Parameter Handling should preserve checkpoint data in storage" time="0.15">
+    </testcase>
+  </testsuite>
+  <testsuite name="Atomic File Operations Tests" errors="0" failures="0" skipped="0" timestamp="2025-08-26T23:28:00" time="1.99" tests="4">
+    <testcase classname="Atomic File Operations Tests PASSES: saveMemory now uses atomic write operations" name="Atomic File Operations Tests PASSES: saveMemory now uses atomic write operations" time="0.245">
+    </testcase>
+    <testcase classname="Atomic File Operations Tests FAILS: concurrent saveMemory operations can corrupt files" name="Atomic File Operations Tests FAILS: concurrent saveMemory operations can corrupt files" time="0.172">
+    </testcase>
+    <testcase classname="Atomic File Operations Tests FAILS: loadMemory does not handle partially written files" name="Atomic File Operations Tests FAILS: loadMemory does not handle partially written files" time="0.144">
+    </testcase>
+    <testcase classname="Atomic File Operations Tests FAILS: no file locking prevents concurrent access issues" name="Atomic File Operations Tests FAILS: no file locking prevents concurrent access issues" time="0.144">
+    </testcase>
+  </testsuite>
+  <testsuite name="Focused Security Vulnerability Tests" errors="0" failures="0" skipped="0" timestamp="2025-08-26T23:28:00" time="1.972" tests="4">
+    <testcase classname="Focused Security Vulnerability Tests execSync Usage Vulnerability PASSES: Storage now uses safe spawn instead of execSync" name="Focused Security Vulnerability Tests execSync Usage Vulnerability PASSES: Storage now uses safe spawn instead of execSync" time="0.21">
+    </testcase>
+    <testcase classname="Focused Security Vulnerability Tests Race Condition in ID Generation PASSES: generateChronologicalFilename now has improved collision resistance" name="Focused Security Vulnerability Tests Race Condition in ID Generation PASSES: generateChronologicalFilename now has improved collision resistance" time="0.157">
+    </testcase>
+    <testcase classname="Focused Security Vulnerability Tests Non-Atomic File Operations PASSES: saveMemory now uses atomic write operations" name="Focused Security Vulnerability Tests Non-Atomic File Operations PASSES: saveMemory now uses atomic write operations" time="0.146">
+    </testcase>
+    <testcase classname="Focused Security Vulnerability Tests File Path Security PASSES: workspace sanitization prevents path traversal" name="Focused Security Vulnerability Tests File Path Security PASSES: workspace sanitization prevents path traversal" time="0.125">
+    </testcase>
+  </testsuite>
+  <testsuite name="Cross-Workspace Functionality Tests" errors="0" failures="0" skipped="0" timestamp="2025-08-26T23:27:59" time="2.331" tests="15">
+    <testcase classname="Cross-Workspace Functionality Tests Storage.loadAllMemories Cross-Workspace Tests should load memories from different workspace parameters" name="Cross-Workspace Functionality Tests Storage.loadAllMemories Cross-Workspace Tests should load memories from different workspace parameters" time="0.144">
+    </testcase>
+    <testcase classname="Cross-Workspace Functionality Tests Storage.loadAllMemories Cross-Workspace Tests should properly load memories from date-organized checkpoint directories" name="Cross-Workspace Functionality Tests Storage.loadAllMemories Cross-Workspace Tests should properly load memories from date-organized checkpoint directories" time="0.132">
+    </testcase>
+    <testcase classname="Cross-Workspace Functionality Tests SearchEngine Cross-Workspace Discovery Tests should discover all valid workspaces when scope=&quot;all&quot;" name="Cross-Workspace Functionality Tests SearchEngine Cross-Workspace Discovery Tests should discover all valid workspaces when scope=&quot;all&quot;" time="0.105">
+    </testcase>
+    <testcase classname="Cross-Workspace Functionality Tests SearchEngine Cross-Workspace Discovery Tests should aggregate workspace directories correctly" name="Cross-Workspace Functionality Tests SearchEngine Cross-Workspace Discovery Tests should aggregate workspace directories correctly" time="0.078">
+    </testcase>
+    <testcase classname="Cross-Workspace Functionality Tests SearchEngine Cross-Workspace Discovery Tests should validate workspace directory structure requirements" name="Cross-Workspace Functionality Tests SearchEngine Cross-Workspace Discovery Tests should validate workspace directory structure requirements" time="0.071">
+    </testcase>
+    <testcase classname="Cross-Workspace Functionality Tests Timeline Cross-Workspace Integration Tests should show timeline data from ALL workspaces when scope=&quot;all&quot;" name="Cross-Workspace Functionality Tests Timeline Cross-Workspace Integration Tests should show timeline data from ALL workspaces when scope=&quot;all&quot;" time="0.064">
+    </testcase>
+    <testcase classname="Cross-Workspace Functionality Tests Timeline Cross-Workspace Integration Tests should handle cross-workspace timeline with date grouping" name="Cross-Workspace Functionality Tests Timeline Cross-Workspace Integration Tests should handle cross-workspace timeline with date grouping" time="0.06">
+    </testcase>
+    <testcase classname="Cross-Workspace Functionality Tests Search History Cross-Workspace Tests should search across all workspaces when scope=&quot;all&quot;" name="Cross-Workspace Functionality Tests Search History Cross-Workspace Tests should search across all workspaces when scope=&quot;all&quot;" time="0.059">
+    </testcase>
+    <testcase classname="Cross-Workspace Functionality Tests Recall Cross-Workspace Tests should recall memories from all workspaces when scope=&quot;all&quot;" name="Cross-Workspace Functionality Tests Recall Cross-Workspace Tests should recall memories from all workspaces when scope=&quot;all&quot;" time="0.051">
+    </testcase>
+    <testcase classname="Cross-Workspace Functionality Tests Recall Cross-Workspace Tests should handle workspace filtering in cross-workspace context" name="Cross-Workspace Functionality Tests Recall Cross-Workspace Tests should handle workspace filtering in cross-workspace context" time="0.064">
+    </testcase>
+    <testcase classname="Cross-Workspace Functionality Tests Edge Cases and Error Handling should handle empty workspaces gracefully" name="Cross-Workspace Functionality Tests Edge Cases and Error Handling should handle empty workspaces gracefully" time="0.051">
+    </testcase>
+    <testcase classname="Cross-Workspace Functionality Tests Edge Cases and Error Handling should handle missing directories gracefully" name="Cross-Workspace Functionality Tests Edge Cases and Error Handling should handle missing directories gracefully" time="0.041">
+    </testcase>
+    <testcase classname="Cross-Workspace Functionality Tests Edge Cases and Error Handling should handle corrupted JSON files gracefully" name="Cross-Workspace Functionality Tests Edge Cases and Error Handling should handle corrupted JSON files gracefully" time="0.03">
+    </testcase>
+    <testcase classname="Cross-Workspace Functionality Tests Edge Cases and Error Handling should handle Windows path separators correctly" name="Cross-Workspace Functionality Tests Edge Cases and Error Handling should handle Windows path separators correctly" time="0.037">
+    </testcase>
+    <testcase classname="Cross-Workspace Functionality Tests Performance and Resource Management should handle large numbers of workspaces efficiently" name="Cross-Workspace Functionality Tests Performance and Resource Management should handle large numbers of workspaces efficiently" time="0.136">
+    </testcase>
+  </testsuite>
+  <testsuite name="SearchEngine Cross-Workspace Tests" errors="0" failures="0" skipped="0" timestamp="2025-08-26T23:28:00" time="2.305" tests="15">
+    <testcase classname="SearchEngine Cross-Workspace Tests Workspace Discovery Logic Tests should discover all valid workspaces in basePath" name="SearchEngine Cross-Workspace Tests Workspace Discovery Logic Tests should discover all valid workspaces in basePath" time="0.168">
+    </testcase>
+    <testcase classname="SearchEngine Cross-Workspace Tests Workspace Discovery Logic Tests should validate workspace directory requirements correctly" name="SearchEngine Cross-Workspace Tests Workspace Discovery Logic Tests should validate workspace directory requirements correctly" time="0.076">
+    </testcase>
+    <testcase classname="SearchEngine Cross-Workspace Tests Workspace Discovery Logic Tests should handle workspace discovery with missing basePath gracefully" name="SearchEngine Cross-Workspace Tests Workspace Discovery Logic Tests should handle workspace discovery with missing basePath gracefully" time="0.039">
+    </testcase>
+    <testcase classname="SearchEngine Cross-Workspace Tests Workspace Discovery Logic Tests should handle workspace discovery with permission errors gracefully" name="SearchEngine Cross-Workspace Tests Workspace Discovery Logic Tests should handle workspace discovery with permission errors gracefully" time="0.048">
+    </testcase>
+    <testcase classname="SearchEngine Cross-Workspace Tests Cross-Workspace Memory Aggregation Tests should correctly aggregate memories from multiple workspaces" name="SearchEngine Cross-Workspace Tests Cross-Workspace Memory Aggregation Tests should correctly aggregate memories from multiple workspaces" time="0.048">
+    </testcase>
+    <testcase classname="SearchEngine Cross-Workspace Tests Cross-Workspace Memory Aggregation Tests should maintain memory ordering across workspaces" name="SearchEngine Cross-Workspace Tests Cross-Workspace Memory Aggregation Tests should maintain memory ordering across workspaces" time="0.048">
+    </testcase>
+    <testcase classname="SearchEngine Cross-Workspace Tests Cross-Workspace Memory Aggregation Tests should handle scope parameter correctly" name="SearchEngine Cross-Workspace Tests Cross-Workspace Memory Aggregation Tests should handle scope parameter correctly" time="0.046">
+    </testcase>
+    <testcase classname="SearchEngine Cross-Workspace Tests Cross-Workspace Memory Aggregation Tests should handle workspace parameter with cross-workspace scope" name="SearchEngine Cross-Workspace Tests Cross-Workspace Memory Aggregation Tests should handle workspace parameter with cross-workspace scope" time="0.036">
+    </testcase>
+    <testcase classname="SearchEngine Cross-Workspace Tests Search Filtering with Cross-Workspace Data should apply filters consistently across all workspaces" name="SearchEngine Cross-Workspace Tests Search Filtering with Cross-Workspace Data should apply filters consistently across all workspaces" time="0.051">
+    </testcase>
+    <testcase classname="SearchEngine Cross-Workspace Tests Search Filtering with Cross-Workspace Data should apply tag filtering across all workspaces" name="SearchEngine Cross-Workspace Tests Search Filtering with Cross-Workspace Data should apply tag filtering across all workspaces" time="0.054">
+    </testcase>
+    <testcase classname="SearchEngine Cross-Workspace Tests Search Filtering with Cross-Workspace Data should apply since filter across all workspaces" name="SearchEngine Cross-Workspace Tests Search Filtering with Cross-Workspace Data should apply since filter across all workspaces" time="0.048">
+    </testcase>
+    <testcase classname="SearchEngine Cross-Workspace Tests Search Query Processing with Cross-Workspace Data should search content across all workspaces with fuzzy matching" name="SearchEngine Cross-Workspace Tests Search Query Processing with Cross-Workspace Data should search content across all workspaces with fuzzy matching" time="0.036">
+    </testcase>
+    <testcase classname="SearchEngine Cross-Workspace Tests Search Query Processing with Cross-Workspace Data should handle empty query with cross-workspace scope" name="SearchEngine Cross-Workspace Tests Search Query Processing with Cross-Workspace Data should handle empty query with cross-workspace scope" time="0.029">
+    </testcase>
+    <testcase classname="SearchEngine Cross-Workspace Tests Error Handling and Edge Cases should handle mixed valid and invalid workspace directories" name="SearchEngine Cross-Workspace Tests Error Handling and Edge Cases should handle mixed valid and invalid workspace directories" time="0.032">
+    </testcase>
+    <testcase classname="SearchEngine Cross-Workspace Tests Error Handling and Edge Cases should handle large numbers of workspaces efficiently" name="SearchEngine Cross-Workspace Tests Error Handling and Edge Cases should handle large numbers of workspaces efficiently" time="0.21">
+    </testcase>
+  </testsuite>
+  <testsuite name="Timeline/Standup Cross-Workspace Tests" errors="0" failures="0" skipped="0" timestamp="2025-08-26T23:27:59" time="2.518" tests="9">
+    <testcase classname="Timeline/Standup Cross-Workspace Tests Timeline Cross-Workspace Core Functionality CRITICAL: timeline should show data from ALL workspaces for standup" name="Timeline/Standup Cross-Workspace Tests Timeline Cross-Workspace Core Functionality CRITICAL: timeline should show data from ALL workspaces for standup" time="0.28">
+    </testcase>
+    <testcase classname="Timeline/Standup Cross-Workspace Tests Timeline Cross-Workspace Core Functionality timeline should organize data by date correctly across workspaces" name="Timeline/Standup Cross-Workspace Tests Timeline Cross-Workspace Core Functionality timeline should organize data by date correctly across workspaces" time="0.146">
+    </testcase>
+    <testcase classname="Timeline/Standup Cross-Workspace Tests Timeline Cross-Workspace Core Functionality timeline should handle different time ranges correctly" name="Timeline/Standup Cross-Workspace Tests Timeline Cross-Workspace Core Functionality timeline should handle different time ranges correctly" time="0.153">
+    </testcase>
+    <testcase classname="Timeline/Standup Cross-Workspace Tests Standup Report Generation Tests should generate comprehensive standup report from timeline" name="Timeline/Standup Cross-Workspace Tests Standup Report Generation Tests should generate comprehensive standup report from timeline" time="0.126">
+    </testcase>
+    <testcase classname="Timeline/Standup Cross-Workspace Tests Standup Report Generation Tests should show progress across different projects in timeline" name="Timeline/Standup Cross-Workspace Tests Standup Report Generation Tests should show progress across different projects in timeline" time="0.094">
+    </testcase>
+    <testcase classname="Timeline/Standup Cross-Workspace Tests Current vs All Scope Comparison Tests should show clear difference between current and all scope" name="Timeline/Standup Cross-Workspace Tests Current vs All Scope Comparison Tests should show clear difference between current and all scope" time="0.105">
+    </testcase>
+    <testcase classname="Timeline/Standup Cross-Workspace Tests Timeline Error Handling and Edge Cases should handle empty workspaces gracefully in timeline" name="Timeline/Standup Cross-Workspace Tests Timeline Error Handling and Edge Cases should handle empty workspaces gracefully in timeline" time="0.112">
+    </testcase>
+    <testcase classname="Timeline/Standup Cross-Workspace Tests Timeline Error Handling and Edge Cases should handle timeline when no checkpoints exist" name="Timeline/Standup Cross-Workspace Tests Timeline Error Handling and Edge Cases should handle timeline when no checkpoints exist" time="0.08">
+    </testcase>
+    <testcase classname="Timeline/Standup Cross-Workspace Tests Timeline Error Handling and Edge Cases should handle timeline with future date range" name="Timeline/Standup Cross-Workspace Tests Timeline Error Handling and Edge Cases should handle timeline with future date range" time="0.082">
+    </testcase>
+  </testsuite>
+  <testsuite name="Goldfish Core Functionality" errors="0" failures="0" skipped="0" timestamp="2025-08-26T23:27:59" time="2.873" tests="7">
+    <testcase classname="Goldfish Core Functionality Workspace Detection should detect workspace from git root" name="Goldfish Core Functionality Workspace Detection should detect workspace from git root" time="0.658">
+    </testcase>
+    <testcase classname="Goldfish Core Functionality Workspace Detection should fallback to directory name when not in git repo" name="Goldfish Core Functionality Workspace Detection should fallback to directory name when not in git repo" time="0.002">
+    </testcase>
+    <testcase classname="Goldfish Core Functionality Chronological ID Generation should generate valid hex chronological IDs" name="Goldfish Core Functionality Chronological ID Generation should generate valid hex chronological IDs" time="0.004">
+    </testcase>
+    <testcase classname="Goldfish Core Functionality Chronological ID Generation should generate sortable hex chronological IDs" name="Goldfish Core Functionality Chronological ID Generation should generate sortable hex chronological IDs" time="1.024">
+    </testcase>
+    <testcase classname="Goldfish Core Functionality Memory Storage should create memory directories" name="Goldfish Core Functionality Memory Storage should create memory directories" time="0.009">
+    </testcase>
+    <testcase classname="Goldfish Core Functionality TTL and Expiration Logic should correctly calculate memory age" name="Goldfish Core Functionality TTL and Expiration Logic should correctly calculate memory age" time="0.001">
+    </testcase>
+    <testcase classname="Goldfish Core Functionality TTL and Expiration Logic should determine if memory should be promoted" name="Goldfish Core Functionality TTL and Expiration Logic should determine if memory should be promoted" time="0.001">
     </testcase>
   </testsuite>
 </testsuites>
