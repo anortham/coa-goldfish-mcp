@@ -1,6 +1,6 @@
 {
   "created_at": "2025-08-25T21:30:30.5038372-05:00",
-  "last_updated": "2025-08-25T22:07:31.9766817-05:00",
+  "last_updated": "2025-08-26T07:54:52.0506000-05:00",
   "session_verifications": {},
   "types": {
     "RememberArgs": {
@@ -145,6 +145,17 @@
       "properties": {},
       "file": "C:\\source\\COA Goldfish MCP\\src\\core\\storage.ts",
       "verified_at": "2025-08-25T21:39:21.1794924-05:00"
+    },
+    "CheckpointTool": {
+      "constructors": [],
+      "ttl_days": 7,
+      "file": "C:\\source\\COA Goldfish MCP\\src\\tools\\checkpoint.ts",
+      "mtime": 134001265833550089,
+      "extractedFrom": "source_file",
+      "methods": {},
+      "verified_at": "2025-08-26T07:54:52.0377449-05:00",
+      "kind": "class",
+      "properties": {}
     }
   },
   "version": 3

@@ -106,7 +106,12 @@ class GoldfishMCPServer {
             if (!args || typeof args !== 'object' || !args.description) {
               throw new Error('checkpoint requires description parameter');
             }
-            return await this.checkpointTool.createCheckpoint(args as unknown as CheckpointContent);
+            // Ensure highlights is an array if provided
+            const checkpointArgs = { ...args };
+            if (checkpointArgs.highlights !== undefined && typeof checkpointArgs.highlights === 'string') {
+              checkpointArgs.highlights = [checkpointArgs.highlights];
+            }
+            return await this.checkpointTool.createCheckpoint(checkpointArgs as unknown as CheckpointContent);
           
           case 'search_history':
             if (!args || typeof args !== 'object' || !args.query) {

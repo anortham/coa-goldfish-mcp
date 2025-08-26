@@ -21,7 +21,7 @@ export class CheckpointTool {
    */
   async createCheckpoint(args: {
     description: string;
-    highlights?: string[];
+    highlights?: string[] | string;
     activeFiles?: string[];
     gitBranch?: string;
     workContext?: string;
@@ -31,7 +31,7 @@ export class CheckpointTool {
   }) {
     const {
       description,
-      highlights = [],
+      highlights: rawHighlights = [],
       activeFiles = [],
       gitBranch,
       workContext,
@@ -39,6 +39,9 @@ export class CheckpointTool {
       workspace,
       global = false
     } = args;
+
+    // Ensure highlights is always an array
+    const highlights = Array.isArray(rawHighlights) ? rawHighlights : [rawHighlights];
 
     const targetWorkspace = global ? 'global' : (workspace || this.storage.getCurrentWorkspace());
 
