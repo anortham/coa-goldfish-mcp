@@ -430,6 +430,41 @@ export class Storage {
   }
 
   /**
+   * Discover all valid workspaces in basePath
+   * A workspace is valid if it has either checkpoints or todos directories
+   */
+  async discoverWorkspaces(): Promise<string[]> {
+    try {
+      const allDirs = await fs.readdir(this.basePath);
+      const validWorkspaces: string[] = [];
+      
+      for (const dir of allDirs) {
+        const checkpointsPath = join(this.basePath, dir, 'checkpoints');
+        const todosPath = join(this.basePath, dir, 'todos');
+        
+        const hasCheckpoints = await fs.pathExists(checkpointsPath);
+        const hasTodos = await fs.pathExists(todosPath);
+        
+        // Include workspace if it has checkpoints OR todos directory
+        if (hasCheckpoints || hasTodos) {
+          validWorkspaces.push(dir);
+        }
+      }
+      
+      return validWorkspaces;
+    } catch (error) {
+      return [];
+    }
+  }
+
+  /**
+   * Get the base path used by this storage instance
+   */
+  getBasePath(): string {
+    return this.basePath;
+  }
+
+  /**
    * Clean up expired memories
    */
   async cleanupExpiredMemories(): Promise<number> {

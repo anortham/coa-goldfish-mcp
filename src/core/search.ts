@@ -81,14 +81,10 @@ export class SearchEngine {
     if (scope === 'current') {
       workspacesToSearch = [workspace || this.storage.getCurrentWorkspace()];
     } else if (scope === 'all') {
-      // Get all workspaces
+      // Get all valid workspaces using Storage's discovery method
       try {
-        const { homedir } = await import('os');
-        const { join } = await import('path');
-        const basePath = join(homedir(), '.coa', 'goldfish');
-        const fs = await import('fs-extra');
-        workspacesToSearch = await fs.readdir(basePath);
-      } catch {
+        workspacesToSearch = await this.storage.discoverWorkspaces();
+      } catch (error) {
         workspacesToSearch = [this.storage.getCurrentWorkspace()];
       }
     }
