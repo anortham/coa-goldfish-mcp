@@ -13,7 +13,8 @@
  */
 export function getUTCDateKey(date: Date): string {
   try {
-    return date.toISOString().split('T')[0];
+    const parts = date.toISOString().split('T');
+    return parts[0] || 'unknown';
   } catch (error) {
     console.warn('Invalid date provided to getUTCDateKey:', date, error);
     return 'unknown';
