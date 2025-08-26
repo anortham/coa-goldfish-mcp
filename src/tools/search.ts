@@ -6,6 +6,7 @@ import { SearchEngine } from '../core/search.js';
 import { Storage } from '../core/storage.js';
 import { SessionManager } from '../core/session-manager.js';
 import { SearchHistoryResponse, RecallResponse, TimelineResponse } from '../types/responses.js';
+import { getLocalDateKey, formatDateName } from '../utils/date-utils.js';
 
 export class SearchTools {
   private searchEngine: SearchEngine;
@@ -171,9 +172,8 @@ export class SearchTools {
       const timelineMap = new Map<string, Map<string, { count: number; highlights: string[] }>>();
       
       for (const memory of memories) {
-        // Use local date for grouping to avoid timezone issues
-        const date = new Date(memory.timestamp.getFullYear(), memory.timestamp.getMonth(), memory.timestamp.getDate())
-          .toISOString().split('T')[0] || 'unknown';
+        // Extract local date key for user-intuitive timeline grouping
+        const date = getLocalDateKey(memory.timestamp);
         const ws = memory.workspace || 'unknown';
         
         if (!timelineMap.has(date)) {
@@ -206,8 +206,8 @@ export class SearchTools {
       
       for (const date of sortedDates) {
         const dayData = timelineMap.get(date)!;
-        const parsedDate = new Date(date + 'T12:00:00'); // Add time to avoid timezone issues
-        const dayName = this.formatDateName(parsedDate);
+        // Use centralized date formatting utility for consistent Today/Yesterday logic
+        const dayName = formatDateName(date);
         
         output.push(`\n**${dayName}** (${date})`);
         
@@ -423,24 +423,6 @@ export class SearchTools {
     }
   }
 
-  private formatDateName(date: Date): string {
-    const today = new Date();
-    const yesterday = new Date(today);
-    yesterday.setDate(yesterday.getDate() - 1);
-
-    // Normalize dates to local date strings for comparison
-    const dateStr = date.toDateString();
-    const todayStr = today.toDateString();
-    const yesterdayStr = yesterday.toDateString();
-
-    if (dateStr === todayStr) {
-      return 'Today';
-    } else if (dateStr === yesterdayStr) {
-      return 'Yesterday';
-    } else {
-      return date.toLocaleDateString('en-US', { weekday: 'long' });
-    }
-  }
 
   private getTypeIcon(type: string): string {
     const icons = {

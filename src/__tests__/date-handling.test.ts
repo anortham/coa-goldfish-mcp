@@ -97,9 +97,9 @@ describe('Date Handling', () => {
       // Should have data grouped by date
       expect(response.data.byDate).toBeDefined();
       
-      // Get today's date string for comparison
+      // Get today's date string using LOCAL date format (matches implementation)
       const today = new Date();
-      const todayStr = today.toISOString().split('T')[0];
+      const todayStr = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
       
       // Should have today's date in the data
       expect(response.data.byDate[todayStr]).toBeDefined();
@@ -132,8 +132,9 @@ describe('Date Handling', () => {
       // Should still be grouped under today
       expect(response.formattedOutput).toMatch(/\*\*Today\*\*/);
       
-      // Verify the midnight memory is included in today's count
-      const todayStr = new Date().toISOString().split('T')[0];
+      // Verify the midnight memory is included in today's count using LOCAL date format
+      const today = new Date();
+      const todayStr = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
       expect(response.data.byDate[todayStr]['test-workspace'].count).toBeGreaterThanOrEqual(1);
     });
   });
