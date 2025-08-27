@@ -6,6 +6,7 @@
 import { GoldfishMemory, CheckpointContent } from '../types/index.js';
 import { Storage } from '../core/storage.js';
 import { SessionManager } from '../core/session-manager.js';
+import { normalizeWorkspaceName } from '../core/workspace-utils.js';
 
 export class CheckpointTool {
   private storage: Storage;
@@ -43,7 +44,8 @@ export class CheckpointTool {
     // Ensure highlights is always an array
     const highlights = Array.isArray(rawHighlights) ? rawHighlights : [rawHighlights];
 
-    const targetWorkspace = global ? 'global' : (workspace || this.storage.getCurrentWorkspace());
+    const targetWorkspace = global ? 'global' : 
+      (workspace ? normalizeWorkspaceName(workspace) : this.storage.getCurrentWorkspace());
 
     // Auto-detect git info if not provided
     let detectedBranch = gitBranch;
@@ -168,7 +170,7 @@ export class CheckpointTool {
           },
           workspace: {
             type: 'string',
-            description: 'Store in specific workspace (default: current workspace)'
+            description: 'Workspace name or path (e.g., "coa-goldfish-mcp" or "C:\\source\\COA Goldfish MCP"). Will be normalized automatically. Defaults to current workspace.'
           },
           global: {
             type: 'boolean',

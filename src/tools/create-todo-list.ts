@@ -6,7 +6,7 @@
 
 import { Storage } from '../core/storage.js';
 import { TodoList, ToolResponse } from '../types/index.js';
-import { validateCommonArgs, createErrorResponse, createSuccessResponse } from '../core/workspace-utils.js';
+import { validateCommonArgs, createErrorResponse, createSuccessResponse, normalizeWorkspaceName } from '../core/workspace-utils.js';
 
 export interface CreateTodoListArgs {
   title: string;
@@ -16,6 +16,7 @@ export interface CreateTodoListArgs {
   metadata?: Record<string, any>; // NEW - Flexible data storage
   status?: 'active' | 'completed' | 'archived';  // NEW - Lifecycle status
   ttlHours?: number;             // NEW - Optional expiration
+  workspace?: string;            // NEW - Optional workspace (path or name)
 }
 
 
@@ -37,14 +38,17 @@ export async function handleCreateTodoList(storage: Storage, args: CreateTodoLis
     return createErrorResponse('Items array is required and must contain at least one item', 'create_todo_list');
   }
 
-  const { title, items, tags, description, metadata, status, ttlHours } = args;
+  const { title, items, tags, description, metadata, status, ttlHours, workspace } = args;
+  
+  // Determine target workspace - normalize if provided, otherwise use current
+  const targetWorkspace = workspace ? normalizeWorkspaceName(workspace) : storage.getCurrentWorkspace();
   
   const todoList: TodoList = {
     id: storage.generateChronologicalFilename().replace('.json', ''),
     title,
     description,              // NEW - Optional description
     metadata,                 // NEW - Optional metadata
-    workspace: storage.getCurrentWorkspace(),
+    workspace: targetWorkspace,
     items: items.map((task: string, index: number) => ({
       id: `${index + 1}`,
       task,
@@ -103,6 +107,10 @@ export function getCreateTodoListToolSchema() {
         ttlHours: {
           type: 'number',
           description: 'Time-to-live in hours for automatic expiration'
+        },
+        workspace: {
+          type: 'string',
+          description: 'Workspace name or path (e.g., "coa-goldfish-mcp" or "C:\\source\\COA Goldfish MCP"). Will be normalized automatically. Defaults to current workspace.'
         }
       },
       required: ['title', 'items']

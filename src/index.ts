@@ -36,6 +36,7 @@ import { SessionTools } from './tools/session.js';
 import { handleCreateTodoList, getCreateTodoListToolSchema } from './tools/create-todo-list.js';
 import { handleViewTodos, getViewTodosToolSchema } from './tools/view-todos.js';
 import { handleUpdateTodo, getUpdateTodoToolSchema } from './tools/update-todo.js';
+import { handleListWorkspaces, getListWorkspacesToolSchema } from './tools/list-workspaces.js';
 
 // Type imports
 import { CheckpointContent } from './types/index.js';
@@ -90,7 +91,8 @@ class GoldfishMCPServer {
           // Individual tools (TODO management only - Memory objects deprecated)
           getCreateTodoListToolSchema(),
           getViewTodosToolSchema(),
-          getUpdateTodoToolSchema()
+          getUpdateTodoToolSchema(),
+          getListWorkspacesToolSchema()
         ],
       };
     });
@@ -140,6 +142,9 @@ class GoldfishMCPServer {
           
           case 'update_todo':
             return await handleUpdateTodo(this.storage, args as any);
+          
+          case 'list_workspaces':
+            return await handleListWorkspaces(this.storage);
           
           default:
             throw new Error(`Unknown tool: ${name}`);

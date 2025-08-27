@@ -151,3 +151,23 @@ export function calculatePercentage(completed: number, total: number): number {
 export function truncateText(text: string, maxLength: number): string {
   return text.length > maxLength ? text.slice(0, maxLength) + '...' : text;
 }
+
+/**
+ * Normalize workspace name to match storage format
+ * Handles both paths and workspace names, converting to consistent format
+ */
+export function normalizeWorkspaceName(name: string): string {
+  // Handle absolute paths like "C:\source\COA Goldfish MCP" or "/home/user/project"
+  if (name.includes('/') || name.includes('\\')) {
+    // Remove trailing separators first, then split and get the last non-empty segment
+    const cleanPath = name.replace(/[/\\]+$/, '');
+    const segments = cleanPath.split(/[/\\]+/).filter(segment => segment.length > 0);
+    name = segments.pop() || name;
+  }
+  
+  return name
+    .toLowerCase()
+    .replace(/[^a-z0-9]/g, '-')
+    .replace(/-+/g, '-')
+    .replace(/^-+|-+$/g, '');
+}

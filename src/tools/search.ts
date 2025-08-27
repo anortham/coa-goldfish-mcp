@@ -490,7 +490,7 @@ export class SearchTools {
             },
             workspace: {
               type: 'string',
-              description: 'Specific workspace to search (optional)'
+              description: 'Workspace name or path (e.g., "coa-goldfish-mcp" or "C:\\source\\COA Goldfish MCP"). Will be normalized automatically.'
             },
             scope: {
               type: 'string',
@@ -517,7 +517,7 @@ export class SearchTools {
             },
             workspace: {
               type: 'string',
-              description: 'Specific workspace (optional)'
+              description: 'Workspace name or path (e.g., "coa-goldfish-mcp" or "C:\\source\\COA Goldfish MCP"). Will be normalized automatically.'
             },
             scope: {
               type: 'string',
@@ -543,7 +543,7 @@ export class SearchTools {
             },
             workspace: {
               type: 'string',
-              description: 'Specific workspace (optional)'
+              description: 'Workspace name or path (e.g., "coa-goldfish-mcp" or "C:\\source\\COA Goldfish MCP"). Will be normalized automatically.'
             },
             scope: {
               type: 'string',

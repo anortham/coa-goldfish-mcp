@@ -467,7 +467,7 @@ export class SessionTools {
             },
             workspace: {
               type: 'string',
-              description: 'Workspace to restore from (optional)'
+              description: 'Workspace name or path (e.g., "coa-goldfish-mcp" or "C:\\source\\COA Goldfish MCP"). Will be normalized automatically.'
             }
           }
         }
@@ -489,7 +489,7 @@ export class SessionTools {
             },
             workspace: {
               type: 'string',
-              description: 'Workspace to summarize (optional)'
+              description: 'Workspace name or path (e.g., "coa-goldfish-mcp" or "C:\\source\\COA Goldfish MCP"). Will be normalized automatically.'
             },
             since: {
               type: 'string',

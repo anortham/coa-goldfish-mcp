@@ -61,6 +61,7 @@ Just ask Goldfish naturally:
 - **"Summarize this week's progress"** - High-level summary of your achievements  
 - **"What are my pending tasks?"** - View active TODOs with status
 - **"Remember: Need to update the API docs"** - Store quick reminders
+- **"What workspaces do I have?"** - List all available workspaces for project switching
 
 ## 📦 Installation
 
@@ -161,6 +162,19 @@ Goldfish: Creates AI summary:
 - Files involved: AuthService.ts, api-routes.js, etc.
 ```
 
+### Workspace Management
+```
+You: "What workspaces do I have available?"
+Goldfish: Lists all workspaces:
+- coa-goldfish-mcp (current)
+- my-api-project  
+- mobile-app-redesign
+- client-portal
+
+You: "Show me work across all projects this week"
+Goldfish: Timeline showing cross-project activity with workspace context
+```
+
 ## 🔄 Integration with Other Tools
 
 ### ProjectKnowledge MCP
@@ -194,6 +208,16 @@ Every action is stored as an immutable event:
 
 ### Workspace-Aware Storage
 Each project gets its own memory space, but you can query across all projects for standups and reviews.
+
+#### Workspace Normalization
+Goldfish automatically normalizes workspace names to ensure consistent storage across different AI agents and tools:
+
+- **Full paths** → **Simple names**: `"C:\source\My Project"` → `"my-project"`
+- **Mixed formats supported**: Both `"coa-goldfish-mcp"` and `"C:\source\COA Goldfish MCP"` work
+- **Case-insensitive**: `"MyProject"` and `"myproject"` map to the same workspace
+- **Special character handling**: Spaces, backslashes, and other characters are normalized
+
+This ensures that external AI agents (like GPT models) can use any workspace format and still access the same data consistently.
 
 ### Smart Search & Timeline
 - **Fuzzy search** finds relevant work even with typos

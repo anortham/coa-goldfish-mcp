@@ -5,6 +5,7 @@
 import Fuse from 'fuse.js';
 import { GoldfishMemory, SearchOptions, SearchMode } from '../types/index.js';
 import { Storage } from './storage.js';
+import { normalizeWorkspaceName } from './workspace-utils.js';
 
 interface SearchConfig {
   threshold: number;
@@ -60,6 +61,8 @@ export class SearchEngine {
     };
   }
 
+  // Removed duplicate normalizeWorkspaceName - now using utility from workspace-utils
+
   /**
    * Search memories with configurable search modes
    */
@@ -75,11 +78,14 @@ export class SearchEngine {
       mode = 'normal'
     } = options;
 
+    // Normalize workspace name if provided
+    const normalizedWorkspace = workspace ? normalizeWorkspaceName(workspace) : undefined;
+
     // Determine which workspaces to search
     let workspacesToSearch: string[] = [];
     
     if (scope === 'current') {
-      workspacesToSearch = [workspace || this.storage.getCurrentWorkspace()];
+      workspacesToSearch = [normalizedWorkspace || this.storage.getCurrentWorkspace()];
     } else if (scope === 'all') {
       // Get all valid workspaces using Storage's discovery method
       try {

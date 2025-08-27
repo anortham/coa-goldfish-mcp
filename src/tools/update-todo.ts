@@ -6,7 +6,7 @@
 
 import { Storage } from '../core/storage.js';
 import { TodoList, TodoItem, ToolResponse } from '../types/index.js';
-import { validateCommonArgs, createErrorResponse, createSuccessResponse, getTaskStatusIcon, truncateText } from '../core/workspace-utils.js';
+import { validateCommonArgs, createErrorResponse, createSuccessResponse, getTaskStatusIcon, truncateText, normalizeWorkspaceName, loadTodoListsWithScope } from '../core/workspace-utils.js';
 
 export interface UpdateTodoArgs {
   listId?: string;
@@ -15,6 +15,7 @@ export interface UpdateTodoArgs {
   newTask?: string;
   priority?: 'low' | 'normal' | 'high';
   delete?: boolean;
+  workspace?: string;  // NEW - Optional workspace (path or name)
 }
 
 
@@ -28,9 +29,12 @@ export async function handleUpdateTodo(storage: Storage, args: UpdateTodoArgs): 
     return createErrorResponse(validation.error!, 'update_todo');
   }
 
-  const { listId, itemId, status, newTask, priority, delete: deleteItem } = args;
+  const { listId, itemId, status, newTask, priority, delete: deleteItem, workspace } = args;
 
-  const todoLists = await storage.loadAllTodoLists();
+  // Load TODO lists - if workspace specified, search across workspaces, otherwise current only
+  const todoLists = workspace ? 
+    await loadTodoListsWithScope(storage, 'all') : 
+    await storage.loadAllTodoLists();
   
   let todoList: TodoList | undefined;
   
@@ -174,6 +178,10 @@ export function getUpdateTodoToolSchema() {
         delete: {
           type: 'boolean',
           description: 'Delete the specified item (requires itemId)'
+        },
+        workspace: {
+          type: 'string',
+          description: 'Workspace name or path (e.g., "coa-goldfish-mcp" or "C:\\source\\COA Goldfish MCP"). Will be normalized automatically. If provided, searches across all workspaces.'
         }
       }
     }
