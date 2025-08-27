@@ -6,7 +6,8 @@
 import fs from 'fs-extra';
 import { join } from 'path';
 import { homedir } from 'os';
-import { spawn } from 'child_process';
+import { spawnSync } from 'child_process';
+import { randomBytes } from 'crypto';
 import { GoldfishMemory, TodoList } from '../types/index.js';
 
 export class Storage {
@@ -47,7 +48,7 @@ export class Storage {
    */
   private safeGitCommand(command: string, args: string[]): string | null {
     try {
-      const { spawnSync } = require('child_process');
+      // Using imported spawnSync instead of require()
       
       const result = spawnSync('git', [command, ...args], {
         encoding: 'utf8',
@@ -91,9 +92,8 @@ export class Storage {
     // Use crypto-grade randomness if available, fall back to Math.random
     let randomPart: string;
     try {
-      const crypto = require('crypto');
-      const randomBytes = crypto.randomBytes(2);
-      randomPart = randomBytes.toString('hex').toUpperCase();
+      const randomBytesBuffer = randomBytes(2);
+      randomPart = randomBytesBuffer.toString('hex').toUpperCase();
     } catch {
       // Fallback to Math.random with higher entropy
       const counter = Math.floor(Math.random() * 0xFFFF);
@@ -167,7 +167,7 @@ export class Storage {
    * Atomic write operation using write-then-rename pattern
    * This prevents partial writes that could corrupt data
    */
-  private async atomicWriteJson(filepath: string, data: any): Promise<void> {
+  private async atomicWriteJson(filepath: string, data: Record<string, unknown>): Promise<void> {
     const tempFilepath = filepath + '.tmp';
     
     try {
@@ -454,7 +454,7 @@ export class Storage {
       }
       
       return validWorkspaces;
-    } catch (error) {
+    } catch (_error) {
       return [];
     }
   }

@@ -84,7 +84,7 @@ export class SearchEngine {
       // Get all valid workspaces using Storage's discovery method
       try {
         workspacesToSearch = await this.storage.discoverWorkspaces();
-      } catch (error) {
+      } catch (_error) {
         workspacesToSearch = [this.storage.getCurrentWorkspace()];
       }
     }

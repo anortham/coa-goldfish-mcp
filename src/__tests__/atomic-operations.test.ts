@@ -8,6 +8,7 @@
 import { Storage } from '../core/storage.js';
 import fs from 'fs-extra';
 import { join } from 'path';
+import { tmpdir } from 'os';
 import { GoldfishMemory } from '../types/index.js';
 
 describe('Atomic File Operations Tests', () => {
@@ -16,7 +17,7 @@ describe('Atomic File Operations Tests', () => {
 
   beforeEach(async () => {
     storage = new Storage();
-    tempDir = join(require('os').tmpdir(), `goldfish-atomic-test-${Date.now()}`);
+    tempDir = join(tmpdir(), `goldfish-atomic-test-${Date.now()}`);
     await fs.ensureDir(tempDir);
   });
 

@@ -60,52 +60,8 @@ describe('Refactored Individual Tool Architecture', () => {
 
   describe('Individual Tool Function Signatures', () => {
     
-    describe.skip('Remember Tool - DEPRECATED', () => {
-      test('handleRemember should accept Storage and RememberArgs', async () => {
-        const args: RememberArgs = {
-          content: 'Test memory content'
-        };
-
-        const result = await handleRemember(mockStorage, args);
-        
-        expect(mockStorage.saveMemory).toHaveBeenCalledTimes(1);
-        expect(result.content).toHaveLength(1);
-        expect(result.content[0].type).toBe('text');
-        expect(result.content[0].text).toContain('💭 Remembered:');
-        expect(result.content[0].text).toContain('Test memory content');
-      });
-
-      test('getRememberToolSchema should return valid MCP tool schema', () => {
-        const schema = getRememberToolSchema();
-        
-        expect(schema.name).toBe('remember');
-        expect(schema.description).toContain('Store a quick thought');
-        expect(schema.inputSchema.type).toBe('object');
-        expect(schema.inputSchema.properties.content).toBeDefined();
-        expect(schema.inputSchema.required).toContain('content');
-      });
-
-      test('handleRemember should accept optional parameters', async () => {
-        const args: RememberArgs = {
-          content: 'Test with options',
-          type: 'context',
-          ttlHours: 48,
-          tags: ['important', 'test']
-        };
-
-        const result = await handleRemember(mockStorage, args);
-        
-        // Verify memory object passed to storage
-        expect(mockStorage.saveMemory).toHaveBeenCalledWith(
-          expect.objectContaining({
-            content: 'Test with options',
-            type: 'context',
-            ttlHours: 48,
-            tags: ['important', 'test']
-          })
-        );
-      });
-    });
+    // Remember Tool - REMOVED: Deprecated as part of storage redesign August 2025
+    // Memory objects replaced with TodoLists. See docs/storage-redesign-2025-08.md
 
     describe('Create TODO List Tool', () => {
       test('handleCreateTodoList should accept Storage and CreateTodoListArgs', async () => {
@@ -412,13 +368,7 @@ describe('Refactored Individual Tool Architecture', () => {
       const updateResult = await handleUpdateTodo(mockStorage, updateArgs);
       expect(updateResult.content[0].text).toContain('✅ Updated [1]');
       
-      // Step 4: Remember the progress
-      const rememberArgs: RememberArgs = {
-        content: 'Completed integration test workflow',
-        type: 'checkpoint'
-      };
-
-      // NOTE: handleRemember removed as part of storage redesign - using TodoList instead
+      // Step 4: Record progress using TodoList (replacement for deprecated remember tool)
       const todoResult = await handleCreateTodoList(mockStorage, {
         title: 'TDD Handoff Context',
         items: ['Test integration workflow']
@@ -813,18 +763,7 @@ describe('Refactored Individual Tool Architecture', () => {
     test('Tool functions should enforce correct parameter types', async () => {
       // This should be caught by TypeScript, but let's verify runtime behavior
       
-      // Remember tool with correct types
-      const validRememberArgs: RememberArgs = {
-        content: 'valid content',
-        type: 'general',
-        ttlHours: 24,
-        tags: ['test']
-      };
-      
-      expect(() => {
-        // This should not throw due to type constraints
-        const _: RememberArgs = validRememberArgs;
-      }).not.toThrow();
+      // Remember tool - REMOVED: Type checking now covered by TodoList types
 
       // CreateTodoList with correct types  
       const validCreateArgs: CreateTodoListArgs = {

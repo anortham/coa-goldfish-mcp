@@ -23,8 +23,9 @@ describe('Focused Security Vulnerability Tests', () => {
       // This test verifies that the security vulnerability has been fixed
       // We replaced execSync with safer spawn/spawnSync approach
       
-      const storageCode = require('fs').readFileSync(
-        require('path').join(__dirname, '../core/storage.ts'),
+      // Use a direct path instead of __dirname for Jest compatibility
+      const storageCode = fs.readFileSync(
+        join(process.cwd(), 'src/core/storage.ts'),
         'utf8'
       );
       
@@ -33,7 +34,7 @@ describe('Focused Security Vulnerability Tests', () => {
       expect(storageCode).not.toContain("execSync('git rev-parse --show-toplevel'");
       
       // Verify it now uses safer spawn approach
-      expect(storageCode).toContain("import { spawn } from 'child_process'");
+      expect(storageCode).toContain("import { spawnSync } from 'child_process'");
       expect(storageCode).toContain("spawnSync('git', [command, ...args]");
       expect(storageCode).toContain("safeGitCommand");
       expect(storageCode).toContain("timeout: 5000"); // Has timeout protection

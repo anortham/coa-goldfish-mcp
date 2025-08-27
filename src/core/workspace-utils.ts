@@ -6,6 +6,7 @@
  */
 
 import { Storage } from './storage.js';
+import { TodoList } from '../types/index.js';
 
 /**
  * Load TODO lists from either current workspace or all workspaces
@@ -13,22 +14,17 @@ import { Storage } from './storage.js';
 export async function loadTodoListsWithScope(
   storage: Storage, 
   scope: 'current' | 'all' = 'current'
-): Promise<any[]> {
+): Promise<TodoList[]> {
   if (scope === 'current') {
     return await storage.loadAllTodoLists();
   }
 
   // Load from all workspaces
   try {
-    const fs = await import('fs-extra');
-    
-    // Use the storage instance's basePath instead of hardcoding
-    const basePath = storage.getBasePath();
-    
     // Use the storage's discoverWorkspaces method for proper workspace detection
     const workspaces = await storage.discoverWorkspaces();
     
-    let allTodoLists: any[] = [];
+    let allTodoLists: TodoList[] = [];
     
     for (const workspace of workspaces) {
       try {

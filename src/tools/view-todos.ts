@@ -131,6 +131,8 @@ export async function handleViewTodos(storage: Storage, args: ViewTodosArgs): Pr
   // Show each list with summary
   for (let i = 0; i < sortedLists.length; i++) {
     const list = sortedLists[i];
+    if (!list) continue; // Skip null/undefined entries
+    
     const completedCount = list.items.filter((item: any) => item.status === 'done').length;
     const totalCount = list.items.length;
     const percentage = calculatePercentage(completedCount, totalCount);
