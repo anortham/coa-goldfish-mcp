@@ -52,7 +52,7 @@ class GoldfishMCPServer {
   constructor() {
     this.server = new Server(
       {
-        name: 'coa-goldfish-mcp',
+        name: '@coa/goldfish-mcp',
         version: '2.0.0',
       },
       {

@@ -68,10 +68,10 @@ Just ask Goldfish naturally:
 ### Method 1: NPM Global Install (Recommended)
 ```bash
 # Install globally
-npm install -g coa-goldfish-mcp
+npm install -g @coa/goldfish-mcp
 
 # Add to Claude Code (automatic)
-claude mcp add coa-goldfish-mcp
+claude mcp add @coa/goldfish-mcp
 ```
 
 ### Method 2: Local Development Setup
@@ -166,7 +166,7 @@ Goldfish: Creates AI summary:
 ```
 You: "What workspaces do I have available?"
 Goldfish: Lists all workspaces:
-- coa-goldfish-mcp (current)
+- @coa/goldfish-mcp (current)
 - my-api-project  
 - mobile-app-redesign
 - client-portal
@@ -213,7 +213,7 @@ Each project gets its own memory space, but you can query across all projects fo
 Goldfish automatically normalizes workspace names to ensure consistent storage across different AI agents and tools:
 
 - **Full paths** → **Simple names**: `"C:\source\My Project"` → `"my-project"`
-- **Mixed formats supported**: Both `"coa-goldfish-mcp"` and `"C:\source\COA Goldfish MCP"` work
+- **Mixed formats supported**: Both `"@coa/goldfish-mcp"` and `"C:\source\COA Goldfish MCP"` work
 - **Case-insensitive**: `"MyProject"` and `"myproject"` map to the same workspace
 - **Special character handling**: Spaces, backslashes, and other characters are normalized
 

@@ -148,7 +148,7 @@ stages:
               
               # Check if version exists in feed
               FEED_URL="https://pkgs.dev.azure.com/childrensal/_packaging/COA-NPM-Packages/npm/registry"
-              PACKAGE_NAME="coa-goldfish-mcp"
+              PACKAGE_NAME="@coa/goldfish-mcp"
               
               # Function to check if version exists
               check_version_exists() {

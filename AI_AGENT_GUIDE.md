@@ -11,7 +11,7 @@ This guide explains how AI agents should use Goldfish MCP tools proactively and 
 **All Goldfish tools now accept workspace parameters in any format:**
 
 - **Full paths**: `"C:\\source\\My Project"`, `"/Users/dev/my-project"`
-- **Simple names**: `"my-project"`, `"coa-goldfish-mcp"`
+- **Simple names**: `"my-project"`, `"@coa/goldfish-mcp"`
 - **Any case**: `"MyProject"`, `"MYPROJECT"`, `"myproject"`
 - **Mixed formats**: Tools automatically normalize to consistent storage
 
@@ -239,7 +239,7 @@ view_todos()
 
 ```typescript
 // When user asks about projects or workspaces
-list_workspaces()  // Returns: ["coa-goldfish-mcp", "my-api-project", "mobile-app"]
+list_workspaces()  // Returns: ["@coa/goldfish-mcp", "my-api-project", "mobile-app"]
 
 // Show work across specific workspace using any format
 timeline({ workspace: "my-api-project", since: "7d" })        // Simple name
