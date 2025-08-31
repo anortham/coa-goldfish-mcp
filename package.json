@@ -1,6 +1,6 @@
 {
   "name": "@coa/goldfish-mcp",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "Short-term memory MCP server for AI agents - simple JSON file storage with auto-expiration",
   "main": "dist/index.js",
   "type": "module",
