@@ -283,61 +283,7 @@ export class Storage {
     }
   }
 
-  /**
-   * Load all memories from session folders (new architecture)
-   */
-  async loadAllSessionMemories(workspace: string = this.currentWorkspace): Promise<GoldfishMemory[]> {
-    try {
-      const sessionsPath = join(this.basePath, 'memories', workspace, 'sessions');
-      const memories: GoldfishMemory[] = [];
-      
-      if (!await fs.pathExists(sessionsPath)) {
-        return [];
-      }
-      
-      // Get all date folders
-      const dateFolders = await fs.readdir(sessionsPath);
-      
-      for (const dateFolder of dateFolders) {
-        if (dateFolder === 'current') continue; // Skip symlink
-        
-        const datePath = join(sessionsPath, dateFolder);
-        const stat = await fs.stat(datePath).catch(() => null);
-        if (!stat || !stat.isDirectory()) continue;
-        
-        // Get all session folders for this date
-        const sessionFolders = await fs.readdir(datePath).catch(() => []);
-        
-        for (const sessionFolder of sessionFolders) {
-          const sessionPath = join(datePath, sessionFolder);
-          const sessionStat = await fs.stat(sessionPath).catch(() => null);
-          if (!sessionStat || !sessionStat.isDirectory()) continue;
-          
-          // Load all checkpoint files from this session
-          const files = await fs.readdir(sessionPath).catch(() => []);
-          const checkpointFiles = files.filter(f => f.startsWith('checkpoint-') && f.endsWith('.json'));
-          
-          for (const file of checkpointFiles) {
-            try {
-              const data = await fs.readJson(join(sessionPath, file));
-              memories.push({
-                ...data,
-                timestamp: new Date(data.timestamp)
-              });
-            } catch (_error) {
-              // Skip corrupted files
-              console.warn(`Skipping corrupted file: ${file}`);
-            }
-          }
-        }
-      }
-      
-      return memories.sort((a, b) => b.timestamp.getTime() - a.timestamp.getTime());
-    } catch (error) {
-      console.warn('Failed to load session memories:', error);
-      return [];
-    }
-  }
+  
 
   /**
    * Delete memory file (search across date directories)
@@ -474,17 +420,19 @@ export class Storage {
     const now = new Date();
     
     try {
-      const workspaces = await fs.readdir(join(this.basePath, 'memories'));
+      const workspaces = await this.discoverWorkspaces();
       
       for (const workspace of workspaces) {
         const memories = await this.loadAllMemories(workspace);
         
         for (const memory of memories) {
-          const expiryTime = new Date(memory.timestamp.getTime() + memory.ttlHours * 60 * 60 * 1000);
-          
-          if (now > expiryTime) {
-            await this.deleteMemory(memory.id, workspace);
-            cleanedCount++;
+          if (memory.ttlHours) {
+            const expiryTime = new Date(memory.timestamp.getTime() + memory.ttlHours * 60 * 60 * 1000);
+            
+            if (now > expiryTime) {
+              await this.deleteMemory(memory.id, workspace);
+              cleanedCount++;
+            }
           }
         }
       }

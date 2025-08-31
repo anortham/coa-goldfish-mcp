@@ -22,7 +22,7 @@ export class CheckpointTool {
    */
   async createCheckpoint(args: {
     description: string;
-    highlights?: string[] | string;
+    highlights?: string[];
     activeFiles?: string[];
     gitBranch?: string;
     workContext?: string;
@@ -32,7 +32,7 @@ export class CheckpointTool {
   }) {
     const {
       description,
-      highlights: rawHighlights = [],
+      highlights = [],
       activeFiles = [],
       gitBranch,
       workContext,
@@ -41,9 +41,6 @@ export class CheckpointTool {
       global = false
     } = args;
 
-    // Ensure highlights is always an array
-    const highlights = Array.isArray(rawHighlights) ? rawHighlights : [rawHighlights];
-
     const targetWorkspace = global ? 'global' : 
       (workspace ? normalizeWorkspaceName(workspace) : this.storage.getCurrentWorkspace());
 
@@ -51,11 +48,14 @@ export class CheckpointTool {
     let detectedBranch = gitBranch;
     if (!detectedBranch) {
       try {
-        const { execSync } = await import('child_process');
-        detectedBranch = execSync('git branch --show-current', { 
+        const { spawnSync } = await import('child_process');
+        const gitProcess = spawnSync('git', ['branch', '--show-current'], { 
           encoding: 'utf8', 
           stdio: 'pipe' 
-        }).trim();
+        });
+        if (gitProcess.status === 0) {
+          detectedBranch = gitProcess.stdout.trim();
+        }
       } catch {
         // Not in a git repo or git not available
       }

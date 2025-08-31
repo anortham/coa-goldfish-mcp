@@ -157,7 +157,7 @@ describe('Refactored Individual Tool Architecture', () => {
         const schema = getViewTodosToolSchema();
         
         expect(schema.name).toBe('view_todos');
-        expect(schema.description).toContain('View active TODO lists');
+        expect(schema.description).toContain('ALWAYS check TODO lists when starting work or after completing tasks');
         expect(schema.inputSchema.properties.scope).toBeDefined();
         expect(schema.inputSchema.properties.listId).toBeDefined();
       });

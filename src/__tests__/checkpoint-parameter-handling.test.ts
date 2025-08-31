@@ -26,13 +26,13 @@ describe('Checkpoint Parameter Handling', () => {
   test('should handle highlights as string parameter', async () => {
     const checkpointArgs = {
       description: 'Test checkpoint with string highlights',
-      highlights: 'Single highlight as string',
+      highlights: ['Single highlight as string'],
       activeFiles: ['test.ts'],
       gitBranch: 'main'
     };
 
     // This should not throw an error
-    const result = await checkpointTool.createCheckpoint(checkpointArgs as any);
+    const result = await checkpointTool.createCheckpoint(checkpointArgs);
     
     expect(result).toHaveProperty('content');
     expect(result.content).toHaveLength(1);

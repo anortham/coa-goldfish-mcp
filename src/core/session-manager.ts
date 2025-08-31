@@ -52,13 +52,7 @@ export class SessionManager {
     }
   }
 
-  /**
-   * No longer needed - checkpoints are standalone files
-   */
-  async updateCheckpointCount(): Promise<void> {
-    // This method is now a no-op since we don't track session manifests
-    // Checkpoints are standalone files in date directories
-  }
+  
 
   /**
    * Get all checkpoints for today
