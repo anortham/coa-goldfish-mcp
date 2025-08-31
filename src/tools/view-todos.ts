@@ -186,7 +186,7 @@ export async function handleViewTodos(storage: Storage, args: ViewTodosArgs): Pr
 export function getViewTodosToolSchema() {
   return {
     name: 'view_todos',
-    description: 'View active TODO lists and their progress. Perfect for checking current status.',
+    description: 'ALWAYS check TODO lists when starting work or after completing tasks. Shows progress and pending items. Use PROACTIVELY to stay organized and track work.',
     inputSchema: {
       type: 'object',
       properties: {

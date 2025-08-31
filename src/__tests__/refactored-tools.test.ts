@@ -241,6 +241,95 @@ describe('Refactored Individual Tool Architecture', () => {
         expect(schema.inputSchema.properties.delete).toBeDefined();
       });
 
+      test('handleUpdateTodo should support markAllComplete for bulk completion', async () => {
+        const mockTodoList: TodoList = {
+          id: 'bulk-complete-list',
+          title: 'Bulk Complete Test',
+          workspace: 'test-workspace',
+          items: [
+            { id: '1', task: 'First task', status: 'pending', createdAt: new Date() },
+            { id: '2', task: 'Second task', status: 'active', createdAt: new Date() },
+            { id: '3', task: 'Third task', status: 'done', createdAt: new Date() },
+            { id: '4', task: 'Fourth task', status: 'pending', createdAt: new Date() }
+          ],
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        };
+
+        mockStorage.loadAllTodoLists = jest.fn().mockResolvedValue([mockTodoList]);
+        
+        const args: UpdateTodoArgs = {
+          listId: 'bulk-complete-list',
+          markAllComplete: true
+        };
+
+        const result = await handleUpdateTodo(mockStorage, args);
+        
+        expect(result.content).toHaveLength(1);
+        expect(result.content[0].text).toContain('🎉 Marked all 3 pending tasks as complete');
+        expect(result.content[0].text).toContain('✅ TodoList "Bulk Complete Test" marked as completed');
+        
+        // Verify that saveTodoList was called with all items marked as done
+        const savedList = mockStorage.saveTodoList.mock.calls[0][0] as TodoList;
+        expect(savedList.items.every(item => item.status === 'done')).toBe(true);
+        expect(savedList.status).toBe('completed');
+        expect(savedList.completedAt).toBeDefined();
+      });
+
+      test('handleUpdateTodo markAllComplete should handle already completed lists', async () => {
+        const mockTodoList: TodoList = {
+          id: 'already-complete-list',
+          title: 'Already Complete Test',
+          workspace: 'test-workspace',
+          items: [
+            { id: '1', task: 'Done task 1', status: 'done', createdAt: new Date() },
+            { id: '2', task: 'Done task 2', status: 'done', createdAt: new Date() }
+          ],
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        };
+
+        mockStorage.loadAllTodoLists = jest.fn().mockResolvedValue([mockTodoList]);
+        
+        const args: UpdateTodoArgs = {
+          listId: 'already-complete-list',
+          markAllComplete: true
+        };
+
+        const result = await handleUpdateTodo(mockStorage, args);
+        
+        expect(result.content).toHaveLength(1);
+        expect(result.content[0].text).toContain('✅ All tasks in "Already Complete Test" are already complete');
+        
+        // Verify saveTodoList was NOT called since nothing changed
+        expect(mockStorage.saveTodoList).not.toHaveBeenCalled();
+      });
+
+      test('handleUpdateTodo markAllComplete should work without explicit listId', async () => {
+        const recentList: TodoList = {
+          id: 'recent-list',
+          title: 'Most Recent List',
+          workspace: 'test-workspace',
+          items: [
+            { id: '1', task: 'Task to complete', status: 'pending', createdAt: new Date() }
+          ],
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        };
+
+        mockStorage.loadAllTodoLists = jest.fn().mockResolvedValue([recentList]);
+        
+        const args: UpdateTodoArgs = {
+          markAllComplete: true
+        };
+
+        const result = await handleUpdateTodo(mockStorage, args);
+        
+        expect(result.content).toHaveLength(1);
+        expect(result.content[0].text).toContain('🎉 Marked all 1 pending task as complete');
+        expect(result.content[0].text).toContain('"Most Recent List"');
+      });
+
       test('handleUpdateTodo should support task description updates', async () => {
         const mockTodoList: TodoList = {
           id: 'desc-update-list',

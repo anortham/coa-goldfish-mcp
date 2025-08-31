@@ -476,7 +476,7 @@ export class SearchTools {
     return [
       {
         name: 'search_history',
-        description: 'Search work history with fuzzy matching. Perfect for "Did we fix the auth bug last week?" type questions. Searches across checkpoints and finds relevant work.',
+        description: 'PROACTIVELY search before implementing features to find related past work. ALWAYS use when user mentions past work or asks about previous solutions. Essential for avoiding duplicate effort.',
         inputSchema: {
           type: 'object',
           properties: {
@@ -507,7 +507,7 @@ export class SearchTools {
       },
       {
         name: 'timeline',
-        description: 'Show timeline of work sessions. Perfect for standups and understanding recent activity across projects. Shows checkpoints grouped by date and workspace.',
+        description: 'Use DAILY to review work progress. ALWAYS run when user asks "what did I do" or mentions reporting. Essential for tracking multi-day projects and standup preparation.',
         inputSchema: {
           type: 'object',
           properties: {
@@ -529,7 +529,7 @@ export class SearchTools {
       },
       {
         name: 'recall',
-        description: 'Enhanced memory recall with fuzzy search support. Can search or just show recent memories. Perfect for "what did I work on yesterday?" questions.',
+        description: 'IMMEDIATELY recall context when returning to work or after breaks. Use WITHOUT query to see recent activity. Essential after /clear or session restarts. ALWAYS use to restore working memory.',
         inputSchema: {
           type: 'object',
           properties: {

@@ -16,6 +16,7 @@ export interface UpdateTodoArgs {
   priority?: 'low' | 'normal' | 'high';
   delete?: boolean;
   workspace?: string;  // NEW - Optional workspace (path or name)
+  markAllComplete?: boolean;  // NEW - Mark all tasks in the list as complete
 }
 
 
@@ -29,7 +30,7 @@ export async function handleUpdateTodo(storage: Storage, args: UpdateTodoArgs): 
     return createErrorResponse(validation.error!, 'update_todo');
   }
 
-  const { listId, itemId, status, newTask, priority, delete: deleteItem, workspace } = args;
+  const { listId, itemId, status, newTask, priority, delete: deleteItem, workspace, markAllComplete } = args;
 
   // Load TODO lists - if workspace specified, search across workspaces, otherwise current only
   const todoLists = workspace ? 
@@ -54,6 +55,39 @@ export async function handleUpdateTodo(storage: Storage, args: UpdateTodoArgs): 
     if (!todoList) {
       return createErrorResponse(`❓ No TODO lists found. Create one first with create_todo_list.`);
     }
+  }
+
+  // Handle markAllComplete operation
+  if (markAllComplete) {
+    if (!todoList) {
+      return createErrorResponse(`❓ No TODO list found to mark complete`);
+    }
+
+    // Mark all items as done
+    const pendingCount = todoList.items.filter((item: TodoItem) => item.status !== 'done').length;
+    
+    if (pendingCount === 0) {
+      return createSuccessResponse(`✅ All tasks in "${todoList.title}" are already complete`);
+    }
+
+    todoList.items.forEach((item: TodoItem) => {
+      if (item.status !== 'done') {
+        item.status = 'done';
+        item.updatedAt = new Date();
+      }
+    });
+
+    // Mark the list itself as completed
+    todoList.status = 'completed';
+    todoList.completedAt = new Date();
+    todoList.updatedAt = new Date();
+    
+    await storage.saveTodoList(todoList);
+
+    return createSuccessResponse(
+      `🎉 Marked all ${pendingCount} pending task${pendingCount !== 1 ? 's' : ''} as complete in "${todoList.title}"\n` +
+      `✅ TodoList "${todoList.title}" marked as completed`
+    );
   }
 
   if (itemId) {
@@ -149,7 +183,7 @@ export async function handleUpdateTodo(storage: Storage, args: UpdateTodoArgs): 
 export function getUpdateTodoToolSchema() {
   return {
     name: 'update_todo',
-    description: 'Update task status immediately as you complete work. ALWAYS mark tasks done when finished, add new tasks as discovered.',
+    description: 'Update task status immediately as you complete work. ALWAYS mark tasks done when finished, add new tasks as discovered. Use markAllComplete to bulk-complete all tasks in a list.',
     inputSchema: {
       type: 'object',
       properties: {
@@ -182,6 +216,10 @@ export function getUpdateTodoToolSchema() {
         workspace: {
           type: 'string',
           description: 'Workspace name or path (e.g., "coa-goldfish-mcp" or "C:\\source\\COA Goldfish MCP"). Will be normalized automatically. If provided, searches across all workspaces.'
+        },
+        markAllComplete: {
+          type: 'boolean',
+          description: 'Mark all tasks in the TODO list as complete (requires listId)'
         }
       }
     }

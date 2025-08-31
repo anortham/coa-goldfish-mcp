@@ -452,7 +452,7 @@ export class SessionTools {
     return [
       {
         name: 'restore_session',
-        description: 'Restore session state after /clear or break. Default shows last checkpoint + highlights. Use depth: "full" for complete session replay when returning after days away.',
+        description: 'IMMEDIATELY restore context after any break or /clear. ALWAYS use at conversation start if continuing previous work. Critical for continuity. Use depth: "full" when returning after days away.',
         inputSchema: {
           type: 'object',
           properties: {
@@ -474,7 +474,7 @@ export class SessionTools {
       },
       {
         name: 'summarize_session',
-        description: 'Create AI-condensed summary of session or recent work. Perfect for "what did I accomplish today?" or understanding long sessions.',
+        description: 'ALWAYS summarize before ending work sessions. Use when user says "done for today" or asks about accomplishments. Creates shareable progress reports. Essential for handoffs and documentation.',
         inputSchema: {
           type: 'object',
           properties: {
