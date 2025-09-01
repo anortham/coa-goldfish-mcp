@@ -6,7 +6,7 @@
 
 import { Storage } from '../core/storage.js';
 import { TodoList, TodoItem, ToolResponse } from '../types/index.js';
-import { validateCommonArgs, createErrorResponse, createSuccessResponse, getTaskStatusIcon, truncateText, normalizeWorkspaceName, loadTodoListsWithScope } from '../core/workspace-utils.js';
+import { validateCommonArgs, createErrorResponse, createSuccessResponse, getTaskStatusIcon, truncateText, normalizeWorkspaceName, loadTodoListsWithScope, resolveSpecialTodoListId } from '../core/workspace-utils.js';
 
 export interface UpdateTodoArgs {
   listId?: string;
@@ -37,22 +37,18 @@ export async function handleUpdateTodo(storage: Storage, args: UpdateTodoArgs): 
     await loadTodoListsWithScope(storage, 'all') : 
     await storage.loadAllTodoLists();
   
-  let todoList: TodoList | undefined;
+  // Use the new resolver that handles "latest" and other special keywords
+  const todoList = resolveSpecialTodoListId(listId, todoLists);
   
-  if (listId) {
-    // Find by explicit list ID
-    todoList = todoLists.find(list => list.id === listId || list.id.endsWith(listId));
-    
-    if (!todoList) {
+  if (!todoList) {
+    if (listId) {
+      // Provide helpful error message for special keywords
+      const isSpecialKeyword = ['latest', 'recent', 'last', 'active', 'current'].includes(listId.toLowerCase().trim());
+      if (isSpecialKeyword) {
+        return createErrorResponse(`❓ No ${listId} TODO list found. Create one first with create_todo_list.`);
+      }
       return createErrorResponse(`❓ TODO list "${listId}" not found`);
-    }
-  } else {
-    // No listId provided - use most recently updated list
-    todoList = todoLists.sort((a, b) => 
-      new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime()
-    )[0];
-    
-    if (!todoList) {
+    } else {
       return createErrorResponse(`❓ No TODO lists found. Create one first with create_todo_list.`);
     }
   }

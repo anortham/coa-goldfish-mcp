@@ -32,6 +32,8 @@ import { SessionManager } from './core/session-manager.js';
 import { CheckpointTool } from './tools/checkpoint.js';
 import { SearchTools } from './tools/search.js';
 import { SessionTools } from './tools/session.js';
+import { initializeVSCodeDisplay } from './vscode-bridge/simple-loader.js';
+import { GoldfishDisplayHandler } from './vscode-bridge/display-handler.js';
 // Removed: handleRemember, getRememberToolSchema - Memory objects deprecated in favor of TodoLists
 import { handleCreateTodoList, getCreateTodoListToolSchema } from './tools/create-todo-list.js';
 import { handleViewTodos, getViewTodosToolSchema } from './tools/view-todos.js';
@@ -48,6 +50,7 @@ class GoldfishMCPServer {
   private checkpointTool: CheckpointTool;
   private searchTools: SearchTools;
   private sessionTools: SessionTools;
+  private displayHandler: GoldfishDisplayHandler | null = null;
 
   constructor() {
     this.server = new Server(
@@ -66,12 +69,13 @@ class GoldfishMCPServer {
     this.storage = new Storage();
     this.sessionManager = new SessionManager(this.storage.getCurrentWorkspace(), this.storage);
     
-    // Initialize tool modules
+    // Initialize tool modules (will be updated after VS Code display handler is initialized)
     this.checkpointTool = new CheckpointTool(this.storage, this.sessionManager);
-    this.searchTools = new SearchTools(this.storage, this.sessionManager);
+    this.searchTools = new SearchTools(this.storage, this.sessionManager); // Will be updated with display handler
     this.sessionTools = new SessionTools(this.storage, this.sessionManager);
 
     this.setupHandlers();
+    this.initializeOptionalFeatures();
   }
 
   private setupHandlers() {
@@ -160,12 +164,43 @@ class GoldfishMCPServer {
 
 
   /**
+   * Initialize optional features like VS Code bridge
+   */
+  private async initializeOptionalFeatures() {
+    try {
+      // Try to initialize VS Code display handler
+      this.displayHandler = await initializeVSCodeDisplay();
+      
+      // Reinitialize SearchTools with display handler
+      this.searchTools = new SearchTools(this.storage, this.sessionManager, this.displayHandler);
+      
+      if (this.displayHandler.isAvailable) {
+        console.error('✨ VS Code bridge visualization enabled');
+      } else {
+        console.error('ℹ️ VS Code bridge not connected (optional feature)');
+      }
+    } catch (error) {
+      console.error('⚠️ Failed to initialize optional features:', error);
+      // Continue without optional features
+      this.displayHandler = null;
+      // SearchTools already initialized without display handler
+    }
+  }
+
+  /**
    * Start the server
    */
   async start() {
     const transport = new StdioServerTransport();
     await this.server.connect(transport);
     console.error('COA Goldfish MCP Server 2.0 started');
+    
+    // Log feature status
+    if (this.displayHandler?.isAvailable) {
+      console.error('  ✅ VS Code visualizations: Available');
+    } else {
+      console.error('  ⚪ VS Code visualizations: Not connected');
+    }
   }
 }
 

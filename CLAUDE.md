@@ -34,10 +34,10 @@ return {
 ### Essential Tools
 - `remember()` - Store temporary context with tags
 - `create_todo_list()` - Structure tasks
-- `update_todo()` - Track progress
+- `update_todo()` - Track progress (supports "latest" keyword for listId)
 - `checkpoint()` - Save session state
 - `recall()` - Retrieve memories with tag filtering
-- `view_todos()` - See active tasks
+- `view_todos()` - See active tasks (supports "latest" keyword for listId)
 - `timeline()` - Cross-workspace reporting
 - `search_history()` - Fuzzy search across checkpoints
 
@@ -46,6 +46,26 @@ return {
 - **todo**: Task tracking  
 - **checkpoint**: Session snapshots
 - **context**: Conversation context (used for agent handoffs)
+
+### TODO List Special Keywords (NEW)
+AI agents can use intuitive keywords instead of exact IDs when working with TODO lists:
+
+**Supported Keywords for `listId` parameter:**
+- `"latest"` / `"recent"` / `"last"` - Most recently updated TODO list
+- `"active"` / `"current"` - Most recent list with pending tasks
+- Partial ID match - Use suffix of actual ID (e.g., "5228" matches "20250831-171240-122-05E0-5228")
+
+**Example Usage:**
+```javascript
+// Instead of finding exact ID
+update_todo({ listId: "latest", itemId: "1", status: "done" })
+view_todos({ listId: "latest" })
+
+// Get the active list with pending work
+update_todo({ listId: "active", newTask: "New urgent task" })
+```
+
+This feature reduces "TODO list not found" errors when AI agents make reasonable assumptions about which list to use.
 
 ## Agent Handoff System (Updated)
 

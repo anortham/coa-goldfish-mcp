@@ -7,16 +7,19 @@ import { Storage } from '../core/storage.js';
 import { SessionManager } from '../core/session-manager.js';
 import { SearchHistoryResponse, RecallResponse, TimelineResponse } from '../types/responses.js';
 import { getLocalDateKey, formatDateName } from '../utils/date-utils.js';
+import { GoldfishDisplayHandler } from '../vscode-bridge/display-handler.js';
 
 export class SearchTools {
   private searchEngine: SearchEngine;
   private storage: Storage;
   private sessionManager: SessionManager;
+  private displayHandler?: GoldfishDisplayHandler;
 
-  constructor(storage: Storage, sessionManager: SessionManager) {
+  constructor(storage: Storage, sessionManager: SessionManager, displayHandler?: GoldfishDisplayHandler) {
     this.storage = storage;
     this.sessionManager = sessionManager;
     this.searchEngine = new SearchEngine(storage);
+    this.displayHandler = displayHandler;
   }
 
   /**
@@ -245,6 +248,16 @@ export class SearchTools {
               output.push(`     ... and ${uniqueHighlights.length - 3} more`);
             }
           }
+        }
+      }
+
+      // Send to VS Code if available
+      if (this.displayHandler?.isAvailable) {
+        try {
+          await this.displayHandler.displayTimeline(memories, `Work Timeline (${since})`);
+          console.error('📊 Timeline sent to VS Code');
+        } catch (error) {
+          console.error('⚠️ Failed to send timeline to VS Code:', error);
         }
       }
 

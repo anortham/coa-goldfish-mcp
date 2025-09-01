@@ -15,7 +15,8 @@ import {
   createStructuredResponse,
   getTaskStatusIcon,
   calculatePercentage,
-  truncateText
+  truncateText,
+  resolveSpecialTodoListId
 } from '../core/workspace-utils.js';
 
 export interface ViewTodosArgs {
@@ -44,9 +45,15 @@ export async function handleViewTodos(storage: Storage, args: ViewTodosArgs): Pr
     // View specific list 
     const todoLists = await loadTodoListsWithScope(storage, scope);
     
-    const targetList = todoLists.find(list => list.id === listId);
+    // Use the resolver to handle "latest" and other special keywords
+    const targetList = resolveSpecialTodoListId(listId, todoLists);
     
     if (!targetList) {
+      // Provide helpful error message for special keywords
+      const isSpecialKeyword = ['latest', 'recent', 'last', 'active', 'current'].includes(listId.toLowerCase().trim());
+      if (isSpecialKeyword) {
+        return createErrorResponse(`❓ No ${listId} TODO list found`);
+      }
       return createErrorResponse(`❓ TODO list "${listId}" not found`);
     }
     

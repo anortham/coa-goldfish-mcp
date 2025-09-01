@@ -171,3 +171,48 @@ export function normalizeWorkspaceName(name: string): string {
     .replace(/-+/g, '-')
     .replace(/^-+|-+$/g, '');
 }
+
+/**
+ * Resolve special TODO list identifiers like "latest" to actual list IDs
+ * Makes AI agents more intuitive by supporting semantic keywords
+ * 
+ * @param listId The list ID or special keyword (e.g., "latest")
+ * @param todoLists Available TODO lists to search through
+ * @returns The resolved TODO list or undefined if not found
+ */
+export function resolveSpecialTodoListId(
+  listId: string | undefined,
+  todoLists: TodoList[]
+): TodoList | undefined {
+  if (!listId) {
+    // No ID provided - return most recently updated list
+    return todoLists.sort((a, b) => 
+      new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime()
+    )[0];
+  }
+
+  // Check for special keywords
+  const normalizedId = listId.toLowerCase().trim();
+  
+  if (normalizedId === 'latest' || normalizedId === 'recent' || normalizedId === 'last') {
+    // Return the most recently updated list
+    return todoLists.sort((a, b) => 
+      new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime()
+    )[0];
+  }
+  
+  if (normalizedId === 'active' || normalizedId === 'current') {
+    // Return the most recent list with pending tasks
+    const activeLists = todoLists.filter(list => 
+      list.items.some(item => item.status !== 'done')
+    );
+    return activeLists.sort((a, b) => 
+      new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime()
+    )[0];
+  }
+  
+  // Not a special keyword - try to find by exact ID or partial match
+  return todoLists.find(list => 
+    list.id === listId || list.id.endsWith(listId)
+  );
+}
