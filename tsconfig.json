@@ -18,8 +18,7 @@
     "isolatedModules": true,
     "noEmit": false,
     "incremental": true,
-    "noUncheckedIndexedAccess": true,
-    "types": ["node"]
+    "noUncheckedIndexedAccess": true
   },
   "include": [
     "src/**/*"
