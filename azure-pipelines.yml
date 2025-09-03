@@ -30,19 +30,20 @@ stages:
               versionSpec: "20.x"
             displayName: "Install Node.js"
 
-          - script: |
+          - powershell: |
               # Use public registry for installing dependencies
-              echo "registry=https://registry.npmjs.org/" > .npmrc.temp
-              if [ -f .npmrc ]; then
-                mv .npmrc .npmrc.azure
-              fi
-              mv .npmrc.temp .npmrc
+              Write-Host "Creating temporary .npmrc for public registry"
+              "registry=https://registry.npmjs.org/" | Out-File -FilePath .npmrc.temp -Encoding utf8
+              if (Test-Path .npmrc) {
+                Move-Item .npmrc .npmrc.azure
+              }
+              Move-Item .npmrc.temp .npmrc
               npm ci
               # Restore Azure npmrc
-              rm .npmrc
-              if [ -f .npmrc.azure ]; then
-                mv .npmrc.azure .npmrc
-              fi
+              Remove-Item .npmrc
+              if (Test-Path .npmrc.azure) {
+                Move-Item .npmrc.azure .npmrc
+              }
             displayName: "Install dependencies"
 
           - script: |
@@ -117,19 +118,20 @@ stages:
               versionSpec: "20.x"
             displayName: "Install Node.js"
 
-          - script: |
+          - powershell: |
               # Use public registry for installing dependencies
-              echo "registry=https://registry.npmjs.org/" > .npmrc.temp
-              if [ -f .npmrc ]; then
-                mv .npmrc .npmrc.azure
-              fi
-              mv .npmrc.temp .npmrc
+              Write-Host "Creating temporary .npmrc for public registry"
+              "registry=https://registry.npmjs.org/" | Out-File -FilePath .npmrc.temp -Encoding utf8
+              if (Test-Path .npmrc) {
+                Move-Item .npmrc .npmrc.azure
+              }
+              Move-Item .npmrc.temp .npmrc
               npm ci
               # Restore Azure npmrc
-              rm .npmrc
-              if [ -f .npmrc.azure ]; then
-                mv .npmrc.azure .npmrc
-              fi
+              Remove-Item .npmrc
+              if (Test-Path .npmrc.azure) {
+                Move-Item .npmrc.azure .npmrc
+              }
             displayName: "Install dependencies"
 
           - script: |
