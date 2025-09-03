@@ -18,9 +18,7 @@
     "isolatedModules": true,
     "noEmit": false,
     "incremental": true,
-    "noUncheckedIndexedAccess": true,
-    "types": ["node"],
-    "typeRoots": ["./node_modules/@types"]
+    "noUncheckedIndexedAccess": true
   },
   "include": [
     "src/**/*"
