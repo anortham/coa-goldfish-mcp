@@ -2,10 +2,16 @@
  * Search functionality using Fuse.js for fuzzy matching
  */
 
-import Fuse from 'fuse.js';
+import Fuse, { IFuseOptions, FuseResult } from 'fuse.js';
 import { GoldfishMemory, SearchOptions, SearchMode } from '../types/index.js';
 import { Storage } from './storage.js';
 import { normalizeWorkspaceName } from './workspace-utils.js';
+
+interface SearchableMemory extends Omit<GoldfishMemory, 'content' | 'tags'> {
+  content: string;
+  highlights: string;
+  tags: string;
+}
 
 interface SearchConfig {
   threshold: number;
@@ -138,7 +144,7 @@ export class SearchEngine {
     const config = this.searchConfigs[mode];
     
     // Set up Fuse.js with mode-specific configuration
-    const fuseOptions = {
+    const fuseOptions: IFuseOptions<SearchableMemory> = {
       keys: [
         { name: 'content', weight: config.weights.content },
         { name: 'highlights', weight: config.weights.highlights },
@@ -190,7 +196,7 @@ export class SearchEngine {
 
     // Extract memories from Fuse results and restore original format
     return results
-      .map(result => {
+      .map((result: FuseResult<SearchableMemory>) => {
         const originalMemory = filteredMemories.find(m => m.id === result.item.id);
         return originalMemory!;
       })
@@ -206,7 +212,7 @@ export class SearchEngine {
     for (const escalationMode of escalationModes) {
       const config = this.searchConfigs[escalationMode];
       
-      const fuseOptions = {
+      const fuseOptions: IFuseOptions<SearchableMemory> = {
         keys: [
           { name: 'content', weight: config.weights.content },
           { name: 'highlights', weight: config.weights.highlights },
@@ -258,7 +264,7 @@ export class SearchEngine {
         // For strict/normal modes, require at least 2 good matches or stop escalating
         if (results.length >= Math.min(2, limit)) {
           return results
-            .map(result => {
+            .map((result: FuseResult<SearchableMemory>) => {
               const originalMemory = filteredMemories.find(m => m.id === result.item.id);
               return originalMemory!;
             })
@@ -266,10 +272,10 @@ export class SearchEngine {
         }
       } else if (escalationMode === 'fuzzy') {
         // For fuzzy mode, filter by score to maintain reasonable precision
-        const goodResults = results.filter(r => r.score !== undefined && r.score <= 0.4);
+        const goodResults = results.filter((r: FuseResult<SearchableMemory>) => r.score !== undefined && r.score <= 0.4);
         if (goodResults.length >= 1) {
           return goodResults
-            .map(result => {
+            .map((result: FuseResult<SearchableMemory>) => {
               const originalMemory = filteredMemories.find(m => m.id === result.item.id);
               return originalMemory!;
             })
@@ -349,6 +355,7 @@ export class SearchEngine {
     const searchableMemories = memories.map(memory => ({
       ...memory,
       content: typeof memory.content === 'string' ? memory.content : JSON.stringify(memory.content),
+      highlights: '', // Add empty highlights to match interface
       tags: memory.tags?.join(' ') || ''
     }));
 
@@ -369,10 +376,10 @@ export class SearchEngine {
 
     const results = fuse.search(query);
     
-    return results.map(result => ({
+    return results.map((result: FuseResult<SearchableMemory>) => ({
       memory: memories.find(m => m.id === result.item.id)!,
       score: result.score || 0,
-      matches: result.matches?.map(match => ({
+      matches: result.matches?.map((match: any) => ({
         key: match.key || '',
         value: match.value || '',
         indices: (match.indices || []) as [number, number][]

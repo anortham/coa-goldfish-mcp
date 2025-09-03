@@ -61,7 +61,7 @@ export class SessionManager {
     try {
       const dateDir = await this.getCurrentDateDir();
       const files = await fs.readdir(dateDir);
-      return files.filter(f => f.endsWith('.json')).sort();
+      return files.filter((f: string) => f.endsWith('.json')).sort();
     } catch {
       return [];
     }

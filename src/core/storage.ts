@@ -242,7 +242,7 @@ export class Storage {
           if (!stat || !stat.isDirectory()) continue;
           
           const files = await fs.readdir(datePath);
-          const jsonFiles = files.filter(f => f.endsWith('.json'));
+          const jsonFiles = files.filter((f: string) => f.endsWith('.json'));
           
           for (const file of jsonFiles) {
             try {
@@ -262,7 +262,7 @@ export class Storage {
       const todosDir = this.getTodosDir(workspace);
       if (await fs.pathExists(todosDir)) {
         const files = await fs.readdir(todosDir);
-        const jsonFiles = files.filter(f => f.endsWith('.json'));
+        const jsonFiles = files.filter((f: string) => f.endsWith('.json'));
         
         for (const file of jsonFiles) {
           try {
@@ -277,7 +277,7 @@ export class Storage {
         }
       }
       
-      return memories.sort((a, b) => b.timestamp.getTime() - a.timestamp.getTime());
+      return memories.sort((a: GoldfishMemory, b: GoldfishMemory) => b.timestamp.getTime() - a.timestamp.getTime());
     } catch {
       return [];
     }
@@ -346,7 +346,7 @@ export class Storage {
     try {
       const todosDir = this.getTodosDir(workspace);
       const files = await fs.readdir(todosDir);
-      const jsonFiles = files.filter(f => f.endsWith('.json'));
+      const jsonFiles = files.filter((f: string) => f.endsWith('.json'));
       
       const todoLists = await Promise.all(
         jsonFiles.map(async (file) => {
@@ -371,7 +371,7 @@ export class Storage {
       
       return todoLists
         .filter((list): list is TodoList => list !== null)
-        .sort((a, b) => b.updatedAt.getTime() - a.updatedAt.getTime());
+        .sort((a: TodoList, b: TodoList) => b.updatedAt.getTime() - a.updatedAt.getTime());
     } catch {
       return [];
     }
