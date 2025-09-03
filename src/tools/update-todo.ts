@@ -28,7 +28,7 @@ export async function handleUpdateTodo(storage: Storage, args: UpdateTodoArgs): 
   // Validate input
   const validation = validateCommonArgs(args);
   if (!validation.isValid) {
-    return createErrorResponse(validation.error!, 'update_todo', args.format);
+    return createErrorResponse(validation.error!, 'update_todo', args.format || 'emoji');
   }
 
   const { listId, itemId, status, newTask, priority, delete: deleteItem, workspace, markAllComplete } = args;
@@ -46,25 +46,25 @@ export async function handleUpdateTodo(storage: Storage, args: UpdateTodoArgs): 
       // Provide helpful error message for special keywords
       const isSpecialKeyword = ['latest', 'recent', 'last', 'active', 'current'].includes(listId.toLowerCase().trim());
       if (isSpecialKeyword) {
-        return createErrorResponse(`❓ No ${listId} TODO list found. Create one first with create_todo_list.`, 'update_todo', args.format);
+        return createErrorResponse(`❓ No ${listId} TODO list found. Create one first with create_todo_list.`, 'update_todo', args.format || 'emoji');
       }
-      return createErrorResponse(`❓ TODO list "${listId}" not found`, 'update_todo', args.format);
+      return createErrorResponse(`❓ TODO list "${listId}" not found`, 'update_todo', args.format || 'emoji');
     } else {
-      return createErrorResponse(`❓ No TODO lists found. Create one first with create_todo_list.`, 'update_todo', args.format);
+      return createErrorResponse(`❓ No TODO lists found. Create one first with create_todo_list.`, 'update_todo', args.format || 'emoji');
     }
   }
 
   // Handle markAllComplete operation
   if (markAllComplete) {
     if (!todoList) {
-      return createErrorResponse(`❓ No TODO list found to mark complete`, 'update_todo', args.format);
+      return createErrorResponse(`❓ No TODO list found to mark complete`, 'update_todo', args.format || 'emoji');
     }
 
     // Mark all items as done
     const pendingCount = todoList.items.filter((item: TodoItem) => item.status !== 'done').length;
     
     if (pendingCount === 0) {
-      return createSuccessResponse(`✅ All tasks in "${todoList.title}" are already complete`, 'update-todo', { listId: todoList.id }, args.format);
+      return createSuccessResponse(`✅ All tasks in "${todoList.title}" are already complete`, 'update-todo', { listId: todoList.id }, args.format || 'emoji');
     }
 
     todoList.items.forEach((item: TodoItem) => {
@@ -86,7 +86,7 @@ export async function handleUpdateTodo(storage: Storage, args: UpdateTodoArgs): 
       `✅ TodoList "${todoList.title}" marked as completed`,
       'update-todo',
       { listId: todoList.id, pendingCount },
-      args.format
+      args.format || 'emoji'
     );
   }
 
@@ -95,7 +95,7 @@ export async function handleUpdateTodo(storage: Storage, args: UpdateTodoArgs): 
     const item = todoList.items.find((i: TodoItem) => i.id === itemId);
     
     if (!item) {
-      return createErrorResponse(`❓ Task ${itemId} not found in list "${todoList.title}"`, 'update_todo', args.format);
+      return createErrorResponse(`❓ Task ${itemId} not found in list "${todoList.title}"`, 'update_todo', args.format || 'emoji');
     }
 
     // Handle delete operation
@@ -105,7 +105,7 @@ export async function handleUpdateTodo(storage: Storage, args: UpdateTodoArgs): 
       todoList.updatedAt = new Date();
       await storage.saveTodoList(todoList);
 
-      return createSuccessResponse(`🗑️ Deleted [${itemId}] ${taskText}`, 'update-todo', { listId: todoList.id, itemId }, args.format);
+      return createSuccessResponse(`🗑️ Deleted [${itemId}] ${taskText}`, 'update-todo', { listId: todoList.id, itemId }, args.format || 'emoji');
     }
 
     const oldStatus = item.status;
@@ -154,7 +154,7 @@ export async function handleUpdateTodo(storage: Storage, args: UpdateTodoArgs): 
       message += `\n🎉 All tasks completed! TodoList "${todoList.title}" marked as completed.`;
     }
 
-    return createSuccessResponse(message, 'update-todo', { listId: todoList.id, itemId, changes }, args.format);
+    return createSuccessResponse(message, 'update-todo', { listId: todoList.id, itemId, changes }, args.format || 'emoji');
   }
 
   if (newTask) {
@@ -171,10 +171,10 @@ export async function handleUpdateTodo(storage: Storage, args: UpdateTodoArgs): 
     todoList.updatedAt = new Date();
     await storage.saveTodoList(todoList);
 
-    return createSuccessResponse(`➕ Added "${newTask}" to "${todoList.title}"`, 'update-todo', { listId: todoList.id, itemId: newItem.id }, args.format);
+    return createSuccessResponse(`➕ Added "${newTask}" to "${todoList.title}"`, 'update-todo', { listId: todoList.id, itemId: newItem.id }, args.format || 'emoji');
   }
 
-  return createErrorResponse('❓ Please specify either newTask to add, or itemId + status to update', 'update_todo', args.format);
+  return createErrorResponse('❓ Please specify either newTask to add, or itemId + status to update', 'update_todo', args.format || 'emoji');
 }
 
 /**

@@ -69,7 +69,7 @@ export async function handleCreateTodoList(storage: Storage, args: CreateTodoLis
     `📝 Created TODO list "${title}" with ${items.length} items (ID: ${todoList.id})`,
     'create-todo-list',
     { id: todoList.id, title, items: todoList.items.length, workspace: targetWorkspace },
-    args.format
+    args.format || 'emoji'
   );
 }
 

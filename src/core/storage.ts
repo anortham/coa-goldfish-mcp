@@ -15,7 +15,29 @@ export class Storage {
   private currentWorkspace: string;
 
   constructor(customWorkspace?: string, customBasePath?: string) {
-    this.basePath = customBasePath || join(homedir(), '.coa', 'goldfish');
+    // Determine base path with environment and permission-aware fallback
+    const envBase = process.env.COA_GOLDFISH_BASE_PATH;
+    const isTestEnv = !!process.env.JEST_WORKER_ID || process.env.NODE_ENV === 'test';
+    const preferredDefault = isTestEnv
+      ? (envBase || join(process.cwd(), '.coa', 'goldfish'))
+      : (envBase || join(homedir(), '.coa', 'goldfish'));
+    const defaultBase = customBasePath || preferredDefault;
+
+    // Try to ensure the default base path is usable; if not, fall back to a workspace-local path
+    try {
+      fs.ensureDirSync(defaultBase);
+      this.basePath = defaultBase;
+    } catch (_err) {
+      const fallbackBase = join(process.cwd(), '.coa', 'goldfish');
+      try {
+        fs.ensureDirSync(fallbackBase);
+        this.basePath = fallbackBase;
+      } catch {
+        // As a last resort, keep the original default (subsequent ops will surface errors)
+        this.basePath = defaultBase;
+      }
+    }
+
     this.currentWorkspace = customWorkspace || this.detectWorkspace();
   }
 

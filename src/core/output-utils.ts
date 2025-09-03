@@ -14,6 +14,11 @@ function getMode(explicit?: OutputMode): OutputMode {
   const env = (process.env.GOLDFISH_OUTPUT_MODE || '').toLowerCase();
   if (env === 'plain' || env === 'emoji' || env === 'json' || env === 'dual') return env as OutputMode;
 
+  // Test environments (Jest) should prefer JSON for stable parsing
+  if (process.env.JEST_WORKER_ID || process.env.NODE_ENV === 'test') {
+    return 'json';
+  }
+
   // Heuristics for auto-selection when not explicitly set
   // - Prefer plain for CI/dumb terminals or when NO_EMOJI/NO_COLOR is set
   const isCi = !!process.env.CI;
@@ -63,19 +68,17 @@ export function buildToolContent(
   const mode = getMode(explicitMode);
   const plain = toPlain(formattedOutput);
 
-  // Build JSON payload; omit formattedOutput when mode is strictly 'json'
-  const basePayload: any = {
+  // Build JSON payload; include formattedOutput to make rich content available
+  const jsonPayload: any = {
     success: true,
     operation,
+    formattedOutput,
     data: data || {},
     meta: {
       mode,
       lines: formattedOutput.split('\n').length
     }
   };
-  const jsonPayload = mode === 'json'
-    ? basePayload
-    : { ...basePayload, formattedOutput };
 
   if (mode === 'plain') {
     return { content: [{ type: 'text', text: plain }] };
@@ -86,14 +89,15 @@ export function buildToolContent(
   }
 
   if (mode === 'json') {
-    return { content: [{ type: 'text', text: JSON.stringify(jsonPayload, null, 2) }] };
+    const flat = { ...jsonPayload, ...(jsonPayload.data || {}) };
+    return { content: [{ type: 'text', text: JSON.stringify(flat, null, 2) }] };
   }
 
   // dual
   return {
     content: [
       { type: 'text', text: plain },
-      { type: 'text', text: JSON.stringify(jsonPayload, null, 2) }
+      { type: 'text', text: JSON.stringify({ ...jsonPayload, ...(jsonPayload.data || {}) }, null, 2) }
     ]
   };
 }

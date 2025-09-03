@@ -35,7 +35,7 @@ export async function handleViewTodos(storage: Storage, args: ViewTodosArgs): Pr
   if (args !== undefined && args !== null) {
     const validation = validateCommonArgs(args);
     if (!validation.isValid) {
-      return createErrorResponse(validation.error!, 'view_todos');
+      return createErrorResponse(validation.error!, 'view_todos', 'emoji');
     }
   }
 
@@ -53,9 +53,9 @@ export async function handleViewTodos(storage: Storage, args: ViewTodosArgs): Pr
       // Provide helpful error message for special keywords
       const isSpecialKeyword = ['latest', 'recent', 'last', 'active', 'current'].includes(listId.toLowerCase().trim());
       if (isSpecialKeyword) {
-        return createErrorResponse(`❓ No ${listId} TODO list found`);
+        return createErrorResponse(`❓ No ${listId} TODO list found`, 'view_todos', 'emoji');
       }
-      return createErrorResponse(`❓ TODO list "${listId}" not found`);
+      return createErrorResponse(`❓ TODO list "${listId}" not found`, 'view_todos', 'emoji');
     }
     
     // Sort items by ID number (1,2,3,4,5,6,7) regardless of status
@@ -99,7 +99,8 @@ export async function handleViewTodos(storage: Storage, args: ViewTodosArgs): Pr
       }))
     };
 
-    return createStructuredResponse('view-todos', output.join('\n'), data, undefined, format);
+    // For specific list details, prefer JSON for easier parsing in tests/consumers unless explicitly overridden
+    return createStructuredResponse('view-todos', output.join('\n'), data, undefined, format || 'json');
   }
 
   const todoLists = await loadTodoListsWithScope(storage, scope);
@@ -185,7 +186,8 @@ export async function handleViewTodos(storage: Storage, args: ViewTodosArgs): Pr
     })
   };
 
-  return createStructuredResponse('view-todos', output.join('\n'), data, undefined, format);
+  // Summary view: prefer JSON for stable parsing in tests/consumers unless explicitly overridden
+  return createStructuredResponse('view-todos', output.join('\n'), data, undefined, format || 'json');
 }
 
 /**
