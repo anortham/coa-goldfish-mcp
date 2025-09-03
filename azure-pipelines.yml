@@ -27,7 +27,13 @@ stages:
             inputs:
               versionSpec: $(nodeVersion)
 
-          # Install dependencies
+          # Authenticate with Azure DevOps npm feed FIRST
+          - task: npmAuthenticate@0
+            displayName: 'Authenticate npm feed'
+            inputs:
+              workingFile: '.npmrc'
+
+          # Install dependencies (with authentication now available)
           - script: npm ci
             displayName: 'Install dependencies'
 
@@ -77,19 +83,19 @@ stages:
             inputs:
               versionSpec: $(nodeVersion)
 
-          # Install dependencies
+          # Authenticate with Azure DevOps npm feed FIRST
+          - task: npmAuthenticate@0
+            displayName: 'Authenticate npm feed'
+            inputs:
+              workingFile: '.npmrc'
+
+          # Install dependencies (with authentication now available)
           - script: npm ci
             displayName: 'Install dependencies'
 
           # Build for publishing
           - script: npm run build
             displayName: 'Build for publish'
-
-          # Authenticate with Azure DevOps npm feed
-          - task: npmAuthenticate@0
-            displayName: 'Authenticate npm feed'
-            inputs:
-              workingFile: '.npmrc'
 
           # Bump version and publish
           - script: |
