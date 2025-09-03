@@ -30,7 +30,13 @@ stages:
               versionSpec: '20.x'
             displayName: 'Install Node.js'
 
-          - script: npm ci
+          - script: |
+              # Temporarily use public registry for dependency installation
+              cp .npmrc .npmrc.backup
+              echo "registry=https://registry.npmjs.org/" > .npmrc
+              npm ci
+              # Restore original .npmrc
+              mv .npmrc.backup .npmrc
             displayName: 'Install dependencies'
 
           - script: |
@@ -105,7 +111,13 @@ stages:
               versionSpec: '20.x'
             displayName: 'Install Node.js'
 
-          - script: npm ci
+          - script: |
+              # Temporarily use public registry for dependency installation
+              cp .npmrc .npmrc.backup
+              echo "registry=https://registry.npmjs.org/" > .npmrc
+              npm ci
+              # Restore original .npmrc
+              mv .npmrc.backup .npmrc
             displayName: 'Install dependencies'
 
           - script: |
