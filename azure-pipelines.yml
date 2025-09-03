@@ -32,7 +32,20 @@ stages:
               versionSpec: '20.x'
             displayName: 'Install Node.js'
 
-          - script: npm ci
+          - script: |
+              echo "=== Debugging npm configuration ==="
+              echo "Current working directory:"
+              pwd
+              echo "Files in current directory:"
+              ls -la
+              echo "Checking for .npmrc files:"
+              find . -name ".npmrc" -type f 2>/dev/null || echo "No .npmrc files found"
+              echo "NPM configuration:"
+              npm config list
+              echo "NPM registry:"
+              npm config get registry
+              echo "=== Installing dependencies ==="
+              npm ci
             displayName: 'Install dependencies'
 
           - script: |
@@ -107,7 +120,20 @@ stages:
               versionSpec: '20.x'
             displayName: 'Install Node.js'
 
-          - script: npm ci
+          - script: |
+              echo "=== Debugging npm configuration ==="
+              echo "Current working directory:"
+              pwd
+              echo "Files in current directory:"
+              ls -la
+              echo "Checking for .npmrc files:"
+              find . -name ".npmrc" -type f 2>/dev/null || echo "No .npmrc files found"
+              echo "NPM configuration:"
+              npm config list
+              echo "NPM registry:"
+              npm config get registry
+              echo "=== Installing dependencies ==="
+              npm ci
             displayName: 'Install dependencies'
 
           - script: |
