@@ -51,7 +51,7 @@ Just ask naturally - Goldfish will search your work history.
 - **`/checkpoint`** - Save your current progress with context
 - **`/resume`** - Restore your session after breaks or crashes  
 - **`/standup`** - Generate daily standup report
-- **`/todo`** - Manage your active task lists
+- **`/todo`** - Manage your active task lists with smart keywords
 
 ### Natural Language Queries
 Just ask Goldfish naturally:
@@ -209,6 +209,21 @@ Every action is stored as an immutable event:
 ### Workspace-Aware Storage
 Each project gets its own memory space, but you can query across all projects for standups and reviews.
 
+#### Storage Location & Fallback
+Goldfish automatically handles different environments and permission scenarios:
+
+- **Default location**: `~/.coa/goldfish/` (user's home directory)
+- **Environment override**: Set `COA_GOLDFISH_BASE_PATH` to use a custom location
+- **Permission fallback**: If home directory isn't writable, falls back to `.coa/goldfish/` in current project
+- **Test isolation**: In test environments, uses workspace-local storage automatically
+
+```bash
+# Use custom storage location
+export COA_GOLDFISH_BASE_PATH="/tmp/my-goldfish-storage"
+
+# Or let Goldfish handle it automatically based on permissions
+```
+
 #### Workspace Normalization
 Goldfish automatically normalizes workspace names to ensure consistent storage across different AI agents and tools:
 
@@ -242,31 +257,42 @@ npm run dev
 
 **Test Coverage**: 51 tests covering all major functionality including edge cases, concurrent operations, and error handling.
 
-## 📤 Output Modes (Codex/Gemini Friendly)
+## 📤 Output Modes (Multi-CLI Compatible)
 
-Goldfish can adapt its tool outputs for different CLIs:
+Goldfish intelligently adapts its tool outputs for different environments and CLIs:
 
-- `plain`: ASCII/plain text (no emojis/markdown)
-- `emoji`: Rich text with emojis/markdown (best in Claude Code)
-- `json`: JSON payload only
-- `dual` (default): Plain text first, then JSON payload
+### Output Formats
+- **`plain`**: ASCII/plain text (no emojis/markdown) - ideal for CI environments
+- **`emoji`**: Rich text with emojis/markdown - best experience in Claude Code
+- **`json`**: Structured JSON payload only - perfect for programmatic consumption
+- **`dual`** (default): Plain text first, then JSON payload - works everywhere
 
-Set globally via env var:
+### Smart Environment Detection
+Goldfish automatically selects the best format based on your environment:
 
+- **CI environments** (`CI=true`): Defaults to `plain` for clean logs
+- **Test environments** (`JEST_WORKER_ID`, `NODE_ENV=test`): Defaults to `json` for stable parsing
+- **Terminal capabilities**: Checks for emoji/color support
+- **Manual override**: Always respected via environment variable or parameter
+
+### Configuration Options
+
+**Global setting:**
 ```bash
 export GOLDFISH_OUTPUT_MODE=plain   # or emoji|json|dual
+export COA_GOLDFISH_BASE_PATH="/custom/storage/path"
 ```
 
-Or override per call with the `format` argument on tools like `timeline`, `search_history`, `recall`, `restore_session`, `summarize_session`, and `view_todos`.
-
-Example:
-
+**Per-tool override:**
 ```json
 {
   "name": "timeline",
-  "arguments": { "since": "7d", "format": "plain" }
+  "arguments": { "since": "7d", "format": "emoji" }
 }
 ```
+
+**Supported tools with format parameter:**
+`timeline`, `search_history`, `recall`, `restore_session`, `summarize_session`, `view_todos`, `create_todo_list`, `update_todo`, `checkpoint`
 
 ## 🤖 AI Agent Optimization
 
@@ -274,8 +300,27 @@ Goldfish is designed to work seamlessly with AI coding assistants:
 
 - **Proactive checkpointing** - AI agents automatically save progress
 - **Context restoration** - Agents can resume work intelligently  
-- **Task tracking** - Automatic TODO management during coding sessions
+- **Smart task tracking** - TODO management with intuitive keywords
 - **Cross-session memory** - Agents remember work across conversations
+
+### TODO List Smart Keywords
+AI agents can use intuitive keywords instead of exact IDs when working with TODO lists:
+
+- **`latest`**, **`recent`**, **`last`** - Most recently updated TODO list
+- **`active`**, **`current`** - Most recent list with pending tasks  
+- **Partial ID matching** - Use just the suffix of the full ID (e.g., "D298" instead of "20250903-154935-560-5BD8-D298")
+
+```
+# Instead of remembering exact IDs:
+You: "Mark task 2 as done in list 20250903-154935-560-5BD8-D298"
+
+# Use smart keywords:
+You: "Mark task 2 as done in latest list"
+You: "Add urgent task to active list"
+You: "Show me the current todo list"
+```
+
+This eliminates "TODO list not found" errors and makes the system more intuitive for AI agents.
 
 ## 🎯 Philosophy
 

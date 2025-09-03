@@ -143,7 +143,10 @@ npm run lint        # ESLint checking
 - **Handoff Mechanism**: Tag-based search resolves agent communication issues
 - **Date Handling**: Centralized utilities prevent timezone bugs in timeline
 - **Test Isolation**: Storage constructor supports custom workspace/basePath
-- **Comprehensive Testing**: 14 handoff tests + 21 date utility tests
+- **Storage Fallback**: Graceful handling of permission issues and test environments
+- **TODO Keywords**: Intuitive "latest", "active" keywords reduce ID lookup errors
+- **Smart Output Modes**: Environment-aware formatting (CI=plain, test=json, etc.)
+- **Comprehensive Testing**: 22+ test suites with 258+ tests covering all scenarios
 
 ## Common Patterns
 
@@ -151,6 +154,21 @@ npm run lint        # ESLint checking
 ```typescript
 // Use custom workspace for test isolation
 const storage = new Storage('test-workspace-name', '/tmp/test-goldfish');
+```
+
+### Storage Initialization Patterns
+```typescript
+// Production use - automatic fallback handling
+const storage = new Storage();  // Uses workspace detection + home directory
+
+// Custom workspace
+const storage = new Storage('my-project');
+
+// Full control for testing
+const storage = new Storage('test-workspace', '/tmp/test-storage');
+
+// Environment variable support
+// Set COA_GOLDFISH_BASE_PATH="/custom/path" for global override
 ```
 
 ### Tag-Based Memory Search
