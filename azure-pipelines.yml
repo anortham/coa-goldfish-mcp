@@ -98,24 +98,25 @@ stages:
             displayName: 'Build for publish'
 
           # Bump version and publish
-          - script: |
+          - powershell: |
               # Get current version
-              CURRENT_VERSION=$(node -p "require('./package.json').version")
-              echo "Current version: $CURRENT_VERSION"
+              $currentVersion = node -p "require('./package.json').version"
+              Write-Host "Current version: $currentVersion"
               
               # Parse version components
-              MAJOR=$(echo $CURRENT_VERSION | cut -d. -f1)
-              MINOR=$(echo $CURRENT_VERSION | cut -d. -f2)
-              PATCH=$(echo $CURRENT_VERSION | cut -d. -f3)
+              $versionParts = $currentVersion.Split('.')
+              $major = [int]$versionParts[0]
+              $minor = [int]$versionParts[1]
+              $patch = [int]$versionParts[2]
               
               # Increment patch version
-              NEW_PATCH=$((PATCH + 1))
-              NEW_VERSION="$MAJOR.$MINOR.$NEW_PATCH"
+              $newPatch = $patch + 1
+              $newVersion = "$major.$minor.$newPatch"
               
-              echo "Publishing version: $NEW_VERSION"
+              Write-Host "Publishing version: $newVersion"
               
               # Update version in package.json
-              npm version $NEW_VERSION --no-git-tag-version
+              npm version $newVersion --no-git-tag-version
               
               # Publish to feed
               npm publish --registry https://pkgs.dev.azure.com/childrensal/_packaging/COA-NPM-Packages/npm/registry/
