@@ -7,6 +7,7 @@ import { GoldfishMemory, CheckpointContent } from '../types/index.js';
 import { Storage } from '../core/storage.js';
 import { SessionManager } from '../core/session-manager.js';
 import { normalizeWorkspaceName } from '../core/workspace-utils.js';
+import { buildToolContent, OutputMode } from '../core/output-utils.js';
 
 export class CheckpointTool {
   private storage: Storage;
@@ -29,6 +30,7 @@ export class CheckpointTool {
     sessionId?: string;
     workspace?: string;
     global?: boolean;
+    format?: OutputMode;
   }) {
     const {
       description,
@@ -38,7 +40,8 @@ export class CheckpointTool {
       workContext,
       sessionId,
       workspace,
-      global = false
+      global = false,
+      format
     } = args;
 
     const targetWorkspace = global ? 'global' : 
@@ -75,8 +78,9 @@ export class CheckpointTool {
       sessionId: actualSessionId
     };
 
+    const checkpointId = this.storage.generateChronologicalFilename().replace('.json', '');
     const checkpoint: GoldfishMemory = {
-      id: this.storage.generateChronologicalFilename().replace('.json', ''),
+      id: checkpointId,
       timestamp: new Date(),
       workspace: targetWorkspace,
       sessionId: actualSessionId,
@@ -101,14 +105,19 @@ export class CheckpointTool {
     const branchInfo = detectedBranch ? `\n🌿 Branch: ${detectedBranch}` : '';
     const highlightsInfo = highlights.length > 0 ? `\n✨ Highlights: ${highlights.join(', ')}` : '';
 
-    return {
-      content: [
-        {
-          type: 'text',
-          text: `💾 Checkpoint saved: "${description}"\n🆔 ID: ${checkpoint.id}\n⏰ Session: ${actualSessionId}${filesInfo}${branchInfo}${highlightsInfo}\n\n✅ Ready to continue or /clear context!`
-        }
-      ]
-    };
+    const formatted = `💾 Checkpoint saved: "${description}"\n` +
+      `🆔 ID: ${checkpoint.id}\n` +
+      `⏰ Session: ${actualSessionId}${filesInfo}${branchInfo}${highlightsInfo}\n\n` +
+      `✅ Ready to continue or /clear context!`;
+    const data = {
+      id: checkpoint.id,
+      sessionId: actualSessionId,
+      workspace: targetWorkspace,
+      gitBranch: detectedBranch,
+      highlightsCount: highlights.length,
+      filesCount: activeFiles.length
+    } as const;
+    return buildToolContent('checkpoint', formatted, data as any, format);
   }
 
   /**
@@ -175,6 +184,11 @@ export class CheckpointTool {
           global: {
             type: 'boolean',
             description: 'Store as global checkpoint (visible across all workspaces)'
+          },
+          format: {
+            type: 'string',
+            enum: ['plain', 'emoji', 'json', 'dual'],
+            description: 'Output format override (defaults to env GOLDFISH_OUTPUT_MODE or dual)'
           }
         },
         required: ['description']

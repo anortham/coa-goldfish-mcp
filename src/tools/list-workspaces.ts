@@ -12,7 +12,7 @@ import { createErrorResponse, createSuccessResponse } from '../core/workspace-ut
 /**
  * Handle list workspaces - discover available workspaces
  */
-export async function handleListWorkspaces(storage: Storage): Promise<ToolResponse> {
+export async function handleListWorkspaces(storage: Storage, args?: { format?: import('../core/output-utils.js').OutputMode }): Promise<ToolResponse> {
   try {
     const workspaces = await storage.discoverWorkspaces();
     const current = storage.getCurrentWorkspace();
@@ -40,10 +40,10 @@ export async function handleListWorkspaces(storage: Storage): Promise<ToolRespon
     output.push('• Full paths like "C:\\source\\Project" are auto-normalized');
     output.push('• Omit workspace parameter to use current workspace');
     
-    return createSuccessResponse(output.join('\n'));
+    return createSuccessResponse(output.join('\n'), 'list-workspaces', { current, total: workspaces.length, workspaces }, args?.format);
     
   } catch (error) {
-    return createErrorResponse(`Failed to list workspaces: ${error instanceof Error ? error.message : String(error)}`);
+    return createErrorResponse(`Failed to list workspaces: ${error instanceof Error ? error.message : String(error)}`, 'list_workspaces', args?.format);
   }
 }
 
@@ -56,7 +56,13 @@ export function getListWorkspacesToolSchema() {
     description: 'Discover available workspaces and their normalized names. Perfect for external agents to know valid workspace values.',
     inputSchema: {
       type: 'object',
-      properties: {},
+      properties: {
+        format: {
+          type: 'string',
+          enum: ['plain', 'emoji', 'json', 'dual'],
+          description: 'Output format override (defaults to env GOLDFISH_OUTPUT_MODE or dual)'
+        }
+      },
       additionalProperties: false
     }
   };

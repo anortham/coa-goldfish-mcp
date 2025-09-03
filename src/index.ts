@@ -143,7 +143,7 @@ class GoldfishMCPServer {
             return await handleUpdateTodo(this.storage, args as any);
           
           case 'list_workspaces':
-            return await handleListWorkspaces(this.storage);
+            return await handleListWorkspaces(this.storage, args as any);
           
           default:
             throw new Error(`Unknown tool: ${name}`);

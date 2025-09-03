@@ -150,12 +150,18 @@ export class Storage {
     
     await fs.ensureDir(targetDir);
     
-    const filename = this.generateChronologicalFilename();
+    // Ensure we persist using the memory's id as the filename to keep
+    // deletion and lookups consistent. If no id provided, create one.
+    const id = (memory.id && memory.id.trim().length > 0)
+      ? memory.id.replace(/\.json$/i, '')
+      : this.generateChronologicalFilename().replace(/\.json$/i, '');
+    const filename = `${id}.json`;
     const filepath = join(targetDir, filename);
     
     // Convert dates to ISO strings for JSON storage
     const serializable = {
       ...memory,
+      id,
       timestamp: memory.timestamp.toISOString()
     };
     
@@ -193,6 +199,7 @@ export class Storage {
   async loadMemory(filename: string, workspace: string = this.currentWorkspace, type: 'checkpoint' | 'todo' = 'checkpoint'): Promise<GoldfishMemory | null> {
     try {
       let filepath: string | undefined;
+      const nameWithExt = filename.endsWith('.json') ? filename : `${filename}.json`;
       
       if (type === 'checkpoint') {
         // Search in date directories for checkpoints
@@ -200,7 +207,7 @@ export class Storage {
         const dateDirs = await fs.readdir(checkpointsDir).catch(() => []);
         
         for (const dateDir of dateDirs) {
-          const candidatePath = join(checkpointsDir, dateDir, filename);
+          const candidatePath = join(checkpointsDir, dateDir, nameWithExt);
           if (await fs.pathExists(candidatePath)) {
             filepath = candidatePath;
             break;
@@ -209,7 +216,7 @@ export class Storage {
         
         if (!filepath) return null;
       } else {
-        filepath = join(this.getTodosDir(workspace), filename);
+        filepath = join(this.getTodosDir(workspace), nameWithExt);
         if (!await fs.pathExists(filepath)) return null;
       }
       
@@ -290,12 +297,13 @@ export class Storage {
    */
   async deleteMemory(filename: string, workspace: string = this.currentWorkspace): Promise<void> {
     try {
+      const nameWithExt = filename.endsWith('.json') ? filename : `${filename}.json`;
       // Search in checkpoints directories
       const checkpointsDir = this.getCheckpointsDir(workspace);
       const dateDirs = await fs.readdir(checkpointsDir).catch(() => []);
       
       for (const dateDir of dateDirs) {
-        const candidatePath = join(checkpointsDir, dateDir, filename);
+        const candidatePath = join(checkpointsDir, dateDir, nameWithExt);
         if (await fs.pathExists(candidatePath)) {
           await fs.unlink(candidatePath);
           return;
@@ -303,9 +311,53 @@ export class Storage {
       }
       
       // Search in todos directory
-      const todosPath = join(this.getTodosDir(workspace), filename);
+      const todosPath = join(this.getTodosDir(workspace), nameWithExt);
       if (await fs.pathExists(todosPath)) {
         await fs.unlink(todosPath);
+        return;
+      }
+
+      // Legacy fallback: some older files were saved with filenames not matching the memory id.
+      // If direct filename deletion failed, scan for files whose JSON content has matching id.
+      const bareId = filename.replace(/\.json$/i, '');
+
+      // Check in checkpoints date folders
+      for (const dateDir of dateDirs) {
+        const datePath = join(checkpointsDir, dateDir);
+        const stat = await fs.stat(datePath).catch(() => null);
+        if (!stat || !stat.isDirectory()) continue;
+
+        const files = await fs.readdir(datePath).catch(() => []);
+        for (const file of files) {
+          if (!file.endsWith('.json')) continue;
+          const full = join(datePath, file);
+          try {
+            const data = await fs.readJson(full);
+            if (data && typeof data === 'object' && data.id === bareId) {
+              await fs.unlink(full);
+              return;
+            }
+          } catch {
+            // Ignore unreadable/corrupt files
+          }
+        }
+      }
+
+      // Check in todos folder
+      const todosDir = this.getTodosDir(workspace);
+      const todoFiles = await fs.readdir(todosDir).catch(() => []);
+      for (const file of todoFiles) {
+        if (!file.endsWith('.json')) continue;
+        const full = join(todosDir, file);
+        try {
+          const data = await fs.readJson(full);
+          if (data && typeof data === 'object' && data.id === bareId) {
+            await fs.unlink(full);
+            return;
+          }
+        } catch {
+          // Ignore unreadable/corrupt files
+        }
       }
     } catch {
       // File doesn't exist, that's fine

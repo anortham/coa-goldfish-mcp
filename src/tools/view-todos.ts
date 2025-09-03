@@ -23,6 +23,7 @@ export interface ViewTodosArgs {
   listId?: string;
   showCompleted?: boolean;
   scope?: 'current' | 'all';
+  format?: import('../core/output-utils.js').OutputMode;
 }
 
 
@@ -39,7 +40,7 @@ export async function handleViewTodos(storage: Storage, args: ViewTodosArgs): Pr
   }
 
   const safeArgs = args || {};
-  const { listId, scope = 'current' } = safeArgs;
+  const { listId, scope = 'current', format } = safeArgs;
 
   if (listId) {
     // View specific list 
@@ -98,7 +99,7 @@ export async function handleViewTodos(storage: Storage, args: ViewTodosArgs): Pr
       }))
     };
 
-    return createStructuredResponse('view-todos', output.join('\n'), data);
+    return createStructuredResponse('view-todos', output.join('\n'), data, undefined, format);
   }
 
   const todoLists = await loadTodoListsWithScope(storage, scope);
@@ -184,7 +185,7 @@ export async function handleViewTodos(storage: Storage, args: ViewTodosArgs): Pr
     })
   };
 
-  return createStructuredResponse('view-todos', output.join('\n'), data);
+  return createStructuredResponse('view-todos', output.join('\n'), data, undefined, format);
 }
 
 /**
@@ -211,6 +212,11 @@ export function getViewTodosToolSchema() {
           enum: ['current', 'all'],
           description: 'Search scope: current workspace or all workspaces (default: current)',
           default: 'current'
+        },
+        format: {
+          type: 'string',
+          enum: ['plain', 'emoji', 'json', 'dual'],
+          description: 'Output format override (defaults to env GOLDFISH_OUTPUT_MODE or dual)'
         }
       }
     }

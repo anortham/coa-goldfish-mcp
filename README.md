@@ -242,6 +242,32 @@ npm run dev
 
 **Test Coverage**: 51 tests covering all major functionality including edge cases, concurrent operations, and error handling.
 
+## 📤 Output Modes (Codex/Gemini Friendly)
+
+Goldfish can adapt its tool outputs for different CLIs:
+
+- `plain`: ASCII/plain text (no emojis/markdown)
+- `emoji`: Rich text with emojis/markdown (best in Claude Code)
+- `json`: JSON payload only
+- `dual` (default): Plain text first, then JSON payload
+
+Set globally via env var:
+
+```bash
+export GOLDFISH_OUTPUT_MODE=plain   # or emoji|json|dual
+```
+
+Or override per call with the `format` argument on tools like `timeline`, `search_history`, `recall`, `restore_session`, `summarize_session`, and `view_todos`.
+
+Example:
+
+```json
+{
+  "name": "timeline",
+  "arguments": { "since": "7d", "format": "plain" }
+}
+```
+
 ## 🤖 AI Agent Optimization
 
 Goldfish is designed to work seamlessly with AI coding assistants:

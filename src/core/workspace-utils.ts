@@ -7,6 +7,7 @@
 
 import { Storage } from './storage.js';
 import { TodoList } from '../types/index.js';
+import { buildToolContent, OutputMode } from './output-utils.js';
 
 /**
  * Load TODO lists from either current workspace or all workspaces
@@ -68,30 +69,17 @@ export function validateCommonArgs(args: any): { isValid: boolean; error?: strin
 /**
  * Create consistent error response
  */
-export function createErrorResponse(message: string, context?: string): any {
+export function createErrorResponse(message: string, context?: string, format?: OutputMode, data?: any): any {
   const fullMessage = context ? `${context}: ${message}` : message;
-  return {
-    content: [
-      {
-        type: 'text' as const,
-        text: fullMessage
-      }
-    ]
-  };
+  const op = context || 'error';
+  return buildToolContent(op, fullMessage, data, format);
 }
 
 /**
  * Create consistent success response
  */
-export function createSuccessResponse(message: string): any {
-  return {
-    content: [
-      {
-        type: 'text' as const,
-        text: message
-      }
-    ]
-  };
+export function createSuccessResponse(message: string, operation = 'success', data?: any, format?: OutputMode): any {
+  return buildToolContent(operation, message, data, format);
 }
 
 /**
@@ -102,28 +90,15 @@ export function createStructuredResponse(
   operation: string,
   formattedOutput: string,
   data: any,
-  additionalMeta?: Record<string, any>
+  additionalMeta?: Record<string, any>,
+  format?: OutputMode
 ): any {
-  const response = {
-    success: true,
-    operation,
-    formattedOutput,
-    data,
-    meta: {
-      mode: 'formatted',
-      lines: formattedOutput.split('\n').length,
-      ...additionalMeta
-    }
-  };
-
-  return {
-    content: [
-      {
-        type: 'text' as const,
-        text: JSON.stringify(response, null, 2)
-      }
-    ]
-  };
+  // buildToolContent already wraps both plain and JSON views
+  const enriched = {
+    ...(data || {}),
+    ...(additionalMeta ? { meta: additionalMeta } : {})
+  } as Record<string, unknown>;
+  return buildToolContent(operation, formattedOutput, enriched, format);
 }
 
 /**

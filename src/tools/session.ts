@@ -7,6 +7,7 @@ import { SessionManager } from '../core/session-manager.js';
 import { SearchEngine } from '../core/search.js';
 import { GoldfishMemory } from '../types/index.js';
 import { SessionRestoreResponse, SessionSummaryResponse } from '../types/responses.js';
+import { buildToolContent, OutputMode } from '../core/output-utils.js';
 
 export class SessionTools {
   private storage: Storage;
@@ -26,11 +27,13 @@ export class SessionTools {
     sessionId?: string;
     depth?: 'minimal' | 'highlights' | 'full';
     workspace?: string;
+    format?: OutputMode;
   } = {}) {
     const {
       sessionId,
       depth = 'highlights',
-      workspace
+      workspace,
+      format
     } = args;
 
     try {
@@ -128,35 +131,20 @@ export class SessionTools {
       output.push('🚀 What would you like to work on?');
       output.push('═══════════════════════════════════════════════════════════');
 
-      // Create structured response with proper formatting
-      const response: SessionRestoreResponse = {
-        success: true,
-        operation: 'session-restore',
-        formattedOutput: output.join('\n'),  // Preserve as structured field
+      const formatted = output.join('\n');
+      const data = {
         sessionId: sessionId || 'latest',
         depth,
         checkpointsFound: targetMemories.length,
-        highlightsFound: targetMemories.filter((m: GoldfishMemory) => 
+        highlightsFound: targetMemories.filter((m: GoldfishMemory) =>
           typeof m.content === 'object' && m.content && 'highlights' in m.content &&
           Array.isArray((m.content as { highlights?: string[] }).highlights) &&
           (m.content as { highlights?: string[] }).highlights!.length > 0
         ).length,
         workspace,
-        data: targetMemories.slice(0, 3) as unknown as Record<string, unknown>, // Sample data for debugging
-        meta: {
-          mode: 'formatted',
-          lines: output.length
-        }
-      };
-
-      return {
-        content: [
-          {
-            type: 'text',
-            text: JSON.stringify(response, null, 2)  // Serialize entire object
-          }
-        ]
-      };
+        sample: targetMemories.slice(0, 3) as unknown as Record<string, unknown>
+      } as const;
+      return buildToolContent('session-restore', formatted, data as any, format);
       
     } catch (error) {
       return {
@@ -178,12 +166,14 @@ export class SessionTools {
     depth?: 'highlights' | 'full';
     workspace?: string;
     since?: string;
+    format?: OutputMode;
   }) {
     const {
       sessionId,
       depth = 'highlights',
       workspace,
-      since = '1d'
+      since = '1d',
+      format
     } = args;
 
     try {
@@ -309,36 +299,21 @@ export class SessionTools {
         }
       }
 
-      // Create structured response with proper formatting
-      const response: SessionSummaryResponse = {
-        success: true,
-        operation: 'session-summary',
-        formattedOutput: output.join('\n'),  // Preserve as structured field
+      const formatted = output.join('\n');
+      const data = {
         sessionId: sessionId || undefined,
         timeRange: since,
         workspace,
         achievements: uniqueHighlights.slice(-5),
-        nextSteps: [],  // Could be populated from TODOs if available
-        data: {
+        nextSteps: [],
+        stats: {
           checkpoints: memories.length,
           workAreas: Array.from(workAreas),
           branches: Array.from(gitBranches),
           files: Array.from(activeFiles).slice(0, 10)
-        },
-        meta: {
-          mode: 'formatted',
-          lines: output.length
         }
-      };
-
-      return {
-        content: [
-          {
-            type: 'text',
-            text: JSON.stringify(response, null, 2)  // Serialize entire object
-          }
-        ]
-      };
+      } as const;
+      return buildToolContent('session-summary', formatted, data as any, format);
       
     } catch (error) {
       return {
@@ -468,6 +443,11 @@ export class SessionTools {
             workspace: {
               type: 'string',
               description: 'Workspace name or path (e.g., "coa-goldfish-mcp" or "C:\\source\\COA Goldfish MCP"). Will be normalized automatically.'
+            },
+            format: {
+              type: 'string',
+              enum: ['plain', 'emoji', 'json', 'dual'],
+              description: 'Output format override (defaults to env GOLDFISH_OUTPUT_MODE or dual)'
             }
           }
         }
@@ -494,6 +474,11 @@ export class SessionTools {
             since: {
               type: 'string',
               description: 'Time range for summary when no sessionId (default: "1d")'
+            },
+            format: {
+              type: 'string',
+              enum: ['plain', 'emoji', 'json', 'dual'],
+              description: 'Output format override (defaults to env GOLDFISH_OUTPUT_MODE or dual)'
             }
           }
         }

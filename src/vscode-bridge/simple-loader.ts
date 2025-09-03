@@ -15,7 +15,7 @@ export async function initializeVSCodeDisplay(): Promise<GoldfishDisplayHandler>
     const bridgeModule = await import('@coa/mcp-vscode-bridge');
     
     if (!bridgeModule || !bridgeModule.VSCodeBridge) {
-      console.log('ℹ️ VS Code bridge not available (optional feature)');
+      console.error('ℹ️ VS Code bridge not available (optional feature)');
       return new GoldfishDisplayHandler(); // Return handler without bridge
     }
     
@@ -35,7 +35,7 @@ export async function initializeVSCodeDisplay(): Promise<GoldfishDisplayHandler>
     await new Promise(resolve => setTimeout(resolve, 500));
     
     if (vscBridge.isConnected) {
-      console.log('✅ Connected to VS Code bridge for visualizations');
+      console.error('✅ Connected to VS Code bridge for visualizations');
     }
     
     // Create display handler with bridge
@@ -43,7 +43,7 @@ export async function initializeVSCodeDisplay(): Promise<GoldfishDisplayHandler>
     
   } catch (error: any) {
     if (error.code === 'MODULE_NOT_FOUND') {
-      console.log('ℹ️ VS Code bridge package not installed (optional)');
+      console.error('ℹ️ VS Code bridge package not installed (optional)');
     } else {
       console.warn('⚠️ VS Code bridge initialization failed:', error.message);
     }

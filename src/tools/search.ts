@@ -8,6 +8,7 @@ import { SessionManager } from '../core/session-manager.js';
 import { SearchHistoryResponse, RecallResponse, TimelineResponse } from '../types/responses.js';
 import { getLocalDateKey, formatDateName } from '../utils/date-utils.js';
 import { GoldfishDisplayHandler } from '../vscode-bridge/display-handler.js';
+import { buildToolContent, OutputMode } from '../core/output-utils.js';
 
 export class SearchTools {
   private searchEngine: SearchEngine;
@@ -31,13 +32,15 @@ export class SearchTools {
     workspace?: string;
     scope?: 'current' | 'all';
     limit?: number;
+    format?: OutputMode;
   }) {
     const {
       query,
       since,
       workspace,
       scope = 'current',
-      limit = 20
+      limit = 20,
+      format
     } = args;
 
     try {
@@ -50,14 +53,9 @@ export class SearchTools {
       });
 
       if (results.length === 0) {
-        return {
-          content: [
-            {
-              type: 'text',
-              text: `🔍 No results found for "${query}"\n\nTry:\n• Different keywords\n• Broader time range (e.g., since: "7d")\n• Cross-workspace search (scope: "all")`
-            }
-          ]
-        };
+        const formatted = `🔍 No results found for "${query}"\n\nTry:\n• Different keywords\n• Broader time range (e.g., since: "7d")\n• Cross-workspace search (scope: "all")`;
+        const data = { query, since, workspace, scope, resultsFound: 0 } as const;
+        return buildToolContent('search-history', formatted, data as any, format);
       }
 
       const output = [`🔍 Found ${results.length} results for "${query}"\n`];
@@ -98,33 +96,19 @@ export class SearchTools {
         output.push(`... and ${results.length - 10} more results`);
       }
 
-      // Create structured response with proper formatting
-      const response: SearchHistoryResponse = {
-        success: true,
-        operation: 'search-history',
-        formattedOutput: output.join('\n'),  // Preserve as structured field
+      const formatted = output.join('\n');
+      const data = {
         query,
         resultsFound: results.length,
         matches: results.slice(0, 10).map(result => ({
           memory: result.memory as Record<string, unknown>,
           score: 1 - result.score,
-          snippet: result.matches.length > 0 && result.matches[0] ? 
-            this.getMatchSnippet(result.matches[0].value, result.matches[0].indices) : undefined
-        })),
-        meta: {
-          mode: 'formatted',
-          lines: output.length
-        }
-      };
-
-      return {
-        content: [
-          {
-            type: 'text',
-            text: JSON.stringify(response, null, 2)  // Serialize entire object
-          }
-        ]
-      };
+          snippet: result.matches.length > 0 && result.matches[0]
+            ? this.getMatchSnippet(result.matches[0].value, result.matches[0].indices)
+            : undefined
+        }))
+      } as const;
+      return buildToolContent('search-history', formatted, data as any, format);
     } catch (error) {
       return {
         content: [
@@ -144,11 +128,13 @@ export class SearchTools {
     since?: string;
     workspace?: string;
     scope?: 'current' | 'all';
+    format?: OutputMode;
   }) {
     const {
       since = '7d',
       workspace,
-      scope = 'current'
+      scope = 'current',
+      format
     } = args;
 
     try {
@@ -161,34 +147,18 @@ export class SearchTools {
       });
 
       if (memories.length === 0) {
-        const response: TimelineResponse = {
-          success: true,
-          operation: 'timeline',
-          formattedOutput: `📅 No work sessions found in the last ${since}\n\nTry extending the time range or checking other workspaces.`,
+        const formatted = `📅 No work sessions found in the last ${since}\n\nTry extending the time range or checking other workspaces.`;
+        const data = {
           scope,
           since,
           workspace,
           totalItems: 0,
           workspacesFound: 0,
           checkpointsFound: 0,
-          data: {
-            byDate: {},
-            byWorkspace: {}
-          },
-          meta: {
-            mode: 'formatted',
-            lines: 2
-          }
-        };
-
-        return {
-          content: [
-            {
-              type: 'text',
-              text: JSON.stringify(response, null, 2)
-            }
-          ]
-        };
+          byDate: {},
+          byWorkspace: {}
+        } as const;
+        return buildToolContent('timeline', formatted, data as any, format);
       }
 
       // Group by date and workspace
@@ -261,38 +231,22 @@ export class SearchTools {
         }
       }
 
-      // Create structured response with proper formatting
-      const response: TimelineResponse = {
-        success: true,
-        operation: 'timeline',
-        formattedOutput: output.join('\n'),  // Preserve as structured field
+      const formatted = output.join('\n');
+      const data = {
         scope,
         since,
         workspace,
         totalItems: memories.length,
         workspacesFound: new Set(memories.map(m => m.workspace || 'unknown')).size,
         checkpointsFound: memories.filter(m => m.type === 'checkpoint').length,
-        data: {
-          byDate: Object.fromEntries(Array.from(timelineMap.entries()).map(([date, wsMap]) => [
-            date, 
-            Object.fromEntries(wsMap.entries())
-          ])),
-          byWorkspace: {}  // Could organize by workspace if needed
-        },
-        meta: {
-          mode: 'formatted',
-          lines: output.length
-        }
-      };
+        byDate: Object.fromEntries(Array.from(timelineMap.entries()).map(([date, wsMap]) => [
+          date,
+          Object.fromEntries(wsMap.entries())
+        ])),
+        byWorkspace: {}
+      } as const;
 
-      return {
-        content: [
-          {
-            type: 'text',
-            text: JSON.stringify(response, null, 2)  // Serialize entire object
-          }
-        ]
-      };
+      return buildToolContent('timeline', formatted, data as any, format);
     } catch (error) {
       return {
         content: [
@@ -316,6 +270,7 @@ export class SearchTools {
     type?: string;
     tags?: string[];
     limit?: number;
+    format?: OutputMode;
   }) {
     const {
       query,
@@ -324,7 +279,8 @@ export class SearchTools {
       scope = 'current',
       type,
       tags,
-      limit = 10
+      limit = 10,
+      format
     } = args;
 
     try {
@@ -355,14 +311,9 @@ export class SearchTools {
 
       if (memories.length === 0) {
         const searchInfo = query ? ` matching "${query}"` : '';
-        return {
-          content: [
-            {
-              type: 'text',
-              text: `🧠 No memories found${searchInfo} in the last ${since}`
-            }
-          ]
-        };
+        const formatted = `🧠 No memories found${searchInfo} in the last ${since}`;
+        const data = { query, since, scope, workspace, memoriesFound: 0 } as const;
+        return buildToolContent('recall', formatted, data as any, format);
       }
 
       // Build formatted output
@@ -394,11 +345,8 @@ export class SearchTools {
         output.push('');
       }
 
-      // Create structured response with proper formatting
-      const response: RecallResponse = {
-        success: true,
-        operation: 'recall',
-        formattedOutput: output.join('\n'),  // Preserve as structured field
+      const formatted = output.join('\n');
+      const data = {
         memoriesFound: memories.length,
         timeRange: since,
         memories: memories.map(m => ({
@@ -408,21 +356,9 @@ export class SearchTools {
           content: typeof m.content === 'string' ? m.content : JSON.stringify(m.content),
           workspace: m.workspace,
           tags: m.tags
-        })),
-        meta: {
-          mode: 'formatted',
-          lines: output.length
-        }
-      };
-
-      return {
-        content: [
-          {
-            type: 'text',
-            text: JSON.stringify(response, null, 2)  // Serialize entire object
-          }
-        ]
-      };
+        }))
+      } as const;
+      return buildToolContent('recall', formatted, data as any, format);
     } catch (error) {
       return {
         content: [
@@ -513,6 +449,11 @@ export class SearchTools {
             limit: {
               type: 'number',
               description: 'Maximum results to return (default: 20)'
+            },
+            format: {
+              type: 'string',
+              enum: ['plain', 'emoji', 'json', 'dual'],
+              description: 'Output format override (defaults to env GOLDFISH_OUTPUT_MODE or dual)'
             }
           },
           required: ['query']
@@ -536,6 +477,11 @@ export class SearchTools {
               type: 'string',
               enum: ['current', 'all'],
               description: 'Timeline scope: current workspace or all workspaces'
+            },
+            format: {
+              type: 'string',
+              enum: ['plain', 'emoji', 'json', 'dual'],
+              description: 'Output format override (defaults to env GOLDFISH_OUTPUT_MODE or dual)'
             }
           }
         }
@@ -576,6 +522,11 @@ export class SearchTools {
             limit: {
               type: 'number',
               description: 'Maximum results (default: 10)'
+            },
+            format: {
+              type: 'string',
+              enum: ['plain', 'emoji', 'json', 'dual'],
+              description: 'Output format override (defaults to env GOLDFISH_OUTPUT_MODE or dual)'
             }
           }
         }

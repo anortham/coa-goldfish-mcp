@@ -17,6 +17,7 @@ export interface CreateTodoListArgs {
   status?: 'active' | 'completed' | 'archived';  // NEW - Lifecycle status
   ttlHours?: number;             // NEW - Optional expiration
   workspace?: string;            // NEW - Optional workspace (path or name)
+  format?: import('../core/output-utils.js').OutputMode;
 }
 
 
@@ -27,15 +28,15 @@ export async function handleCreateTodoList(storage: Storage, args: CreateTodoLis
   // Validate input
   const validation = validateCommonArgs(args);
   if (!validation.isValid) {
-    return createErrorResponse(validation.error!, 'create_todo_list');
+    return createErrorResponse(validation.error!, 'create_todo_list', args.format);
   }
 
   if (!args.title || args.title.trim().length === 0) {
-    return createErrorResponse('Title is required and cannot be empty', 'create_todo_list');
+    return createErrorResponse('Title is required and cannot be empty', 'create_todo_list', args.format);
   }
 
   if (!args.items || !Array.isArray(args.items) || args.items.length === 0) {
-    return createErrorResponse('Items array is required and must contain at least one item', 'create_todo_list');
+    return createErrorResponse('Items array is required and must contain at least one item', 'create_todo_list', args.format);
   }
 
   const { title, items, tags, description, metadata, status, ttlHours, workspace } = args;
@@ -64,7 +65,12 @@ export async function handleCreateTodoList(storage: Storage, args: CreateTodoLis
 
   await storage.saveTodoList(todoList);
 
-  return createSuccessResponse(`📝 Created TODO list "${title}" with ${items.length} items (ID: ${todoList.id})`);
+  return createSuccessResponse(
+    `📝 Created TODO list "${title}" with ${items.length} items (ID: ${todoList.id})`,
+    'create-todo-list',
+    { id: todoList.id, title, items: todoList.items.length, workspace: targetWorkspace },
+    args.format
+  );
 }
 
 /**
@@ -111,6 +117,11 @@ export function getCreateTodoListToolSchema() {
         workspace: {
           type: 'string',
           description: 'Workspace name or path (e.g., "coa-goldfish-mcp" or "C:\\source\\COA Goldfish MCP"). Will be normalized automatically. Defaults to current workspace.'
+        },
+        format: {
+          type: 'string',
+          enum: ['plain', 'emoji', 'json', 'dual'],
+          description: 'Output format override (defaults to env GOLDFISH_OUTPUT_MODE or dual)'
         }
       },
       required: ['title', 'items']
