@@ -30,19 +30,7 @@ stages:
               versionSpec: '20.x'
             displayName: 'Install Node.js'
 
-          - script: |
-              # Use public registry for installing dependencies
-              echo "registry=https://registry.npmjs.org/" > .npmrc.temp
-              if [ -f .npmrc ]; then
-                mv .npmrc .npmrc.azure
-              fi
-              mv .npmrc.temp .npmrc
-              npm ci
-              # Restore Azure npmrc
-              rm .npmrc
-              if [ -f .npmrc.azure ]; then
-                mv .npmrc.azure .npmrc
-              fi
+          - script: npm ci
             displayName: 'Install dependencies'
 
           - script: |
@@ -117,19 +105,7 @@ stages:
               versionSpec: '20.x'
             displayName: 'Install Node.js'
 
-          - script: |
-              # Use public registry for installing dependencies
-              echo "registry=https://registry.npmjs.org/" > .npmrc.temp
-              if [ -f .npmrc ]; then
-                mv .npmrc .npmrc.azure
-              fi
-              mv .npmrc.temp .npmrc
-              npm ci
-              # Restore Azure npmrc
-              rm .npmrc
-              if [ -f .npmrc.azure ]; then
-                mv .npmrc.azure .npmrc
-              fi
+          - script: npm ci
             displayName: 'Install dependencies'
 
           - script: |
