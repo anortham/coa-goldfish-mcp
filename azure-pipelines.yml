@@ -33,16 +33,13 @@ stages:
             displayName: 'Install Node.js'
 
           - script: |
-              echo "=== Debugging npm configuration ==="
-              echo "Current working directory:"
-              pwd
-              echo "Files in current directory:"
-              ls -la
-              echo "Checking for .npmrc files:"
-              find . -name ".npmrc" -type f 2>/dev/null || echo "No .npmrc files found"
-              echo "NPM configuration:"
-              npm config list
-              echo "NPM registry:"
+              echo "=== Clearing any existing npm authentication ==="
+              # Clear any authentication tokens that might be set
+              npm config delete //registry.npmjs.org/:_authToken 2>/dev/null || true
+              npm config delete //pkgs.dev.azure.com/childrensal/_packaging/COA-NPM-Packages/npm/registry/:_authToken 2>/dev/null || true
+              # Explicitly set registry to public
+              npm config set registry https://registry.npmjs.org/
+              echo "Registry after clearing auth:"
               npm config get registry
               echo "=== Installing dependencies ==="
               npm ci
@@ -121,16 +118,13 @@ stages:
             displayName: 'Install Node.js'
 
           - script: |
-              echo "=== Debugging npm configuration ==="
-              echo "Current working directory:"
-              pwd
-              echo "Files in current directory:"
-              ls -la
-              echo "Checking for .npmrc files:"
-              find . -name ".npmrc" -type f 2>/dev/null || echo "No .npmrc files found"
-              echo "NPM configuration:"
-              npm config list
-              echo "NPM registry:"
+              echo "=== Clearing any existing npm authentication ==="
+              # Clear any authentication tokens that might be set
+              npm config delete //registry.npmjs.org/:_authToken 2>/dev/null || true
+              npm config delete //pkgs.dev.azure.com/childrensal/_packaging/COA-NPM-Packages/npm/registry/:_authToken 2>/dev/null || true
+              # Explicitly set registry to public
+              npm config set registry https://registry.npmjs.org/
+              echo "Registry after clearing auth:"
               npm config get registry
               echo "=== Installing dependencies ==="
               npm ci
