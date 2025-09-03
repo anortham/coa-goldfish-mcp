@@ -8,77 +8,77 @@ trigger:
       - src/*
       - package.json
       - tsconfig.json
-      - azure-pipelines.yml
-      - .npmrc
 
 pool:
-  vmImage: 'ubuntu-latest'
+  vmImage: "ubuntu-latest"
 
 variables:
   - name: packagePath
-    value: '.'
+    value: "."
   - name: artifactFeedName
-    value: 'COA-NPM-Packages'
+    value: "COA-NPM-Packages"
 
 stages:
   - stage: Build
-    displayName: 'Build and Test'
+    displayName: "Build and Test"
     jobs:
       - job: BuildAndTest
-        displayName: 'Build and Test'
+        displayName: "Build and Test"
         steps:
           - task: NodeTool@0
             inputs:
-              versionSpec: '20.x'
-            displayName: 'Install Node.js'
+              versionSpec: "20.x"
+            displayName: "Install Node.js"
 
           - script: |
-              echo "=== Clearing any existing npm authentication ==="
-              # Clear any authentication tokens that might be set
-              npm config delete //registry.npmjs.org/:_authToken 2>/dev/null || true
-              npm config delete //pkgs.dev.azure.com/childrensal/_packaging/COA-NPM-Packages/npm/registry/:_authToken 2>/dev/null || true
-              # Explicitly set registry to public
-              npm config set registry https://registry.npmjs.org/
-              echo "Registry after clearing auth:"
-              npm config get registry
-              echo "=== Installing dependencies ==="
+              # Use public registry for installing dependencies
+              echo "registry=https://registry.npmjs.org/" > .npmrc.temp
+              if [ -f .npmrc ]; then
+                mv .npmrc .npmrc.azure
+              fi
+              mv .npmrc.temp .npmrc
               npm ci
-            displayName: 'Install dependencies'
+              # Restore Azure npmrc
+              rm .npmrc
+              if [ -f .npmrc.azure ]; then
+                mv .npmrc.azure .npmrc
+              fi
+            displayName: "Install dependencies"
 
           - script: |
               npm run lint
-            displayName: 'Run linting'
+            displayName: "Run linting"
             continueOnError: true
 
           - script: |
               npm run build
-            displayName: 'Build project'
+            displayName: "Build project"
 
           - script: |
               npm test -- --coverage --coverageReporters=cobertura --coverageReporters=lcov --coverageReporters=text
-            displayName: 'Run tests with coverage'
+            displayName: "Run tests with coverage"
             continueOnError: true
 
           - task: PublishTestResults@2
             inputs:
-              testResultsFormat: 'JUnit'
-              testResultsFiles: 'test-results.xml'
+              testResultsFormat: "JUnit"
+              testResultsFiles: "test-results.xml"
               failTaskOnFailedTests: false
-            displayName: 'Publish test results'
+            displayName: "Publish test results"
             condition: always()
 
           - task: PublishCodeCoverageResults@2
             inputs:
-              summaryFileLocation: 'coverage/cobertura-coverage.xml'
-              reportDirectory: 'coverage/lcov-report'
-              codecoverageTool: 'Cobertura'
+              summaryFileLocation: "coverage/cobertura-coverage.xml"
+              reportDirectory: "coverage/lcov-report"
+              codecoverageTool: "Cobertura"
               failIfCoverageEmpty: false
-            displayName: 'Publish code coverage results'
+            displayName: "Publish code coverage results"
             condition: always()
 
           - script: |
               echo "=== Code Coverage Summary ==="
-              
+
               # Check if Jest output contains coverage information
               if [ -f coverage/coverage-summary.json ]; then
                 # Extract coverage from Jest's JSON summary
@@ -101,59 +101,55 @@ stages:
               else
                 echo "##vso[task.logissue type=warning]No coverage summary found"
               fi
-            displayName: 'Coverage threshold check'
+            displayName: "Coverage threshold check"
             condition: always()
 
   - stage: PublishToFeed
-    displayName: 'Publish to Azure DevOps Feed'
+    displayName: "Publish to Azure DevOps Feed"
     dependsOn: Build
     condition: and(succeeded(), or(eq(variables['Build.SourceBranch'], 'refs/heads/main'), eq(variables['Build.SourceBranch'], 'refs/heads/develop')))
     jobs:
       - job: PublishPackage
-        displayName: 'Publish Package'
+        displayName: "Publish Package"
         steps:
           - task: NodeTool@0
             inputs:
-              versionSpec: '20.x'
-            displayName: 'Install Node.js'
+              versionSpec: "20.x"
+            displayName: "Install Node.js"
 
           - script: |
-              echo "=== Clearing any existing npm authentication ==="
-              # Clear any authentication tokens that might be set
-              npm config delete //registry.npmjs.org/:_authToken 2>/dev/null || true
-              npm config delete //pkgs.dev.azure.com/childrensal/_packaging/COA-NPM-Packages/npm/registry/:_authToken 2>/dev/null || true
-              # Explicitly set registry to public
-              npm config set registry https://registry.npmjs.org/
-              echo "Registry after clearing auth:"
-              npm config get registry
-              echo "=== Installing dependencies ==="
+              # Use public registry for installing dependencies
+              echo "registry=https://registry.npmjs.org/" > .npmrc.temp
+              if [ -f .npmrc ]; then
+                mv .npmrc .npmrc.azure
+              fi
+              mv .npmrc.temp .npmrc
               npm ci
-            displayName: 'Install dependencies'
+              # Restore Azure npmrc
+              rm .npmrc
+              if [ -f .npmrc.azure ]; then
+                mv .npmrc.azure .npmrc
+              fi
+            displayName: "Install dependencies"
 
           - script: |
               npm run build
-            displayName: 'Build project'
+            displayName: "Build project"
 
-          - script: |
-              # Create .npmrc for Azure DevOps publishing
-              echo "registry=https://pkgs.dev.azure.com/childrensal/_packaging/COA-NPM-Packages/npm/registry/" > .npmrc
-              echo "//pkgs.dev.azure.com/childrensal/_packaging/COA-NPM-Packages/npm/registry/:_authToken=\${NPM_TOKEN}" >> .npmrc
-            displayName: 'Create npmrc for publishing'
-            
           - task: npmAuthenticate@0
             inputs:
-              workingFile: '.npmrc'
-            displayName: 'Authenticate with Azure DevOps npm feed'
+              workingFile: ".npmrc"
+            displayName: "Authenticate with Azure DevOps npm feed"
 
           - script: |
               # Get current version from package.json
               CURRENT_VERSION=$(node -p "require('./package.json').version")
               echo "Current version: $CURRENT_VERSION"
-              
+
               # Check if version exists in feed
               FEED_URL="https://pkgs.dev.azure.com/childrensal/_packaging/COA-NPM-Packages/npm/registry"
               PACKAGE_NAME="@coa/goldfish-mcp"
-              
+
               # Function to check if version exists
               check_version_exists() {
                 local version=$1
@@ -168,7 +164,7 @@ stages:
                   return 1
                 fi
               }
-              
+
               # Determine new version based on branch
               if [ "$(Build.SourceBranch)" = "refs/heads/main" ]; then
                 # For main branch, increment patch version until we find an unused one
@@ -203,17 +199,17 @@ stages:
                 echo "Setting new prerelease version to: $NEW_VERSION"
                 npm version $NEW_VERSION --no-git-tag-version
               fi
-              
+
               echo "##vso[task.setvariable variable=packageVersion]$(node -p "require('./package.json').version")"
-            displayName: 'Update package version'
+            displayName: "Update package version"
 
           - script: |
               echo "Publishing version: $(packageVersion)"
-              
+
               # Try to publish, with retry logic
               MAX_RETRIES=3
               RETRY_COUNT=0
-              
+
               while [ $RETRY_COUNT -lt $MAX_RETRIES ]; do
                 if npm publish; then
                   echo "Successfully published version $(packageVersion)"
@@ -239,10 +235,10 @@ stages:
                   fi
                 fi
               done
-            displayName: 'Publish to Azure DevOps npm feed'
+            displayName: "Publish to Azure DevOps npm feed"
 
           - task: PublishBuildArtifacts@1
             inputs:
-              pathToPublish: 'dist'
-              artifactName: 'npm-package'
-            displayName: 'Publish build artifacts'
+              pathToPublish: "dist"
+              artifactName: "npm-package"
+            displayName: "Publish build artifacts"
