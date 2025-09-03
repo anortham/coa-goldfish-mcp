@@ -109,9 +109,33 @@ stages:
               $minor = [int]$versionParts[1]
               $patch = [int]$versionParts[2]
               
-              # Increment patch version
+              # Azure DevOps feed URL
+              $feedUrl = "https://pkgs.dev.azure.com/childrensal/_packaging/COA-NPM-Packages/npm/registry/"
+              $packageName = "@coa/goldfish-mcp"
+              
+              # Function to check if version exists
+              function Test-VersionExists {
+                  param($version)
+                  try {
+                      $result = npm view "$packageName@$version" version --registry $feedUrl 2>&1
+                      if ($LASTEXITCODE -eq 0) {
+                          return $true
+                      }
+                      return $false
+                  } catch {
+                      return $false
+                  }
+              }
+              
+              # Find next available version
               $newPatch = $patch + 1
               $newVersion = "$major.$minor.$newPatch"
+              
+              while (Test-VersionExists $newVersion) {
+                  Write-Host "Version $newVersion already exists, incrementing..."
+                  $newPatch++
+                  $newVersion = "$major.$minor.$newPatch"
+              }
               
               Write-Host "Publishing version: $newVersion"
               
@@ -119,7 +143,7 @@ stages:
               npm version $newVersion --no-git-tag-version
               
               # Publish to feed
-              npm publish --registry https://pkgs.dev.azure.com/childrensal/_packaging/COA-NPM-Packages/npm/registry/
+              npm publish --registry $feedUrl
               
             displayName: 'Version and publish'
             
