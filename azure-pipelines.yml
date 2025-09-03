@@ -8,6 +8,8 @@ trigger:
       - src/*
       - package.json
       - tsconfig.json
+      - azure-pipelines.yml
+      - .npmrc
 
 pool:
   vmImage: 'ubuntu-latest'
