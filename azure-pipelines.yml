@@ -10,7 +10,7 @@ trigger:
       - tsconfig.json
 
 pool:
-  vmImage: "ubuntu-latest"
+  name: "Default" # Using local Windows agent pool
 
 variables:
   - name: packagePath
