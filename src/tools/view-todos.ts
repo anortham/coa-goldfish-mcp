@@ -24,6 +24,59 @@ export interface ViewTodosArgs {
   showCompleted?: boolean;
   scope?: 'current' | 'all';
   format?: import('../core/output-utils.js').OutputMode;
+  summary?: boolean;
+}
+
+/**
+ * Background cleanup - silently maintain TODO list lifecycle
+ * 1. Complete lists where all tasks are done
+ * 2. Archive lists inactive for 7+ days with pending tasks
+ * 3. Delete archived lists older than 30 days
+ */
+async function performBackgroundCleanup(storage: Storage, todoLists: any[]): Promise<void> {
+  const now = new Date();
+  const sevenDaysAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+  const thirtyDaysAgo = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
+  
+  for (const list of todoLists) {
+    let needsSave = false;
+    const lastUpdate = new Date(list.updatedAt);
+    
+    // 1. Auto-complete lists where all tasks are done
+    const allItemsDone = list.items.length > 0 && list.items.every((item: any) => item.status === 'done');
+    if (allItemsDone && list.status !== 'completed') {
+      list.status = 'completed';
+      list.completedAt = now;
+      list.updatedAt = now;
+      needsSave = true;
+    }
+    
+    // 2. Archive lists inactive for 7+ days with pending tasks
+    else if (list.status === 'active' && lastUpdate < sevenDaysAgo && !allItemsDone) {
+      list.status = 'archived';
+      list.archivedAt = now;
+      list.updatedAt = now;
+      needsSave = true;
+    }
+    
+    // 3. Delete archived lists older than 30 days
+    else if (list.status === 'archived' && lastUpdate < thirtyDaysAgo) {
+      try {
+        await storage.deleteTodoList(list.id, list.workspace);
+        continue; // Skip save since we deleted
+      } catch (error) {
+        // Ignore deletion errors, list will be retried next time
+      }
+    }
+    
+    if (needsSave) {
+      try {
+        await storage.saveTodoList(list);
+      } catch (error) {
+        // Ignore save errors to prevent blocking the view operation
+      }
+    }
+  }
 }
 
 
@@ -40,7 +93,7 @@ export async function handleViewTodos(storage: Storage, args: ViewTodosArgs): Pr
   }
 
   const safeArgs = args || {};
-  const { listId, scope = 'current', format } = safeArgs;
+  const { listId, scope = 'current', format, summary = false } = safeArgs;
 
   if (listId) {
     // View specific list 
@@ -103,7 +156,13 @@ export async function handleViewTodos(storage: Storage, args: ViewTodosArgs): Pr
     return createStructuredResponse('view-todos', output.join('\n'), data, undefined, format || 'json');
   }
 
-  const todoLists = await loadTodoListsWithScope(storage, scope);
+  let todoLists = await loadTodoListsWithScope(storage, scope);
+  
+  // Background cleanup - silently maintain list lifecycle
+  await performBackgroundCleanup(storage, todoLists);
+  
+  // Reload to get cleaned up lists
+  todoLists = await loadTodoListsWithScope(storage, scope);
   
   if (todoLists.length === 0) {
     const scopeText = scope === 'all' ? ' across all workspaces' : '';
@@ -131,7 +190,61 @@ export async function handleViewTodos(storage: Storage, args: ViewTodosArgs): Pr
     return new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime();
   });
 
-  // Build formatted output showing ALL lists
+  // Check if we need summary mode for token limit management
+  if (summary || sortedLists.length > 10) {
+    // Build compact summary for standup/large datasets
+    const output = [];
+    const now = new Date();
+    const twentyFourHoursAgo = new Date(now.getTime() - 24 * 60 * 60 * 1000);
+    
+    const relevantLists = sortedLists.filter(list => {
+      const lastUpdate = new Date(list.updatedAt);
+      const hasPendingTasks = list.items.some((item: any) => item.status !== 'done');
+      
+      // Show lists that are:
+      // 1. Recently updated (within 24h) OR
+      // 2. Active status with pending tasks OR  
+      // 3. Have no explicit status (legacy) with pending tasks
+      return (
+        lastUpdate > twentyFourHoursAgo ||
+        (list.status === 'active' && hasPendingTasks) ||
+        (!list.status && hasPendingTasks)
+      );
+    });
+    
+    if (relevantLists.length === 0) {
+      output.push(`📋 No active or recent TODO lists found! 🎉`);
+    } else {
+      output.push(`📋 ${relevantLists.length} active/recent TODO lists (${todoLists.length} total)`);
+      
+      // Show only relevant lists with basic info
+      for (const list of relevantLists.slice(0, 5)) {
+        const pendingTasks = list.items.filter((item: any) => item.status !== 'done');
+        const workspaceLabel = formatWorkspaceLabel(list.workspace, storage.getCurrentWorkspace(), scope);
+        const statusIcon = list.status === 'completed' ? '✅' : (pendingTasks.length === 0 ? '✅' : '📝');
+        output.push(`${statusIcon} ${list.title}${workspaceLabel}: ${pendingTasks.length} pending`);
+      }
+      
+      if (relevantLists.length > 5) {
+        output.push(`... and ${relevantLists.length - 5} more relevant lists`);
+      }
+    }
+    
+    output.push(`💡 Use view_todos({ listId: "latest" }) for details`);
+    
+    // Minimal data for summary mode  
+    const data = {
+      totalLists: todoLists.length,
+      activeLists: relevantLists.length,
+      completedLists: todoLists.length - relevantLists.length,
+      summaryMode: true,
+      filteredView: true // Indicate this is showing only active/recent
+    };
+
+    return createStructuredResponse('view-todos', output.join('\n'), data, undefined, format || 'json');
+  }
+
+  // Full detailed view for smaller datasets
   const output = [];
   
   output.push(`📋 Active TODO Lists (${todoLists.length} found)`);
@@ -196,7 +309,7 @@ export async function handleViewTodos(storage: Storage, args: ViewTodosArgs): Pr
 export function getViewTodosToolSchema() {
   return {
     name: 'view_todos',
-    description: 'ALWAYS check TODO lists when starting work or after completing tasks. Shows progress and pending items. Use PROACTIVELY to stay organized and track work.',
+    description: 'ALWAYS check TODO lists when starting work or after completing tasks. Shows progress and pending items. Use PROACTIVELY to stay organized and track work. Smart filtering shows only active/recent lists by default. Auto-summary mode for large datasets.',
     inputSchema: {
       type: 'object',
       properties: {
@@ -219,6 +332,11 @@ export function getViewTodosToolSchema() {
           type: 'string',
           enum: ['plain', 'emoji', 'json', 'dual'],
           description: 'Output format override (defaults to env GOLDFISH_OUTPUT_MODE or dual)'
+        },
+        summary: {
+          type: 'boolean',
+          description: 'Show compact summary view for token limit management (default: false, auto-enabled for >10 lists)',
+          default: false
         }
       }
     }

@@ -17,6 +17,7 @@ export interface UpdateTodoArgs {
   delete?: boolean;
   workspace?: string;  // NEW - Optional workspace (path or name)
   markAllComplete?: boolean;  // NEW - Mark all tasks in the list as complete
+  cleanupOldLists?: boolean;  // NEW - Auto-complete old lists with all tasks done
   format?: import('../core/output-utils.js').OutputMode;
 }
 
@@ -31,12 +32,43 @@ export async function handleUpdateTodo(storage: Storage, args: UpdateTodoArgs): 
     return createErrorResponse(validation.error!, 'update_todo', args.format || 'emoji');
   }
 
-  const { listId, itemId, status, newTask, priority, delete: deleteItem, workspace, markAllComplete } = args;
+  const { listId, itemId, status, newTask, priority, delete: deleteItem, workspace, markAllComplete, cleanupOldLists } = args;
 
   // Load TODO lists - if workspace specified, search across workspaces, otherwise current only
   const todoLists = workspace ? 
     await loadTodoListsWithScope(storage, 'all') : 
     await storage.loadAllTodoLists();
+  
+  // Handle cleanup of old/legacy lists
+  if (cleanupOldLists) {
+    let cleanedCount = 0;
+    const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
+    
+    for (const list of todoLists) {
+      // Auto-complete lists that:
+      // 1. Have all items marked as 'done'
+      // 2. Don't have explicit status (legacy lists) OR are older than 30 days
+      // 3. Are not already marked as completed
+      const allItemsDone = list.items.length > 0 && list.items.every(item => item.status === 'done');
+      const isOldOrLegacy = !list.status || new Date(list.updatedAt) < thirtyDaysAgo;
+      const notAlreadyCompleted = list.status !== 'completed';
+      
+      if (allItemsDone && isOldOrLegacy && notAlreadyCompleted) {
+        list.status = 'completed';
+        list.completedAt = new Date();
+        list.updatedAt = new Date();
+        await storage.saveTodoList(list);
+        cleanedCount++;
+      }
+    }
+    
+    return createSuccessResponse(
+      `🧹 Cleaned up ${cleanedCount} old TODO lists that had all tasks completed`,
+      'update-todo',
+      { cleanedCount },
+      args.format || 'emoji'
+    );
+  }
   
   // Use the new resolver that handles "latest" and other special keywords
   const todoList = resolveSpecialTodoListId(listId, todoLists);
@@ -169,9 +201,22 @@ export async function handleUpdateTodo(storage: Storage, args: UpdateTodoArgs): 
     
     todoList.items.push(newItem);
     todoList.updatedAt = new Date();
+    
+    // NEW - Reopen capability: If list was completed, reopen it when adding new tasks
+    const wasCompleted = todoList.status === 'completed';
+    if (wasCompleted) {
+      todoList.status = 'active';
+      todoList.completedAt = undefined;
+    }
+    
     await storage.saveTodoList(todoList);
 
-    return createSuccessResponse(`➕ Added "${newTask}" to "${todoList.title}"`, 'update-todo', { listId: todoList.id, itemId: newItem.id }, args.format || 'emoji');
+    let message = `➕ Added "${newTask}" to "${todoList.title}"`;
+    if (wasCompleted) {
+      message += `\n🔄 Reopened completed list - new work detected`;
+    }
+
+    return createSuccessResponse(message, 'update-todo', { listId: todoList.id, itemId: newItem.id, reopened: wasCompleted }, args.format || 'emoji');
   }
 
   return createErrorResponse('❓ Please specify either newTask to add, or itemId + status to update', 'update_todo', args.format || 'emoji');
@@ -220,6 +265,10 @@ export function getUpdateTodoToolSchema() {
         markAllComplete: {
           type: 'boolean',
           description: 'Mark all tasks in the TODO list as complete (requires listId)'
+        },
+        cleanupOldLists: {
+          type: 'boolean',
+          description: 'Auto-complete old TODO lists that have all tasks marked as done (works across all workspaces)'
         },
         format: {
           type: 'string',

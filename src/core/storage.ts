@@ -516,4 +516,22 @@ export class Storage {
     
     return cleanedCount;
   }
+
+  /**
+   * Delete a TODO list file
+   */
+  async deleteTodoList(todoListId: string, workspace: string = this.currentWorkspace): Promise<void> {
+    const todosDir = this.getTodosDir(workspace);
+    const filename = `${todoListId}.json`;
+    const filepath = join(todosDir, filename);
+    
+    try {
+      await fs.remove(filepath);
+    } catch (error) {
+      // Ignore if file doesn't exist (may have been already deleted)
+      if ((error as any)?.code !== 'ENOENT') {
+        throw error;
+      }
+    }
+  }
 }
