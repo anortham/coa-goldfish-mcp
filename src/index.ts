@@ -40,6 +40,8 @@ import { handlePlan, getPlanToolSchema } from './tools/plan.js';
 // Standup tool for intelligent work aggregation and reporting
 import { handleStandup, getStandupToolSchema } from './tools/standup.js';
 import { handleListWorkspaces, getListWorkspacesToolSchema } from './tools/list-workspaces.js';
+// Intel tool for project knowledge management
+import { handleIntel, getIntelToolSchema } from './tools/intel.js';
 
 // Type imports
 import { CheckpointContent } from './types/index.js';
@@ -97,7 +99,10 @@ class GoldfishMCPServer {
           // Standup tool for intelligent work aggregation and reporting
           getStandupToolSchema(),
           
-          getListWorkspacesToolSchema()
+          getListWorkspacesToolSchema(),
+          
+          // Intel tool for project knowledge management  
+          getIntelToolSchema()
         ],
       };
     });
@@ -137,6 +142,9 @@ class GoldfishMCPServer {
           
           case 'list_workspaces':
             return await handleListWorkspaces(this.storage, args as any);
+          
+          case 'intel':
+            return await handleIntel(this.storage, args as any);
           
           default:
             throw new Error(`Unknown tool: ${name}`);

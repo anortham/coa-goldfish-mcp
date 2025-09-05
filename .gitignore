@@ -64,4 +64,7 @@ temp/
 node_modules
 test-results.xml
 
+# Test storage directory (contains temporary test data)
+test-storage/
+
 .coa/

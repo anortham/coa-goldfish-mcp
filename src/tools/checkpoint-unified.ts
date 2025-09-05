@@ -268,6 +268,9 @@ export class UnifiedCheckpointTool {
         });
       }
 
+      // Include project intelligence if available
+      await this.includeProjectIntelligence(output, workspace || this.storage.getCurrentWorkspace());
+
       output.push('');
       output.push('═══════════════════════════════════════════════════════════');
       output.push('✅ Session restored successfully');
@@ -708,6 +711,49 @@ export class UnifiedCheckpointTool {
         month: 'short', 
         day: 'numeric' 
       });
+    }
+  }
+
+  /**
+   * Include project intelligence in restore output if available
+   */
+  private async includeProjectIntelligence(output: string[], workspace: string): Promise<void> {
+    try {
+      const hasIntel = await this.storage.hasIntelFile(workspace);
+      if (!hasIntel) {
+        return; // No intelligence file, nothing to include
+      }
+
+      const intel = await this.storage.readIntelFile(workspace);
+      if (!intel || intel.trim() === '') {
+        return; // Empty intelligence file
+      }
+
+      output.push('');
+      output.push('🧠 **PROJECT INTELLIGENCE**');
+      output.push('═══════════════════════════════════════════════════════════');
+      output.push('');
+      
+      // Format the intelligence content
+      const lines = intel.split('\n');
+      for (const line of lines) {
+        if (line.trim() === '') {
+          output.push('');
+        } else if (line.startsWith('#')) {
+          // Section headers get special formatting
+          output.push(`**${line.replace(/^#+\s*/, '')}**`);
+        } else if (line.startsWith('- ')) {
+          // List items
+          output.push(`  ${line}`);
+        } else {
+          // Regular lines
+          output.push(line);
+        }
+      }
+      
+    } catch (error) {
+      // Don't fail the restore if intelligence loading fails
+      console.warn('Failed to load project intelligence:', error);
     }
   }
 

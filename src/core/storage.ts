@@ -625,4 +625,35 @@ export class Storage {
       }
     }
   }
+
+  /**
+   * Read INTEL.md file for the current workspace
+   */
+  async readIntelFile(workspace: string = this.currentWorkspace): Promise<string> {
+    const workspaceDir = this.getWorkspaceDir(workspace);
+    const intelPath = join(workspaceDir, 'INTEL.md');
+    
+    return await fs.readFile(intelPath, 'utf-8');
+  }
+
+  /**
+   * Write INTEL.md file for the current workspace
+   */
+  async writeIntelFile(content: string, workspace: string = this.currentWorkspace): Promise<void> {
+    const workspaceDir = this.getWorkspaceDir(workspace);
+    await fs.ensureDir(workspaceDir);
+    
+    const intelPath = join(workspaceDir, 'INTEL.md');
+    await fs.writeFile(intelPath, content, 'utf-8');
+  }
+
+  /**
+   * Check if INTEL.md file exists
+   */
+  async hasIntelFile(workspace: string = this.currentWorkspace): Promise<boolean> {
+    const workspaceDir = this.getWorkspaceDir(workspace);
+    const intelPath = join(workspaceDir, 'INTEL.md');
+    
+    return await fs.pathExists(intelPath);
+  }
 }
