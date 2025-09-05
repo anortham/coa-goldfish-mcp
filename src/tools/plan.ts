@@ -673,7 +673,7 @@ export async function handlePlan(storage: Storage, args: PlanArgs): Promise<Tool
 export function getPlanToolSchema() {
   return {
     name: 'plan',
-    description: 'Strategic planning tool. Design features, track progress, capture lessons. Generates TODO lists from plans. Use before starting complex work.',
+    description: 'PROACTIVE planning tool for complex features and architecture. Use BEFORE coding to design implementation approach, break down requirements, identify risks, and generate TODO lists. Different from checkpoint: plan = future work design, checkpoint = current progress save. Essential for features requiring multiple files/steps.',
     inputSchema: {
       type: 'object',
       properties: {
