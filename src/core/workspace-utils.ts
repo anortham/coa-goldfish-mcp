@@ -67,19 +67,113 @@ export function validateCommonArgs(args: any): { isValid: boolean; error?: strin
 }
 
 /**
+ * Validate time range parameter with helpful error messages
+ */
+export function validateTimeRange(range?: string): { isValid: boolean; error?: string; normalized?: string } {
+  if (!range) return { isValid: true }; // Optional parameter
+  
+  const validRanges = [
+    '1h', '1 hour', '24h', '1d', '1 day', '7d', '1w', '1 week', 
+    '30d', '1m', '1 month', 'yesterday', 'today', 'this week', 'last week'
+  ];
+  
+  const normalizedRange = range.toLowerCase().trim();
+  
+  if (validRanges.includes(normalizedRange)) {
+    return { isValid: true, normalized: normalizedRange };
+  }
+  
+  // Check if it's a date string (basic validation)
+  if (/^\d{4}-\d{2}-\d{2}$/.test(range)) {
+    return { isValid: true, normalized: range };
+  }
+  
+  return { 
+    isValid: false, 
+    error: `⏰ Invalid time range "${range}". Valid options: "1h", "24h", "7d", "1w", "30d", "yesterday", "2025-01-15", etc.`
+  };
+}
+
+/**
+ * Validate action parameter with suggestions
+ */
+export function validateAction(action: string, validActions: string[], toolName: string): { isValid: boolean; error?: string } {
+  if (!validActions.includes(action)) {
+    const suggestions = validActions.slice(0, 3).join('", "');
+    return { 
+      isValid: false, 
+      error: `❓ Invalid action "${action}" for ${toolName}. Valid options: "${suggestions}"${validActions.length > 3 ? '...' : ''}`
+    };
+  }
+  return { isValid: true };
+}
+
+/**
+ * Validate string parameters with length and content checks
+ */
+export function validateStringParam(value: any, paramName: string, options: {
+  required?: boolean;
+  minLength?: number;
+  maxLength?: number;
+  examples?: string[];
+} = {}): { isValid: boolean; error?: string; value?: string } {
+  const { required = false, minLength = 0, maxLength = 500, examples = [] } = options;
+  
+  if (!value && required) {
+    const exampleText = examples.length > 0 ? ` Examples: ${examples.slice(0, 2).join(', ')}` : '';
+    return { 
+      isValid: false, 
+      error: `📝 ${paramName} is required.${exampleText}`
+    };
+  }
+  
+  if (!value) return { isValid: true }; // Optional parameter
+  
+  if (typeof value !== 'string') {
+    return { 
+      isValid: false, 
+      error: `❓ ${paramName} must be a string, got ${typeof value}`
+    };
+  }
+  
+  const trimmedValue = value.trim();
+  
+  if (trimmedValue.length < minLength) {
+    const exampleText = examples.length > 0 ? ` Examples: ${examples.slice(0, 2).join(', ')}` : '';
+    return { 
+      isValid: false, 
+      error: `📏 ${paramName} must be at least ${minLength} characters long.${exampleText}`
+    };
+  }
+  
+  if (trimmedValue.length > maxLength) {
+    return { 
+      isValid: false, 
+      error: `📏 ${paramName} must be no more than ${maxLength} characters long. Current length: ${trimmedValue.length}`
+    };
+  }
+  
+  return { isValid: true, value: trimmedValue };
+}
+
+/**
  * Create consistent error response
  */
 export function createErrorResponse(message: string, context?: string, format?: OutputMode, data?: any): any {
   const fullMessage = context ? `${context}: ${message}` : message;
   const op = context || 'error';
-  return buildToolContent(op, fullMessage, data, format);
+  const result = buildToolContent(op, fullMessage, data, format);
+  result.isError = true;
+  return result;
 }
 
 /**
  * Create consistent success response
  */
 export function createSuccessResponse(message: string, operation = 'success', data?: any, format?: OutputMode): any {
-  return buildToolContent(operation, message, data, format);
+  const result = buildToolContent(operation, message, data, format);
+  result.isError = false;
+  return result;
 }
 
 /**

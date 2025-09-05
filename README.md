@@ -45,23 +45,31 @@ Just ask naturally - Goldfish will search your work history.
 - **"What did the team accomplish this week?"** → Timeline across all projects
 - **"Where did I leave that API documentation task?"** → Finds your work context
 
-## 🛠 Available Commands
+## 🛠 Available Tools
 
-### Custom Slash Commands (Available in .claude/commands/)
-- **`/checkpoint`** - Save your current progress with context
-- **`/resume`** - Restore your session after breaks or crashes  
-- **`/standup`** - Generate daily standup report
-- **`/todo`** - Manage your active task lists with smart keywords
+### Unified Smart Tools
+Goldfish provides 4 main tools that cover your complete workflow:
 
-### Natural Language Queries
+- **`checkpoint`** - Save progress or restore session context. Use after completing tasks, before breaks, when resuming work
+- **`todo`** - Manage tasks efficiently. Create lists, track progress, mark complete. Smart keywords: "latest", "active"
+- **`plan`** - Strategic planning tool. Design features, track progress, capture lessons. Generates TODOs from plans
+- **`standup`** - Daily work summaries and progress reports. Shows accomplishments, current tasks, blockers
+
+### Support Tools
+- **`search_history`** - Find past work and solutions. Search all work history
+- **`timeline`** - Review work progress chronologically for reporting
+- **`recall`** - Restore working context after breaks or /clear
+- **`list_workspaces`** - Show available workspaces for project switching
+
+### Natural Language Examples
 Just ask Goldfish naturally:
 
-- **"Show me yesterday's work"** - Timeline of your recent accomplishments
-- **"What JWT tasks am I working on?"** - Search for specific topics
-- **"Summarize this week's progress"** - High-level summary of your achievements  
-- **"What are my pending tasks?"** - View active TODOs with status
-- **"Remember: Need to update the API docs"** - Store quick reminders
-- **"What workspaces do I have?"** - List all available workspaces for project switching
+- **"Save my current progress"** → Creates checkpoint automatically
+- **"What was I working on yesterday?"** → Uses timeline/recall to show recent work
+- **"Show my active tasks"** → Views current TODO lists
+- **"Create a plan for user authentication"** → Starts strategic planning
+- **"Generate standup report"** → Creates daily work summary
+- **"Find my JWT implementation work"** → Searches work history
 
 ## 📦 Installation
 
@@ -144,8 +152,8 @@ Goldfish: Searches and finds:
 
 ### End of Day
 ```
-You: "/checkpoint Finished OAuth2 integration, all tests passing"
-Goldfish: Saves checkpoint with:
+You: "Save a checkpoint: Finished OAuth2 integration, all tests passing"
+Goldfish: Creates checkpoint with:
 - Your description
 - Files you were editing
 - Current git branch
@@ -255,7 +263,7 @@ npm test date-handling.test.ts
 npm run dev
 ```
 
-**Test Coverage**: 51 tests covering all major functionality including edge cases, concurrent operations, and error handling.
+**Test Coverage**: 274 tests across 23 test suites covering all major functionality including edge cases, concurrent operations, and error handling.
 
 ## 📤 Output Modes (Multi-CLI Compatible)
 

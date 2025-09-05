@@ -730,7 +730,7 @@ describe('Refactored Individual Tool Architecture', () => {
       // NOTE: handleRemember removed as part of storage redesign - testing equivalent TodoList functionality
       // TodoList creation with empty items returns error message but doesn't throw
       const result = await handleCreateTodoList(mockStorage, { title: 'Test', items: [] });
-      expect(result.content[0].text).toContain('Items array is required');
+      expect(result.content[0].text).toContain('Please provide at least one task item');
     });
 
     test('view_todos should handle missing list ID gracefully', async () => {
@@ -747,7 +747,7 @@ describe('Refactored Individual Tool Architecture', () => {
       
       const result = await handleViewTodos(mockStorage, { listId: 'non-existent-list' });
       
-      expect(result.content[0].text).toContain('❓ TODO list "non-existent-list" not found');
+      expect(result.content[0].text).toContain('TODO list "non-existent-list" not found');
     });
 
     test('update_todo should handle missing list ID gracefully', async () => {

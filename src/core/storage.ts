@@ -9,14 +9,17 @@ import { homedir } from 'os';
 import { spawnSync } from 'child_process';
 import { randomBytes } from 'crypto';
 import { GoldfishMemory, TodoList } from '../types/index.js';
+import { ConfigManager } from './config.js';
 
 export class Storage {
   private basePath: string;
   private currentWorkspace: string;
 
   constructor(customWorkspace?: string, customBasePath?: string) {
+    const config = ConfigManager.getInstance();
+    
     // Determine base path with environment and permission-aware fallback
-    const envBase = process.env.COA_GOLDFISH_BASE_PATH;
+    const envBase = config.get('basePath');
     const isTestEnv = !!process.env.JEST_WORKER_ID || process.env.NODE_ENV === 'test';
     const preferredDefault = isTestEnv
       ? (envBase || join(process.cwd(), '.coa', 'goldfish'))
@@ -38,7 +41,7 @@ export class Storage {
       }
     }
 
-    this.currentWorkspace = customWorkspace || this.detectWorkspace();
+    this.currentWorkspace = customWorkspace || (config.get('autoDetectWorkspace') ? this.detectWorkspace() : 'default');
   }
 
   /**
@@ -147,6 +150,13 @@ export class Storage {
   }
 
   /**
+   * Get plans directory for workspace
+   */
+  getPlansDir(workspace: string = this.currentWorkspace): string {
+    return join(this.getWorkspaceDir(workspace), 'plans');
+  }
+
+  /**
    * Get date directory for checkpoints
    */
   getDateDir(date?: string, workspace: string = this.currentWorkspace): string {
@@ -165,6 +175,9 @@ export class Storage {
       // Save checkpoints in date-organized folders
       const date = memory.timestamp.toISOString().split('T')[0];
       targetDir = this.getDateDir(date, memory.workspace);
+    } else if (memory.type === 'plan') {
+      // Save plans in dedicated plans folder
+      targetDir = this.getPlansDir(memory.workspace);
     } else {
       // Save other memories (todos, general) in todos folder
       targetDir = this.getTodosDir(memory.workspace);
@@ -218,7 +231,7 @@ export class Storage {
   /**
    * Load memory from file by filename
    */
-  async loadMemory(filename: string, workspace: string = this.currentWorkspace, type: 'checkpoint' | 'todo' = 'checkpoint'): Promise<GoldfishMemory | null> {
+  async loadMemory(filename: string, workspace: string = this.currentWorkspace, type: 'checkpoint' | 'todo' | 'plan' = 'checkpoint'): Promise<GoldfishMemory | null> {
     try {
       let filepath: string | undefined;
       const nameWithExt = filename.endsWith('.json') ? filename : `${filename}.json`;
@@ -237,6 +250,9 @@ export class Storage {
         }
         
         if (!filepath) return null;
+      } else if (type === 'plan') {
+        filepath = join(this.getPlansDir(workspace), nameWithExt);
+        if (!await fs.pathExists(filepath)) return null;
       } else {
         filepath = join(this.getTodosDir(workspace), nameWithExt);
         if (!await fs.pathExists(filepath)) return null;
@@ -296,10 +312,61 @@ export class Storage {
         for (const file of jsonFiles) {
           try {
             const data = await fs.readJson(join(todosDir, file));
-            memories.push({
-              ...data,
-              timestamp: new Date(data.timestamp)
-            });
+            
+            // Check if this is already a GoldfishMemory object or raw TodoList
+            if (data.type && data.content && data.timestamp) {
+              // Already a GoldfishMemory object
+              memories.push({
+                ...data,
+                timestamp: new Date(data.timestamp)
+              });
+            } else {
+              // Raw TodoList object, wrap it
+              memories.push({
+                id: data.id,
+                type: 'todo',
+                content: data,
+                timestamp: new Date(data.createdAt || data.timestamp || new Date()),
+                workspace: data.workspace || workspace,
+                tags: data.tags || [],
+                ttlHours: data.ttlHours
+              });
+            }
+          } catch {
+            // Skip corrupted files
+          }
+        }
+      }
+      
+      // Load plans
+      const plansDir = this.getPlansDir(workspace);
+      if (await fs.pathExists(plansDir)) {
+        const files = await fs.readdir(plansDir);
+        const jsonFiles = files.filter((f: string) => f.endsWith('.json'));
+        
+        for (const file of jsonFiles) {
+          try {
+            const data = await fs.readJson(join(plansDir, file));
+            
+            // Check if this is already a GoldfishMemory object or raw Plan
+            if (data.type && data.content && data.timestamp) {
+              // Already a GoldfishMemory object
+              memories.push({
+                ...data,
+                timestamp: new Date(data.timestamp)
+              });
+            } else {
+              // Raw Plan object, wrap it
+              memories.push({
+                id: data.id,
+                type: 'plan',
+                content: data,
+                timestamp: new Date(data.createdAt || data.timestamp || new Date()),
+                workspace: data.workspace || workspace,
+                tags: data.tags || [],
+                ttlHours: data.ttlHours
+              });
+            }
           } catch {
             // Skip corrupted files
           }
@@ -338,6 +405,13 @@ export class Storage {
         await fs.unlink(todosPath);
         return;
       }
+      
+      // Search in plans directory
+      const plansPath = join(this.getPlansDir(workspace), nameWithExt);
+      if (await fs.pathExists(plansPath)) {
+        await fs.unlink(plansPath);
+        return;
+      }
 
       // Legacy fallback: some older files were saved with filenames not matching the memory id.
       // If direct filename deletion failed, scan for files whose JSON content has matching id.
@@ -371,6 +445,23 @@ export class Storage {
       for (const file of todoFiles) {
         if (!file.endsWith('.json')) continue;
         const full = join(todosDir, file);
+        try {
+          const data = await fs.readJson(full);
+          if (data && typeof data === 'object' && data.id === bareId) {
+            await fs.unlink(full);
+            return;
+          }
+        } catch {
+          // Ignore unreadable/corrupt files
+        }
+      }
+
+      // Check in plans folder
+      const plansDir = this.getPlansDir(workspace);
+      const planFiles = await fs.readdir(plansDir).catch(() => []);
+      for (const file of planFiles) {
+        if (!file.endsWith('.json')) continue;
+        const full = join(plansDir, file);
         try {
           const data = await fs.readJson(full);
           if (data && typeof data === 'object' && data.id === bareId) {

@@ -81,16 +81,16 @@ export function buildToolContent(
   };
 
   if (mode === 'plain') {
-    return { content: [{ type: 'text', text: plain }] };
+    return { content: [{ type: 'text', text: plain }], isError: false };
   }
 
   if (mode === 'emoji') {
-    return { content: [{ type: 'text', text: formattedOutput }] };
+    return { content: [{ type: 'text', text: formattedOutput }], isError: false };
   }
 
   if (mode === 'json') {
     const flat = { ...jsonPayload, ...(jsonPayload.data || {}) };
-    return { content: [{ type: 'text', text: JSON.stringify(flat, null, 2) }] };
+    return { content: [{ type: 'text', text: JSON.stringify(flat, null, 2) }], isError: false };
   }
 
   // dual
@@ -98,6 +98,7 @@ export function buildToolContent(
     content: [
       { type: 'text', text: plain },
       { type: 'text', text: JSON.stringify({ ...jsonPayload, ...(jsonPayload.data || {}) }, null, 2) }
-    ]
+    ],
+    isError: false
   };
 }

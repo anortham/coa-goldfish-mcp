@@ -1,21 +1,40 @@
 # COA Goldfish MCP - AI Agent Instructions
 
-## Testing Requirements
-**CRITICAL**: After making code changes, user must restart Claude Code before testing MCP tools.
+## QUICK START FOR AI AGENTS
+
+### Essential Actions
+1. **Always use unified tools first**: `checkpoint`, `todo`, `plan`, `standup`
+2. **Smart keywords work everywhere**: `"latest"`, `"active"`, `"current"` for listId/planId
+3. **Default to dual output mode**: Shows both formatted text and JSON payload
+4. **Proactively checkpoint after completing tasks**: Save progress automatically
+
+### Core Unified Tools (USE THESE FIRST)
+- **`mcp__goldfish__checkpoint`** - Save/restore session state. Use `action="save"` with description, `action="restore"` to resume work
+- **`mcp__goldfish__todo`** - Complete task management. Use `action="create"` for new lists, `action="view"` to see tasks, `action="update"` to modify
+- **`mcp__goldfish__plan`** - Strategic planning and feature design. Use `action="save"` for new plans, `action="generate-todos"` to create task lists
+- **`mcp__goldfish__standup`** - Daily/weekly summaries. Use `action="daily"` for recent work, `scope="all"` for cross-workspace reports
+
+### Support Tools (Secondary)
+- **`mcp__goldfish__search_history`** - Find past work with `query` parameter
+- **`mcp__goldfish__timeline`** - Chronological view with `since` parameter
+- **`mcp__goldfish__recall`** - Quick context restoration (no parameters needed)
+- **`mcp__goldfish__list_workspaces`** - Show available workspaces
+
+## CRITICAL TESTING INFO
+**After making code changes, user must restart Claude Code before testing MCP tools.**
 
 ## Architecture Overview
-- TypeScript/Node.js MCP server with JSON file storage
-- Workspace-aware memory system (~/.coa/goldfish/memories/{workspace}/)
-- 24h auto-expiration with max 50 memories per workspace
-- Tag-based search with exact filtering support
-- Centralized date utilities for timezone-safe operations
+- TypeScript/Node.js MCP server with workspace-aware JSON storage
+- Automatic memory expiration (24h quick notes, 3d checkpoints)
+- Cross-workspace querying for comprehensive reporting  
+- Smart output modes (plain/emoji/json/dual) with environment detection
+- All 274 tests passing across 23 test suites
 
 ## Core Development Principles
-- Handle errors gracefully, never crash
+- Handle errors gracefully with helpful messages, never crash
 - Use separate content blocks to prevent Claude Code output collapse
-- Optimize tool descriptions for proactive AI agent usage
-- Support cross-workspace queries for standup-style reporting
-- Use TDD methodology for all bug fixes and feature development
+- Tool descriptions optimized for proactive AI agent usage
+- TDD methodology for all bug fixes and feature development
 
 ## Claude Code Display Fix
 Use separate content blocks to prevent output collapse:
@@ -29,17 +48,40 @@ return {
 };
 ```
 
-## Tool Usage for AI Agents
+## Unified Tool Patterns (CURRENT ARCHITECTURE)
 
-### Essential Tools
-- `remember()` - Store temporary context with tags
-- `create_todo_list()` - Structure tasks
-- `update_todo()` - Track progress (supports "latest" keyword for listId)
-- `checkpoint()` - Save session state
-- `recall()` - Retrieve memories with tag filtering
-- `view_todos()` - See active tasks (supports "latest" keyword for listId)
-- `timeline()` - Cross-workspace reporting
-- `search_history()` - Fuzzy search across checkpoints
+### Smart Parameter Defaults
+All unified tools use intelligent defaults and action inference:
+- **Action inference**: `checkpoint({ description: "..." })` automatically saves
+- **Smart keywords**: `listId: "latest"`, `planId: "active"`, `since: "yesterday"`  
+- **Auto-completion**: Most parameters are optional with sensible defaults
+- **Environment adaptation**: Output format auto-detects CI/test/terminal environments
+
+### Example Usage Patterns
+```javascript
+// Checkpoint (save/restore)
+checkpoint({ description: "Fixed authentication bug" })  // auto-saves
+checkpoint({ action: "restore" })  // restores latest
+
+// TODO management
+todo({ title: "Bug Fixes", items: ["Fix login", "Test API"] })  // auto-creates
+todo({ listId: "latest", itemId: "1", status: "done" })  // updates
+todo({ listId: "active", newTask: "Urgent fix" })  // adds to active list
+
+// Planning
+plan({ title: "User Auth", description: "OAuth2 implementation...", items: [...] })  // auto-saves
+plan({ planId: "latest", action: "generate-todos" })  // creates TODO list
+
+// Daily summaries  
+standup({ action: "daily" })  // today's work
+standup({ action: "weekly", scope: "all" })  // cross-workspace weekly
+```
+
+### Legacy Tools (DEPRECATED - Use unified tools above)
+- ~~`remember()`~~ → Use `checkpoint()` for session state
+- ~~`create_todo_list()`~~ → Use `todo()` with title/items
+- ~~`update_todo()`~~ → Use `todo()` with listId/itemId  
+- ~~`view_todos()`~~ → Use `todo()` with action="view"
 
 ### Memory Types
 - **general**: Default working memory
@@ -134,7 +176,7 @@ src/
 ## Development Commands
 ```bash
 npm run dev          # Development with live reload
-npm test            # Run all tests (should show 187+ passing)
+npm test            # Run all tests (should show 274+ passing)
 npm run build       # TypeScript compilation
 npm run lint        # ESLint checking
 ```
@@ -146,7 +188,7 @@ npm run lint        # ESLint checking
 - **Storage Fallback**: Graceful handling of permission issues and test environments
 - **TODO Keywords**: Intuitive "latest", "active" keywords reduce ID lookup errors
 - **Smart Output Modes**: Environment-aware formatting (CI=plain, test=json, etc.)
-- **Comprehensive Testing**: 22+ test suites with 258+ tests covering all scenarios
+- **Comprehensive Testing**: 23 test suites with 274 tests covering all scenarios
 
 ## Common Patterns
 

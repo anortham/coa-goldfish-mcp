@@ -13,7 +13,7 @@ The @coa/mcp-vscode-bridge enables bi-directional communication between Goldfish
 
 ### 2. VS Code UI Integration
 - **Status Bar Widget**: Show current Goldfish session and checkpoint count
-- **Command Palette**: Quick access to Goldfish commands (checkpoint, recall, etc.)
+- **Command Palette**: Quick access to Goldfish unified tools (checkpoint, todo, plan, standup)
 - **Notifications**: Important memories or session restorations
 - **CodeLens**: Inline hints about related memories in your code
 
@@ -127,8 +127,8 @@ this.bridge.registerCommand('goldfish.checkpoint', async () => {
   }
 });
 
-this.bridge.registerCommand('goldfish.recall', async () => {
-  const memories = await this.goldfish.recall({ limit: 5 });
+this.bridge.registerCommand('goldfish.checkpoint', async () => {
+  const session = await this.goldfish.checkpoint({ action: 'restore' });
   const quickPick = memories.map(m => ({
     label: m.content,
     description: new Date(m.timestamp).toLocaleString(),
@@ -268,14 +268,14 @@ Share your Goldfish session ID with a teammate so they can see your recent work 
 1. Install the VS Code Goldfish extension (when available)
 2. Configure your preferences in VS Code settings
 3. Start coding - Goldfish automatically tracks your work
-4. Use Command Palette for manual checkpoints and recalls
+4. Use Command Palette for manual checkpoints and session restoration
 
 ## API Reference
 
 The bridge will expose these methods to VS Code:
 
 - `checkpoint(description: string, context?: object): Promise<void>`
-- `recall(options?: RecallOptions): Promise<Memory[]>`
+- `checkpoint(args: CheckpointArgs): Promise<CheckpointResponse>`
 - `timeline(since?: string): Promise<TimelineData>`
 - `switchWorkspace(path: string): Promise<void>`
 - `getCurrentSession(): Promise<SessionInfo>`

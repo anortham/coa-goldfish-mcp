@@ -6,7 +6,7 @@
 
 import { Storage } from '../core/storage.js';
 import { TodoList, ToolResponse } from '../types/index.js';
-import { validateCommonArgs, createErrorResponse, createSuccessResponse, normalizeWorkspaceName } from '../core/workspace-utils.js';
+import { validateCommonArgs, validateStringParam, createErrorResponse, createSuccessResponse, normalizeWorkspaceName } from '../core/workspace-utils.js';
 
 export interface CreateTodoListArgs {
   title: string;
@@ -31,12 +31,47 @@ export async function handleCreateTodoList(storage: Storage, args: CreateTodoLis
     return createErrorResponse(validation.error!, 'create_todo_list', args.format);
   }
 
-  if (!args.title || args.title.trim().length === 0) {
-    return createErrorResponse('Title is required and cannot be empty', 'create_todo_list', args.format);
+  // Validate title with examples
+  const titleValidation = validateStringParam(args.title, 'TODO list title', {
+    required: true,
+    minLength: 1,
+    maxLength: 100,
+    examples: ['"Sprint Tasks"', '"Bug Fixes"', '"Feature Implementation"']
+  });
+  
+  if (!titleValidation.isValid) {
+    return createErrorResponse(titleValidation.error!, 'create_todo_list', args.format);
   }
 
-  if (!args.items || !Array.isArray(args.items) || args.items.length === 0) {
-    return createErrorResponse('Items array is required and must contain at least one item', 'create_todo_list', args.format);
+  // Validate items array
+  if (!args.items) {
+    return createErrorResponse('📋 Items array is required. Examples: ["Implement user login", "Write unit tests", "Update documentation"]', 'create_todo_list', args.format);
+  }
+  
+  if (!Array.isArray(args.items)) {
+    return createErrorResponse('📋 Items must be an array of strings. Example: ["task 1", "task 2"]', 'create_todo_list', args.format);
+  }
+  
+  if (args.items.length === 0) {
+    return createErrorResponse('📋 Please provide at least one task item. Examples: ["Implement user login", "Write unit tests", "Update documentation"]', 'create_todo_list', args.format);
+  }
+  
+  if (args.items.length > 20) {
+    return createErrorResponse('📏 Too many items. Maximum 20 items per list to keep it manageable. Consider breaking large lists into smaller focused ones.', 'create_todo_list', args.format);
+  }
+  
+  // Validate each item
+  for (let i = 0; i < args.items.length; i++) {
+    const itemValidation = validateStringParam(args.items[i], `Item ${i + 1}`, {
+      required: true,
+      minLength: 1,
+      maxLength: 200,
+      examples: ['"Implement user authentication"', '"Write unit tests"']
+    });
+    
+    if (!itemValidation.isValid) {
+      return createErrorResponse(itemValidation.error!, 'create_todo_list', args.format);
+    }
   }
 
   const { title, items, tags, description, metadata, status, ttlHours, workspace } = args;

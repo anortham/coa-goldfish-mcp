@@ -29,15 +29,16 @@ import { Storage } from './core/storage.js';
 import { SessionManager } from './core/session-manager.js';
 
 // Tool modules
-import { CheckpointTool } from './tools/checkpoint.js';
+import { UnifiedCheckpointTool } from './tools/checkpoint-unified.js';
 import { SearchTools } from './tools/search.js';
-import { SessionTools } from './tools/session.js';
 import { initializeVSCodeDisplay } from './vscode-bridge/simple-loader.js';
 import { GoldfishDisplayHandler } from './vscode-bridge/display-handler.js';
-// Removed: handleRemember, getRememberToolSchema - Memory objects deprecated in favor of TodoLists
-import { handleCreateTodoList, getCreateTodoListToolSchema } from './tools/create-todo-list.js';
-import { handleViewTodos, getViewTodosToolSchema } from './tools/view-todos.js';
-import { handleUpdateTodo, getUpdateTodoToolSchema } from './tools/update-todo.js';
+// Unified TODO tool (consolidates create-todo-list, view-todos, update-todo)
+import { handleTodo, getTodoToolSchema } from './tools/todo.js';
+// Plan tool for strategic planning and design decisions
+import { handlePlan, getPlanToolSchema } from './tools/plan.js';
+// Standup tool for intelligent work aggregation and reporting
+import { handleStandup, getStandupToolSchema } from './tools/standup.js';
 import { handleListWorkspaces, getListWorkspacesToolSchema } from './tools/list-workspaces.js';
 
 // Type imports
@@ -47,9 +48,8 @@ class GoldfishMCPServer {
   private server: Server;
   private storage: Storage;
   private sessionManager: SessionManager;
-  private checkpointTool: CheckpointTool;
+  private unifiedCheckpointTool: UnifiedCheckpointTool;
   private searchTools: SearchTools;
-  private sessionTools: SessionTools;
   private displayHandler: GoldfishDisplayHandler | null = null;
 
   constructor() {
@@ -70,9 +70,8 @@ class GoldfishMCPServer {
     this.sessionManager = new SessionManager(this.storage.getCurrentWorkspace(), this.storage);
     
     // Initialize tool modules (will be updated after VS Code display handler is initialized)
-    this.checkpointTool = new CheckpointTool(this.storage, this.sessionManager);
+    this.unifiedCheckpointTool = new UnifiedCheckpointTool(this.storage, this.sessionManager);
     this.searchTools = new SearchTools(this.storage, this.sessionManager); // Will be updated with display handler
-    this.sessionTools = new SessionTools(this.storage, this.sessionManager);
 
     this.setupHandlers();
     this.initializeOptionalFeatures();
@@ -83,19 +82,21 @@ class GoldfishMCPServer {
     this.server.setRequestHandler(ListToolsRequestSchema, async () => {
       return {
         tools: [
-          // Core checkpoint tool
-          CheckpointTool.getToolSchema(),
+          // Unified checkpoint tool (replaces checkpoint, restore_session, and search functionality)
+          UnifiedCheckpointTool.getToolSchema(),
           
           // Search and timeline tools
           ...SearchTools.getToolSchemas(),
           
-          // Session management tools
-          ...SessionTools.getToolSchemas(),
+          // Unified TODO tool (replaces create_todo_list, view_todos, update_todo)
+          getTodoToolSchema(),
           
-          // Individual tools (TODO management only - Memory objects deprecated)
-          getCreateTodoListToolSchema(),
-          getViewTodosToolSchema(),
-          getUpdateTodoToolSchema(),
+          // Plan tool for strategic planning and design decisions
+          getPlanToolSchema(),
+          
+          // Standup tool for intelligent work aggregation and reporting
+          getStandupToolSchema(),
+          
           getListWorkspacesToolSchema()
         ],
       };
@@ -107,12 +108,8 @@ class GoldfishMCPServer {
 
       try {
         switch (name) {
-          case 'checkpoint': {
-            if (!args || typeof args !== 'object' || !args.description) {
-              throw new Error('checkpoint requires description parameter');
-            }
-            return await this.checkpointTool.createCheckpoint(args as unknown as CheckpointContent);
-          }
+          case 'checkpoint':
+            return await this.unifiedCheckpointTool.handleUnifiedCheckpoint(args as any);
           
           case 'search_history':
             if (!args || typeof args !== 'object' || !args.query) {
@@ -126,21 +123,17 @@ class GoldfishMCPServer {
           case 'recall':
             return await this.searchTools.recall(args || {});
           
-          case 'restore_session':
-            return await this.sessionTools.restoreSession(args || {});
+          // Unified TODO tool (handles create, update, view, complete, quick actions)
+          case 'todo':
+            return await handleTodo(this.storage, args as any);
           
-          case 'summarize_session':
-            return await this.sessionTools.summarizeSession(args || {});
+          // Plan tool (handles save, restore, update, complete, abandon, list, generate-todos)
+          case 'plan':
+            return await handlePlan(this.storage, args as any);
           
-          // Individual tools (TODO management only)
-          case 'create_todo_list':
-            return await handleCreateTodoList(this.storage, args as any);
-          
-          case 'view_todos':
-            return await handleViewTodos(this.storage, args as any);
-          
-          case 'update_todo':
-            return await handleUpdateTodo(this.storage, args as any);
+          // Standup tool (handles daily, weekly, project, custom reports with relationship mapping)
+          case 'standup':
+            return await handleStandup(this.storage, args as any);
           
           case 'list_workspaces':
             return await handleListWorkspaces(this.storage, args as any);

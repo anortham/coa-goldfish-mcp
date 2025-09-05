@@ -7,7 +7,7 @@ export interface GoldfishMemory extends Record<string, unknown> {
   timestamp: Date;
   workspace: string;
   sessionId?: string;
-  type: 'general' | 'todo' | 'checkpoint' | 'context';
+  type: 'general' | 'todo' | 'checkpoint' | 'context' | 'plan';
   content: string | Record<string, unknown>;
   ttlHours: number;
   tags?: string[];
@@ -38,6 +38,42 @@ export interface TodoList {
   ttlHours?: number;             // NEW - Optional expiration
   sessionId?: string;            // Existing
   tags?: string[];               // Existing
+}
+
+export interface Plan extends Record<string, unknown> {
+  id: string;
+  title: string;
+  description: string;           // Full markdown plan content
+  items: string[];              // High-level plan items/milestones
+  category?: 'feature' | 'refactor' | 'research' | 'architecture' | 'bugfix' | 'maintenance';
+  status: 'draft' | 'active' | 'complete' | 'abandoned';
+  workspace: string;
+  
+  // Lifecycle timestamps
+  createdAt: Date;
+  updatedAt: Date;
+  completedAt?: Date;
+  abandonedAt?: Date;
+  
+  // Relationship tracking
+  generatedTodos: string[];      // TODO list IDs created from this plan
+  relatedCheckpoints: string[];  // Checkpoint IDs related to this plan
+  
+  // Progress and outcome tracking
+  completionPercentage: number;
+  outcomes?: string[];           // What actually happened vs plan
+  lessons?: string[];            // What we learned
+  blockers?: string[];           // What prevented progress
+  
+  // Metadata
+  estimatedEffort?: string;      // Time estimate
+  actualEffort?: string;         // Actual time spent
+  priority?: 'low' | 'normal' | 'high' | 'critical';
+  tags?: string[];
+  sessionId?: string;
+  
+  // Optional expiration
+  ttlHours?: number;
 }
 
 export interface SessionManifest {
@@ -90,4 +126,5 @@ export interface ToolResponse {
     type: 'text';
     text: string;
   }>;
+  isError?: boolean;
 }

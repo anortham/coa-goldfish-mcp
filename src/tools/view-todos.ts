@@ -106,9 +106,9 @@ export async function handleViewTodos(storage: Storage, args: ViewTodosArgs): Pr
       // Provide helpful error message for special keywords
       const isSpecialKeyword = ['latest', 'recent', 'last', 'active', 'current'].includes(listId.toLowerCase().trim());
       if (isSpecialKeyword) {
-        return createErrorResponse(`❓ No ${listId} TODO list found`, 'view_todos', 'emoji');
+        return createErrorResponse(`📋 No ${listId} TODO list found. Try using "latest", "active", or create a new list first.`, 'view_todos', 'emoji');
       }
-      return createErrorResponse(`❓ TODO list "${listId}" not found`, 'view_todos', 'emoji');
+      return createErrorResponse(`📋 TODO list "${listId}" not found. Available options: use "latest" for recent list, "active" for current work, or omit listId to see all lists.`, 'view_todos', 'emoji');
     }
     
     // Sort items by ID number (1,2,3,4,5,6,7) regardless of status

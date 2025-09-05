@@ -425,7 +425,7 @@ export class SearchTools {
     return [
       {
         name: 'search_history',
-        description: 'PROACTIVELY search before implementing features to find related past work. ALWAYS use when user mentions past work or asks about previous solutions. Essential for avoiding duplicate effort.',
+        description: 'Find past work and solutions. Use when user asks about previous implementations or mentions earlier tasks. Searches all work history.',
         inputSchema: {
           type: 'object',
           properties: {
@@ -444,11 +444,13 @@ export class SearchTools {
             scope: {
               type: 'string',
               enum: ['current', 'all'],
-              description: 'Search scope: current workspace or all workspaces'
+              description: 'Search scope: current workspace or all workspaces',
+              default: 'current'
             },
             limit: {
               type: 'number',
-              description: 'Maximum results to return (default: 20)'
+              description: 'Maximum results to return (default: 20)',
+              default: 20
             },
             format: {
               type: 'string',
@@ -461,13 +463,14 @@ export class SearchTools {
       },
       {
         name: 'timeline',
-        description: 'Use DAILY to review work progress. ALWAYS run when user asks "what did I do" or mentions reporting. Essential for tracking multi-day projects and standup preparation.',
+        description: 'Review work progress chronologically. Use when user asks "what did I do" or needs timeline view for reporting.',
         inputSchema: {
           type: 'object',
           properties: {
             since: {
               type: 'string',
-              description: 'Time range to show (default: "7d")'
+              description: 'Time range to show (default: "7d")',
+              default: '7d'
             },
             workspace: {
               type: 'string',
@@ -476,7 +479,8 @@ export class SearchTools {
             scope: {
               type: 'string',
               enum: ['current', 'all'],
-              description: 'Timeline scope: current workspace or all workspaces'
+              description: 'Timeline scope: current workspace or all workspaces',
+              default: 'current'
             },
             format: {
               type: 'string',
@@ -488,7 +492,7 @@ export class SearchTools {
       },
       {
         name: 'recall',
-        description: 'IMMEDIATELY recall context when returning to work or after breaks. Use WITHOUT query to see recent activity. Essential after /clear or session restarts. ALWAYS use to restore working memory.',
+        description: 'Restore working context after breaks or /clear. Shows recent activity without query. Use when resuming work sessions.',
         inputSchema: {
           type: 'object',
           properties: {
@@ -498,7 +502,8 @@ export class SearchTools {
             },
             since: {
               type: 'string',
-              description: 'Time range (default: "7d")'
+              description: 'Time range (default: "7d")',
+              default: '7d'
             },
             workspace: {
               type: 'string',
@@ -507,7 +512,8 @@ export class SearchTools {
             scope: {
               type: 'string',
               enum: ['current', 'all'],
-              description: 'Search scope (default: "current")'
+              description: 'Search scope (default: "current")',
+              default: 'current'
             },
             type: {
               type: 'string',
@@ -521,7 +527,8 @@ export class SearchTools {
             },
             limit: {
               type: 'number',
-              description: 'Maximum results (default: 10)'
+              description: 'Maximum results (default: 10)',
+              default: 10
             },
             format: {
               type: 'string',
