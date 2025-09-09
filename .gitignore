@@ -9,6 +9,16 @@ dist/
 build/
 *.tsbuildinfo
 
+# .NET build outputs
+bin/
+obj/
+*.dll
+*.exe
+*.pdb
+*.deps.json
+*.runtimeconfig.json
+*.staticwebassets.endpoints.json
+
 # Environment variables
 .env
 .env.local

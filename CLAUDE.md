@@ -24,28 +24,45 @@
 **After making code changes, user must restart Claude Code before testing MCP tools.**
 
 ## Architecture Overview
-- TypeScript/Node.js MCP server with workspace-aware JSON storage
-- Automatic memory expiration (24h quick notes, 3d checkpoints)
-- Cross-workspace querying for comprehensive reporting  
-- Smart output modes (plain/emoji/json/dual) with environment detection
-- All 274 tests passing across 23 test suites
+- **C#/.NET 9.0 MCP server** with Entity Framework Core and SQLite storage
+- **Workspace-aware data persistence** with automatic database migrations
+- **Cross-workspace querying** for comprehensive reporting across projects
+- **Smart output modes** (plain/emoji/json/dual) with environment detection
+- **High-performance SQLite backend** with indexed search capabilities
 
 ## Core Development Principles
 - Handle errors gracefully with helpful messages, never crash
 - Use separate content blocks to prevent Claude Code output collapse
 - Tool descriptions optimized for proactive AI agent usage
-- TDD methodology for all bug fixes and feature development
+- TDD methodology for all bug fixes and feature development using NUnit
 
-## Claude Code Display Fix
-Use separate content blocks to prevent output collapse:
-```typescript
-return {
-  content: [
-    { type: 'text', text: 'Header line' },
-    { type: 'text', text: 'Item 1' },
-    { type: 'text', text: 'Item 2' }
-  ]
-};
+## Entity Framework & Database Architecture
+
+### Database Context
+```csharp
+public class GoldfishDbContext : DbContext
+{
+    public DbSet<Memory> Memories { get; set; }
+    public DbSet<TodoList> TodoLists { get; set; }
+    public DbSet<TodoItem> TodoItems { get; set; }
+    public DbSet<Plan> Plans { get; set; }
+    // ... other entities
+}
+```
+
+### Key Entities
+- **Memory**: Core storage for checkpoints, search history, and general memories
+- **TodoList/TodoItem**: Task management with hierarchical structure
+- **Plan**: Strategic planning documents with versioning
+- **Workspace**: Multi-project organization with isolation
+
+### Migration & Deployment
+```bash
+# Add new migration after model changes
+dotnet ef migrations add MigrationName --project COA.Goldfish.McpServer
+
+# Update database (automatic on server startup)
+dotnet ef database update --project COA.Goldfish.McpServer
 ```
 
 ## Unified Tool Patterns (CURRENT ARCHITECTURE)
@@ -58,181 +75,242 @@ All unified tools use intelligent defaults and action inference:
 - **Environment adaptation**: Output format auto-detects CI/test/terminal environments
 
 ### Example Usage Patterns
-```javascript
-// Checkpoint (save/restore)
-checkpoint({ description: "Fixed authentication bug" })  // auto-saves
-checkpoint({ action: "restore" })  // restores latest
+```csharp
+// C# MCP Tool Implementation Examples
+public async Task<ToolResult> CheckpointAsync(CheckpointRequest request)
+{
+    if (!string.IsNullOrEmpty(request.Description))
+    {
+        // Auto-save when description provided
+        return await SaveCheckpointAsync(request);
+    }
+    return await RestoreCheckpointAsync(request);
+}
 
-// TODO management
-todo({ title: "Bug Fixes", items: ["Fix login", "Test API"] })  // auto-creates
-todo({ listId: "latest", itemId: "1", status: "done" })  // updates
-todo({ listId: "active", newTask: "Urgent fix" })  // adds to active list
-
-// Planning
-plan({ title: "User Auth", description: "OAuth2 implementation...", items: [...] })  // auto-saves
-plan({ planId: "latest", action: "generate-todos" })  // creates TODO list
-
-// Daily summaries  
-standup({ action: "daily" })  // today's work
-standup({ action: "weekly", scope: "all" })  // cross-workspace weekly
+public async Task<ToolResult> TodoAsync(TodoRequest request)
+{
+    // Smart keyword resolution
+    if (request.ListId == "latest" || request.ListId == "active")
+    {
+        request.ListId = await ResolveSmartKeywordAsync(request.ListId);
+    }
+    
+    // Action inference based on parameters
+    if (!string.IsNullOrEmpty(request.Title) && request.Items?.Any() == true)
+    {
+        return await CreateTodoListAsync(request);
+    }
+    // ... other action inference logic
+}
 ```
 
-### Legacy Tools (DEPRECATED - Use unified tools above)
-- ~~`remember()`~~ → Use `checkpoint()` for session state
-- ~~`create_todo_list()`~~ → Use `todo()` with title/items
-- ~~`update_todo()`~~ → Use `todo()` with listId/itemId  
-- ~~`view_todos()`~~ → Use `todo()` with action="view"
+### Memory Types & Storage
+- **general**: Default working memory and session data
+- **todo**: Task tracking with relationships and dependencies
+- **checkpoint**: Session snapshots with full context restoration
+- **context**: Conversation context for agent handoffs
+- **plan**: Strategic planning documents with versioning
 
-### Memory Types
-- **general**: Default working memory
-- **todo**: Task tracking  
-- **checkpoint**: Session snapshots
-- **context**: Conversation context (used for agent handoffs)
-
-### TODO List Special Keywords (NEW)
-AI agents can use intuitive keywords instead of exact IDs when working with TODO lists:
+### TODO List Special Keywords
+AI agents can use intuitive keywords instead of exact IDs:
 
 **Supported Keywords for `listId` parameter:**
 - `"latest"` / `"recent"` / `"last"` - Most recently updated TODO list
 - `"active"` / `"current"` - Most recent list with pending tasks
-- Partial ID match - Use suffix of actual ID (e.g., "5228" matches "20250831-171240-122-05E0-5228")
+- Partial ID match - Use suffix of actual ID for easy identification
+- **Database queries optimize keyword resolution** for fast lookup
 
-**Example Usage:**
-```javascript
-// Instead of finding exact ID
-update_todo({ listId: "latest", itemId: "1", status: "done" })
-view_todos({ listId: "latest" })
+## Agent Handoff System
 
-// Get the active list with pending work
-update_todo({ listId: "active", newTask: "New urgent task" })
-```
-
-This feature reduces "TODO list not found" errors when AI agents make reasonable assumptions about which list to use.
-
-## Agent Handoff System (Updated)
-
-TDD agents use standardized tag patterns for reliable handoff between phases.
-
-### Current Tag Pattern (FIXED)
+### Current Tag Pattern for C# Implementation
 **Store Handoff:**
-```javascript
-remember({
-  content: JSON.stringify({
-    fromAgent: 'test-designer',
-    toAgent: 'test-implementer', 
-    testSpecs: { /* technical details */ },
-    summary: 'Brief human summary'
-  }),
-  type: 'context',
-  tags: ['handoff', 'from-test-designer', 'to-test-implementer', 'tdd-workflow']
-})
+```csharp
+var memory = new Memory
+{
+    Content = JsonSerializer.Serialize(new
+    {
+        FromAgent = "test-designer",
+        ToAgent = "test-implementer",
+        TestSpecs = new { /* technical details */ },
+        Summary = "Brief human summary"
+    }),
+    Type = "context",
+    Tags = "handoff,from-test-designer,to-test-implementer,tdd-workflow",
+    Workspace = currentWorkspace
+};
+await _context.Memories.AddAsync(memory);
 ```
 
 **Retrieve Handoff:**
-```javascript
-// Primary: Tag-based search (exact matching)
-recall({
-  type: 'context',
-  tags: ['handoff', 'to-test-implementer'],
-  limit: 5
-})
-
-// Fallback: Query-based search
-recall({
-  query: 'handoff test-designer',
-  type: 'context',
-  since: '24h'
-})
+```csharp
+var handoffs = await _context.Memories
+    .Where(m => m.Type == "context" && 
+                m.Tags.Contains("handoff") && 
+                m.Tags.Contains("to-test-implementer"))
+    .OrderByDescending(m => m.CreatedAt)
+    .Take(5)
+    .ToListAsync();
 ```
 
-### TDD Agent Chain
-1. **test-designer** → stores with `['handoff', 'from-test-designer', 'to-test-implementer']`
-2. **test-implementer** → retrieves with `['handoff', 'to-test-implementer']` → stores with `['handoff', 'from-test-implementer', 'to-refactoring-expert']`
-3. **refactoring-expert** → retrieves with `['handoff', 'to-refactoring-expert']` → stores with `['handoff', 'from-refactoring-expert', 'to-test-reviewer']`
-4. **test-reviewer** → retrieves with `['handoff', 'to-test-reviewer']`
+## Project Structure
 
-## File Structure (Key Files)
 ```
-src/
-├── core/
-│   ├── storage.ts          # Storage with test isolation support
-│   ├── search.ts           # Search engine with tag filtering
-│   └── session-manager.ts  # Session state management
-├── tools/
-│   ├── remember.ts         # Memory storage with tags
-│   ├── search.ts           # Recall/search tools
-│   ├── checkpoint.ts       # Session checkpoints
-│   └── [todo tools]        # Task management
-├── utils/
-│   └── date-utils.ts       # Timezone-safe date utilities
-├── types/
-│   └── index.ts            # Type definitions with SearchOptions.tags[]
-└── __tests__/
-    ├── handoff-mechanism.test.ts  # 14 comprehensive handoff tests
-    ├── date-utils.test.ts         # Date utility tests
-    └── [other test suites]
+COA.Goldfish.McpServer/          # Main MCP server project
+├── Models/                      # Entity Framework models
+│   ├── Memory.cs               # Core memory entity
+│   ├── TodoList.cs            # TODO list management
+│   ├── Plan.cs                # Strategic planning
+│   └── GoldfishDbContext.cs   # EF Core context
+├── Services/                   # Business logic services
+│   ├── MemoryService.cs       # Memory management
+│   ├── TodoService.cs         # Task management
+│   ├── WorkspaceService.cs    # Workspace handling
+│   └── PathResolutionService.cs # Path utilities
+├── Tools/                      # MCP tool implementations
+│   ├── CheckpointTool.cs      # Session management
+│   ├── TodoTool.cs           # Task management
+│   ├── PlanTool.cs           # Strategic planning
+│   └── StandupTool.cs        # Reporting tools
+├── Migrations/                 # EF Core migrations
+└── Program.cs                 # MCP server entry point
+
+COA.Goldfish.Migration/         # Legacy data migration utility
+├── JsonToSqliteMigrator.cs    # Migrate from Node.js JSON files
+└── Program.cs                 # Migration tool entry point
+
+COA.Goldfish.IntegrationTests/  # Integration test suite
+├── ClaudeCodeIntegrationTests.cs     # End-to-end MCP tests
+├── ErrorHandlingIntegrationTests.cs # Error scenario tests
+├── McpProtocolIntegrationTests.cs   # MCP protocol compliance
+└── WorkspaceDetectionTests.cs       # Cross-workspace functionality
+
+COA.Goldfish.PerformanceTests/  # Performance benchmarks
+└── PerformanceBenchmarkTests.cs     # Load and performance tests
 ```
 
 ## Development Commands
+
 ```bash
-npm run dev          # Development with live reload
-npm test            # Run all tests (should show 274+ passing)
-npm run build       # TypeScript compilation
-npm run lint        # ESLint checking
+# Build solution
+dotnet build COA.Goldfish.sln
+
+# Run main MCP server
+dotnet run --project COA.Goldfish.McpServer
+
+# Run all tests
+dotnet test COA.Goldfish.sln
+
+# Run integration tests only
+dotnet test COA.Goldfish.IntegrationTests
+
+# Run performance benchmarks
+dotnet test COA.Goldfish.PerformanceTests
+
+# Database migrations
+dotnet ef migrations add <MigrationName> --project COA.Goldfish.McpServer
+dotnet ef database update --project COA.Goldfish.McpServer
+
+# Legacy migration from Node.js
+dotnet run --project COA.Goldfish.Migration
 ```
 
-## Key Fixes Applied
-- **Handoff Mechanism**: Tag-based search resolves agent communication issues
-- **Date Handling**: Centralized utilities prevent timezone bugs in timeline
-- **Test Isolation**: Storage constructor supports custom workspace/basePath
-- **Storage Fallback**: Graceful handling of permission issues and test environments
-- **TODO Keywords**: Intuitive "latest", "active" keywords reduce ID lookup errors
-- **Smart Output Modes**: Environment-aware formatting (CI=plain, test=json, etc.)
-- **Comprehensive Testing**: 23 test suites with 274 tests covering all scenarios
+## Testing Architecture
 
-## Common Patterns
-
-### Creating Tests with Isolation
-```typescript
-// Use custom workspace for test isolation
-const storage = new Storage('test-workspace-name', '/tmp/test-goldfish');
+### NUnit Test Framework
+All tests use NUnit with the following patterns:
+```csharp
+[Test]
+public async Task Should_SaveCheckpoint_When_DescriptionProvided()
+{
+    // Arrange
+    var request = new CheckpointRequest { Description = "Test checkpoint" };
+    
+    // Act
+    var result = await _checkpointTool.ExecuteAsync(request);
+    
+    // Assert
+    Assert.That(result.IsSuccess, Is.True);
+    Assert.That(result.Content, Contains.Substring("checkpoint saved"));
+}
 ```
 
-### Storage Initialization Patterns
-```typescript
-// Production use - automatic fallback handling
-const storage = new Storage();  // Uses workspace detection + home directory
+### Test Categories
+- **Integration Tests**: Full MCP protocol testing with real database
+- **Performance Tests**: Load testing and benchmark measurements
+- **Unit Tests**: Individual component testing with mocked dependencies
 
-// Custom workspace
-const storage = new Storage('my-project');
+## Configuration & Environment
 
-// Full control for testing
-const storage = new Storage('test-workspace', '/tmp/test-storage');
+### Database Configuration
+- **Development**: SQLite database in `%USERPROFILE%\.coa\goldfish\{workspace}\goldfish.db`
+- **Testing**: In-memory SQLite database with isolated test data
+- **CI/CD**: Temporary SQLite databases cleaned up after tests
 
-// Environment variable support
-// Set COA_GOLDFISH_BASE_PATH="/custom/path" for global override
+### Environment Variables
+- `COA_GOLDFISH_BASE_PATH`: Custom base path for data storage
+- `GOLDFISH_WORKSPACE`: Current workspace name override
+- `ASPNETCORE_ENVIRONMENT`: ASP.NET Core environment setting
+
+### MCP Server Configuration
+```json
+{
+  "ConnectionStrings": {
+    "DefaultConnection": "Data Source={workspace-path}/goldfish.db"
+  },
+  "Logging": {
+    "LogLevel": {
+      "Default": "Information",
+      "COA.Goldfish": "Debug"
+    }
+  }
+}
 ```
 
-### Tag-Based Memory Search
-```typescript
-// Exact tag matching (all tags must be present)
-const memories = await searchEngine.searchMemories({
-  tags: ['handoff', 'to-specific-agent'],
-  type: 'context'
-});
+## Key Features & Fixes
+
+### Database-Powered Features
+- **Fast full-text search** with SQLite FTS5 indexes
+- **Cross-workspace queries** with workspace isolation
+- **Automatic data migration** from legacy Node.js JSON storage
+- **Optimized keyword resolution** for smart parameters
+
+### Performance Improvements
+- **Entity Framework Core** with optimized queries and indexing
+- **Connection pooling** for database efficiency
+- **Async/await patterns** throughout the codebase
+- **Memory management** with proper disposal patterns
+
+### Reliability Enhancements
+- **Comprehensive error handling** with graceful degradation
+- **Database transaction safety** for data consistency
+- **Migration path** from legacy Node.js implementation
+- **Cross-platform compatibility** (Windows, macOS, Linux)
+
+## Migration from Node.js
+
+### Automatic Migration Tool
+The `COA.Goldfish.Migration` project provides automatic migration:
+```bash
+# Run migration tool to convert JSON files to SQLite
+dotnet run --project COA.Goldfish.Migration
+
+# Migration preserves:
+# - All existing memories and their metadata
+# - TODO lists with complete history
+# - Workspace organization
+# - Timestamps and relationships
 ```
 
-### Error-Safe Date Operations
-```typescript
-import { getLocalDateKey, formatDateName } from '../utils/date-utils.js';
-
-const dateKey = getLocalDateKey(timestamp); // "YYYY-MM-DD"
-const displayName = formatDateName(new Date()); // "Today", "Yesterday", "Monday"
-```
+### Legacy Compatibility
+- **Smart keyword support** maintains existing agent workflows
+- **JSON serialization compatibility** for memory content
+- **Workspace detection** automatically finds existing data
+- **Incremental migration** handles partial conversions
 
 ## Critical Notes
-- Always use tag-based handoff patterns for TDD agents
-- Test changes require Claude Code restart to reflect in MCP server
-- Use centralized date utilities to prevent timezone bugs
-- All tests should use isolated storage to prevent cross-test contamination
-- Maintain backward compatibility - existing memories should continue to work
+- **Database-first approach**: All data persisted in SQLite with EF Core
+- **Performance optimized**: Indexed queries and efficient data access
+- **Cross-platform ready**: Runs on Windows, macOS, and Linux
+- **Migration included**: Seamless upgrade path from Node.js version
+- **Test coverage**: Comprehensive integration and performance test suites
+- **Production ready**: Error handling, logging, and monitoring built-in

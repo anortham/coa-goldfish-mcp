@@ -1,0 +1,158 @@
+# 🐠 Goldfish MCP - AI Agent Behavioral Guidance
+
+## CRITICAL: Use Goldfish Tools PROACTIVELY for Organized Development
+
+### 🎯 **ALWAYS START WITH A PLAN**
+**Before writing ANY code, create a plan first:**
+- Use `mcp__goldfish__plan` with `action="save"` to create strategic plans
+- Plans should include: technical approach, key milestones, potential risks
+- **NO CODING without an active plan** - this prevents scope creep and technical debt
+- Plans help you think through the implementation before diving into details
+
+**Example Workflow:**
+```
+User: "Add authentication to the API"
+✅ CORRECT: First create plan → Then implement → Update todos
+❌ WRONG: Jump straight into coding
+```
+
+### ✅ **MAINTAIN ACTIVE TODO LISTS**
+**Break down plans into actionable tasks:**
+- Use `mcp__goldfish__plan` with `action="generate-todos"` to create task lists from plans
+- Use `mcp__goldfish__todo` to track implementation progress
+- **Mark tasks complete as you finish them** - don't batch completions
+- Only ONE active TODO list per workspace - maintains focus
+
+**Smart Keywords Work Everywhere:**
+- `listId: "latest"` - Most recently updated list
+- `listId: "active"` - Current active list with pending tasks
+- `planId: "active"` - Current active plan
+
+### 💾 **CHECKPOINT FREQUENTLY**
+**Save your progress and context:**
+- Use `mcp__goldfish__checkpoint` after completing significant work
+- Include active files, highlights, and next steps
+- **Essential for session continuity** - Claude Code sessions end
+- Checkpoints help you resume exactly where you left off
+
+**When to Checkpoint:**
+- After implementing a major feature
+- Before taking a break or ending session
+- When switching between different tasks
+- After resolving complex bugs
+
+### 📝 **DOCUMENT DECISIONS AND DISCOVERIES**
+**Record important insights and choices:**
+- Use `mcp__goldfish__chronicle` to log key decisions made during development
+- Record why you chose specific approaches or patterns
+- **Prevents repeating analysis** in future sessions
+- Types: Decision, Milestone, Issue, Resolution, Discovery, Note
+
+### 🧠 **RESTORE CONTEXT EFFICIENTLY**
+**When resuming work or need context:**
+- Use `mcp__goldfish__recall` to quickly restore recent work context
+- Searches across plans, todos, checkpoints automatically
+- **Use at session start** if you don't remember recent work
+- Supports time ranges: "24h", "3d", "1w"
+
+### 📊 **REGULAR PROGRESS REPORTING**
+**Track progress across all work streams:**
+- Use `mcp__goldfish__standup` for daily/weekly summaries
+- Shows progress across plans, todos, checkpoints, and decisions
+- **Perfect for status reports** and understanding current state
+- Actions: "daily", "weekly", "project" for different time ranges
+
+### 🏢 **MANAGE WORKSPACE STATE**
+**Keep your workspace organized:**
+- Use `mcp__goldfish__workspace` to manage active work state
+- Each workspace has ONE active plan and ONE active todo list
+- **Prevents context switching chaos** - maintain focus
+- Actions: "list", "current", "switch", "clean", "info"
+
+---
+
+## 🔄 **RECOMMENDED WORKFLOW PATTERNS**
+
+### Starting New Work
+1. **Plan First**: `mcp__goldfish__plan` - Create strategic approach
+2. **Generate Tasks**: Use `action="generate-todos"` from plan
+3. **Begin Implementation**: Work through tasks systematically
+4. **Chronicle Decisions**: Document key choices made
+5. **Checkpoint Progress**: Save state after significant milestones
+
+### Resuming Work
+1. **Recall Context**: `mcp__goldfish__recall` - What was I working on?
+2. **Check Active State**: `mcp__goldfish__workspace` with `action="current"`
+3. **Review Progress**: `mcp__goldfish__todo` with `listId="active"`
+4. **Continue Implementation**: Pick up where you left off
+
+### Ending Sessions
+1. **Update Progress**: Mark completed todos as done
+2. **Chronicle Discoveries**: Record what you learned
+3. **Checkpoint Session**: Save current state and next steps
+4. **Clean Workspace**: Archive completed work if needed
+
+---
+
+## ⚡ **PROACTIVE USAGE PRINCIPLES**
+
+### DO Use Goldfish When:
+- ✅ Starting any coding task (create plan first)
+- ✅ User asks "what was I working on?" (recall)
+- ✅ Completing significant milestones (checkpoint)
+- ✅ Making important technical decisions (chronicle)
+- ✅ Need to break down complex tasks (plan → todos)
+- ✅ Session is ending (checkpoint with next steps)
+
+### DON'T Just:
+- ❌ Jump into coding without planning
+- ❌ Leave TODOs incomplete for long periods
+- ❌ Forget to document important decisions
+- ❌ End sessions without checkpointing
+- ❌ Let workspace state become chaotic
+
+---
+
+## 🎯 **ENFORCEMENT LEVELS**
+
+{{ if enforcement_level == "strict" }}
+### STRICT MODE - MANDATORY COMPLIANCE
+- **MUST create plan before any coding task**
+- **MUST update todos as work progresses**  
+- **MUST checkpoint at end of significant work**
+- **MUST chronicle important technical decisions**
+{{ else if enforcement_level == "guided" }}
+### GUIDED MODE - STRONG RECOMMENDATIONS
+- **Strongly encouraged** to create plans for complex tasks
+- **Should** maintain active todo lists for organization
+- **Recommended** to checkpoint frequently for continuity
+- **Beneficial** to chronicle key decisions and discoveries
+{{ else }}
+### FLEXIBLE MODE - SUGGESTIONS ONLY
+- Consider using plans for complex features
+- Todo lists can help with organization
+- Checkpoints are useful for session continuity
+- Chronicle important insights when helpful
+{{ end }}
+
+---
+
+## 🏆 **SUCCESS METRICS**
+
+**You're using Goldfish effectively when:**
+- Plans exist for all active development work
+- TODO completion rate is high (>80%)
+- Sessions can be resumed quickly with context
+- Technical decisions are documented and searchable
+- Workspace state remains organized and focused
+
+**Watch out for these anti-patterns:**
+- Multiple active plans competing for attention
+- Stale TODO lists with incomplete tasks
+- Starting coding without clear plan
+- Lost context between sessions
+- Undocumented technical decisions
+
+---
+
+*Remember: Goldfish tools work best as an integrated system. Use them together to maintain organized, focused, and well-documented development workflows.*

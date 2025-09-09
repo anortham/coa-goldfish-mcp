@@ -1,0 +1,87 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net9.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <LangVersion>latest</LangVersion>
+    
+    <!-- Global dotnet tool configuration -->
+    <IsPackable>true</IsPackable>
+    <PackAsTool>true</PackAsTool>
+    <ToolCommandName>goldfish</ToolCommandName>
+    <PackageId>COA.Goldfish</PackageId>
+    <Version>1.0.0</Version>
+    <Authors>COA Team</Authors>
+    <Company>COA Team</Company>
+    <Description>AI agent memory and workflow management MCP server with SQLite backend for Claude Code integration</Description>
+    <PackageTags>mcp;claude-code;memory;workflow;sqlite;dotnet-tool;goldfish</PackageTags>
+    <PackageProjectUrl>https://github.com/anortham/coa-goldfish-mcp</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/anortham/coa-goldfish-mcp</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <Copyright>Copyright (c) 2025 COA Team</Copyright>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <!-- COA Framework NuGet package references -->
+    <PackageReference Include="COA.Mcp.Framework" Version="2.1.10" />
+    <PackageReference Include="COA.Mcp.Framework.TokenOptimization" Version="2.1.10" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" Version="9.0.8" />
+    
+    <!-- Entity Framework Core for SQLite -->
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="9.0.8" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="9.0.8">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="9.0.8">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
+    </PackageReference>
+    
+    <!-- Logging -->
+    <PackageReference Include="Serilog" Version="4.2.0" />
+    <PackageReference Include="Serilog.Extensions.Logging" Version="9.0.0" />
+    <PackageReference Include="Serilog.Settings.Configuration" Version="9.0.0" />
+    <PackageReference Include="Serilog.Sinks.File" Version="6.0.0" />
+    
+    <!-- Core dependencies -->
+    <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="9.0.8" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="9.0.8" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="9.0.8" />
+    <PackageReference Include="Microsoft.Extensions.Hosting" Version="9.0.0" />
+    
+    <!-- JSON serialization -->
+    <PackageReference Include="System.Text.Json" Version="9.0.8" />
+    
+    <!-- HTTP client for sync service -->
+    <PackageReference Include="Microsoft.Extensions.Http" Version="9.0.8" />
+    
+    <!-- Template engine for behavioral adoption -->
+    <PackageReference Include="Scriban" Version="6.2.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="appsettings.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="..\..\README.md">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
+    </None>
+  </ItemGroup>
+
+  <ItemGroup>
+    <!-- Embed templates as resources -->
+    <EmbeddedResource Include="Templates\goldfish-instructions.scriban">
+      <LogicalName>COA.Goldfish.McpServer.Templates.goldfish-instructions.scriban</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Templates\goldfish-methodology.scriban">
+      <LogicalName>COA.Goldfish.McpServer.Templates.goldfish-methodology.scriban</LogicalName>
+    </EmbeddedResource>
+  </ItemGroup>
+
+</Project>

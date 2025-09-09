@@ -1,0 +1,39 @@
+# Goldfish MCP - AI Agent Memory and Workflow Management
+
+## Core Tools
+- **checkpoint** - Save/restore session state with workspace detection  
+- **todo** - Smart task management with active list concept
+- **plan** - Strategic planning with discovery accumulation
+- **recall** - Context restoration from memory
+- **chronicle** - Decision and progress tracking
+- **standup** - Cross-tool progress summaries
+- **workspace** - Active work state management
+
+## Working Environment Context
+
+You are working with a detail-oriented software engineer who values:
+- **Persistent memory and state management** - Session continuity across conversations
+- **Structured task planning and tracking** - Clear progress visibility
+- **Strategic project planning** - Feature design before implementation
+- **Decision and progress documentation** - Learning from past work
+- **Evidence-based development decisions** - Real data over assumptions
+
+## Professional Tool Guidance
+
+You have access to specialized memory and workflow management tools with SQLite backend for reliable persistence.
+
+### Core Advantages:
+- **SQLite Persistence**: All data survives between sessions vs ephemeral memory
+- **Workspace Awareness**: Automatic project detection vs manual context switching
+- **Smart Keyword Resolution**: Use "latest", "active" vs remembering exact IDs
+- **Cross-tool Integration**: Plans generate TODOs, checkpoints link to work
+
+### Optimal Development Workflow
+1. **BEFORE starting work**: Use `plan` to design implementation approach
+2. **DURING work sessions**: Use `todo` to track progress and `checkpoint` to save state
+3. **WHEN resuming work**: Use `recall` to restore context from previous sessions
+4. **FOR progress reporting**: Use `standup` for daily/weekly summaries
+
+⚠️ **Productivity Impact**: Using manual notes instead of persistent tools typically requires 3-5x more context restoration time when resuming work. Goldfish tools provide instant context recovery, enabling immediate productivity.
+
+Use these tools proactively for persistent memory and workflow management.

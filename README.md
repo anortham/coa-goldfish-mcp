@@ -1,105 +1,35 @@
-# COA Goldfish MCP
+# COA Goldfish MCP (.NET)
 
-> Your development session's "flight recorder" - keeps your work context safe from crashes, restarts, and forgetful moments
+> Your development session's "flight recorder" - now with SQLite persistence and behavioral enforcement
 
-## 🐠 What is Goldfish?
+## 🐠 What is Goldfish (.NET)?
 
-Goldfish is a **crash-safe developer's work journal** that acts like a persistent memory for your coding sessions. Just like a goldfish that remembers more than you think, it helps you:
+Goldfish .NET is a **crash-safe developer's work journal** rebuilt from the ground up with:
 
-- **Never lose your work** - Automatic checkpoints survive crashes, power outages, and terminal closures
-- **Pick up where you left off** - Smart session restoration after `/clear` or breaks
-- **Track what you've done** - "What did I work on yesterday?" becomes easy to answer
-- **Manage active tasks** - TODO lists that persist between sessions
-- **Keep temporary notes** - Quick thoughts and reminders that auto-expire
+- **SQLite Database** - Fast, reliable persistence with Entity Framework Core
+- **Behavioral Enforcement** - AI agents guided to use tools correctly and consistently  
+- **Streamlined Architecture** - 7 unified tools that work as a cohesive system
+- **Global Workspace Support** - Cross-project TODOs and plans
+- **Optional API Sync** - Enterprise-ready with offline-first design
+- **10x Performance** - Faster data correlations and queries
 
-## 🚀 How You'll Use It
+## 🚀 Installation
 
-### Daily Workflow Examples
-
-**📍 Creating Checkpoints** - Save your progress naturally:
-> "I just finished implementing the JWT authentication system with token refresh"
-
-Goldfish automatically captures this as a checkpoint with context about what files you were working on.
-
-**🔄 Resuming Work** - Get back to work quickly:
-> After a crash or `/clear`: "What was I working on?"
-
-Use `/resume` to see your last checkpoint, active TODOs, and recent progress.
-
-**📅 Daily Standups** - Remember what you accomplished:
-> "What did I work on yesterday across all my projects?"
-
-Use `/standup` to get a complete overview of yesterday's achievements.
-
-**🔍 Finding Past Work** - Search your work history:
-> "Did I work on any JWT stuff last week?"
-> "When did I fix that database connection issue?"
-
-Just ask naturally - Goldfish will search your work history.
-
-### Common Questions Goldfish Answers
-
-- **"What was I doing before lunch?"** → Shows your recent checkpoints and context
-- **"Did I already fix the login bug?"** → Searches your work history for "login bug"  
-- **"What are my current TODOs?"** → Shows active task lists with progress
-- **"What did the team accomplish this week?"** → Timeline across all projects
-- **"Where did I leave that API documentation task?"** → Finds your work context
-
-## 🛠 Available Tools
-
-### Unified Smart Tools
-Goldfish provides 4 main tools that cover your complete workflow:
-
-- **`checkpoint`** - Save progress or restore session context. Use after completing tasks, before breaks, when resuming work
-- **`todo`** - Manage tasks efficiently. Create lists, track progress, mark complete. Smart keywords: "latest", "active"
-- **`plan`** - Strategic planning tool. Design features, track progress, capture lessons. Generates TODOs from plans
-- **`standup`** - Daily work summaries and progress reports. Shows accomplishments, current tasks, blockers
-
-### Support Tools
-- **`search_history`** - Find past work and solutions. Search all work history
-- **`timeline`** - Review work progress chronologically for reporting
-- **`recall`** - Restore working context after breaks or /clear
-- **`list_workspaces`** - Show available workspaces for project switching
-
-### Natural Language Examples
-Just ask Goldfish naturally:
-
-- **"Save my current progress"** → Creates checkpoint automatically
-- **"What was I working on yesterday?"** → Uses timeline/recall to show recent work
-- **"Show my active tasks"** → Views current TODO lists
-- **"Create a plan for user authentication"** → Starts strategic planning
-- **"Generate standup report"** → Creates daily work summary
-- **"Find my JWT implementation work"** → Searches work history
-
-## 📦 Installation
-
-### Method 1: NPM Global Install (Recommended)
+### Method 1: Global .NET Tool (Recommended)
 ```bash
-# Install globally
-npm install -g @coa/goldfish-mcp
+# Install as global .NET tool
+dotnet tool install -g COA.Goldfish
 
-# Add to Claude Code (automatic)
-claude mcp add @coa/goldfish-mcp
-```
-
-### Method 2: Local Development Setup
-```bash
-# Clone and build
-git clone [repository-url]
-cd "COA Goldfish MCP" 
-npm install
-npm run build
-
-# Add to Claude Code manually
-# Edit your ~/.claude/settings.json:
+# Add to Claude Code MCP configuration
+# Edit ~/.claude/settings.json:
 ```
 
 ```json
 {
   "mcpServers": {
     "goldfish": {
-      "type": "stdio",
-      "command": "C:/source/COA Goldfish MCP/dist/index.js",
+      "type": "stdio", 
+      "command": "goldfish",
       "args": [],
       "env": {}
     }
@@ -107,239 +37,341 @@ npm run build
 }
 ```
 
-### Custom Commands Setup
-The custom slash commands (`/checkpoint`, `/resume`, `/standup`, `/todo`) are included in the `.claude/commands/` folder and become available when you use this project's Claude Code integration.
-
-## 🎯 Memory Management
-
-Goldfish uses a two-tier memory system:
-
-### 📝 Quick Notes (24 hours)
-- **"Remember: API rate limit is 1000/hour"** - Stores temporary reminders
-- **"Note: Database migration needs rollback plan"** - Quick context notes
-- Auto-expires after 24 hours to keep things fresh
-
-### 💾 Checkpoints (3 days)  
-- **"Completed user authentication with OAuth2 integration"** - Major progress markers
-- **"Fixed critical bug in payment processing"** - Important milestones
-- Kept for 3 days, then archived (but searchable)
-
-### 🔄 Why This Works
-- **Short-term memory** (24h) for immediate context and quick thoughts
-- **Recent work** (72h) prioritized in searches and timelines  
-- **All history** remains searchable but doesn't clutter daily views
-
-## 💡 Real Usage Examples
-
-### Morning Startup
-```
-You: "What was I working on yesterday?"
-Goldfish: Shows timeline with:
-- Completed JWT implementation  
-- Started API documentation
-- Fixed 3 unit tests
-- TODO: Review security audit
-```
-
-### Mid-Day Check-in  
-```
-You: "What's my progress on the authentication system?"
-Goldfish: Searches and finds:
-- "JWT token validation complete" (2 days ago)
-- "OAuth2 integration in progress" (yesterday) 
-- "Need to add refresh token logic" (TODO item)
-```
-
-### End of Day
-```
-You: "Save a checkpoint: Finished OAuth2 integration, all tests passing"
-Goldfish: Creates checkpoint with:
-- Your description
-- Files you were editing
-- Current git branch
-- Links to related TODOs
-```
-
-### Weekly Review
-```
-You: "Summarize what I accomplished this week"
-Goldfish: Creates AI summary:
-- 15 checkpoints across 3 projects
-- Key areas: authentication, API design, testing
-- Major achievements: OAuth2 system, security audit
-- Files involved: AuthService.ts, api-routes.js, etc.
-```
-
-### Workspace Management
-```
-You: "What workspaces do I have available?"
-Goldfish: Lists all workspaces:
-- @coa/goldfish-mcp (current)
-- my-api-project  
-- mobile-app-redesign
-- client-portal
-
-You: "Show me work across all projects this week"
-Goldfish: Timeline showing cross-project activity with workspace context
-```
-
-## 🔄 Integration with Other Tools
-
-### ProjectKnowledge MCP
-- **Goldfish**: Short-term working memory (hours/days)
-- **ProjectKnowledge**: Long-term knowledge base (weeks/months)
-- Important Goldfish memories automatically promote to ProjectKnowledge
-
-### CodeSearch MCP  
-- **CodeSearch**: Find code and analyze structure
-- **Goldfish**: Track what you worked on and why
-- Perfect combination for understanding both "what" and "when"
-
-### Claude Code Integration
-- **Automatic session restoration** on startup
-- **Custom slash commands** for common workflows
-- **Natural language processing** - just ask questions
-- **Context-aware checkpointing** after significant work
-
-## 🏗 How It Works (Technical Overview)
-
-### Event-Source Architecture
-Every action is stored as an immutable event:
-```
-~/.coa/goldfish/{workspace}/
-├── checkpoints/2025-01-20/
-│   ├── 20250120-143022-456-A1B2.json
-│   └── 20250120-150815-123-C3D4.json  
-├── todos/active-lists.json
-└── memories/quick-notes.json
-```
-
-### Workspace-Aware Storage
-Each project gets its own memory space, but you can query across all projects for standups and reviews.
-
-#### Storage Location & Fallback
-Goldfish automatically handles different environments and permission scenarios:
-
-- **Default location**: `~/.coa/goldfish/` (user's home directory)
-- **Environment override**: Set `COA_GOLDFISH_BASE_PATH` to use a custom location
-- **Permission fallback**: If home directory isn't writable, falls back to `.coa/goldfish/` in current project
-- **Test isolation**: In test environments, uses workspace-local storage automatically
-
+### Method 2: Local Development
 ```bash
-# Use custom storage location
-export COA_GOLDFISH_BASE_PATH="/tmp/my-goldfish-storage"
+# Clone and build
+git clone [repository-url]
+cd "COA Goldfish MCP/dotnet"
+dotnet build
 
-# Or let Goldfish handle it automatically based on permissions
+# Run directly
+dotnet run --project src/COA.Goldfish.McpServer
+
+# Or add to Claude Code with full path:
+# "command": "C:/path/to/COA Goldfish MCP/dotnet/src/COA.Goldfish.McpServer/bin/Debug/net9.0/COA.Goldfish.McpServer.exe"
 ```
 
-#### Workspace Normalization
-Goldfish automatically normalizes workspace names to ensure consistent storage across different AI agents and tools:
+## 🛠 Core Tools (Streamlined Architecture)
 
-- **Full paths** → **Simple names**: `"C:\source\My Project"` → `"my-project"`
-- **Mixed formats supported**: Both `"@coa/goldfish-mcp"` and `"C:\source\COA Goldfish MCP"` work
-- **Case-insensitive**: `"MyProject"` and `"myproject"` map to the same workspace
-- **Special character handling**: Spaces, backslashes, and other characters are normalized
+### Unified Smart Tools
+Goldfish .NET provides **7 main tools** that enforce a cohesive workflow:
 
-This ensures that external AI agents (like GPT models) can use any workspace format and still access the same data consistently.
+#### 1. **`mcp__goldfish__plan`** - Strategic Planning with Discovery Accumulation
+- Design features and create implementation roadmaps
+- Track discoveries and lessons learned during development
+- Generate TODO lists automatically from plans
+- **Active Plan Concept** - ONE active plan per workspace at a time
 
-### Smart Search & Timeline
-- **Fuzzy search** finds relevant work even with typos
-- **Time-based filtering** focuses on recent work
-- **Cross-project queries** for comprehensive overviews
-- **Natural language processing** understands your questions
-
-## 🧪 Testing & Development
-
-```bash
-# Run all tests
-npm test
-
-# Test specific components  
-npm test tools.test.ts
-npm test integration.test.ts
-npm test date-handling.test.ts
-
-# Development with live reload
-npm run dev
+```
+You: "Create a plan for implementing OAuth2 authentication"
+Goldfish: Creates structured plan with items, discoveries field, and optional TODO generation
 ```
 
-**Test Coverage**: 274 tests across 23 test suites covering all major functionality including edge cases, concurrent operations, and error handling.
+#### 2. **`mcp__goldfish__todo`** - Smart Task Management 
+- Create and manage persistent TODO lists
+- **Active List Concept** - ONE active TODO list per workspace  
+- Smart keyword resolution: `"latest"`, `"active"`, `"current"`
+- Automatic cleanup of completed/stale tasks
 
-## 📤 Output Modes (Multi-CLI Compatible)
-
-Goldfish intelligently adapts its tool outputs for different environments and CLIs:
-
-### Output Formats
-- **`plain`**: ASCII/plain text (no emojis/markdown) - ideal for CI environments
-- **`emoji`**: Rich text with emojis/markdown - best experience in Claude Code
-- **`json`**: Structured JSON payload only - perfect for programmatic consumption
-- **`dual`** (default): Plain text first, then JSON payload - works everywhere
-
-### Smart Environment Detection
-Goldfish automatically selects the best format based on your environment:
-
-- **CI environments** (`CI=true`): Defaults to `plain` for clean logs
-- **Test environments** (`JEST_WORKER_ID`, `NODE_ENV=test`): Defaults to `json` for stable parsing
-- **Terminal capabilities**: Checks for emoji/color support
-- **Manual override**: Always respected via environment variable or parameter
-
-### Configuration Options
-
-**Global setting:**
-```bash
-export GOLDFISH_OUTPUT_MODE=plain   # or emoji|json|dual
-export COA_GOLDFISH_BASE_PATH="/custom/storage/path"
+```
+You: "Add urgent task to active list"
+Goldfish: Adds to your current active TODO list without needing exact IDs
 ```
 
-**Per-tool override:**
-```json
+#### 3. **`mcp__goldfish__checkpoint`** - Session State Management
+- Save/restore complete work context with workspace detection
+- Automatic file tracking, git branch capture, session correlation
+- **Behavioral Enforcement** - AI agents guided to checkpoint regularly
+
+```
+You: "Save checkpoint: Completed JWT implementation with refresh tokens"  
+Goldfish: Captures description, active files, git branch, session context
+```
+
+#### 4. **`mcp__goldfish__standup`** - Cross-Tool Progress Summaries
+- Daily/weekly/project summaries across all workspaces
+- **Enhanced Reporting** - Correlates data from checkpoints, TODOs, plans
+- Timeline integration for comprehensive progress tracking
+
+```
+You: "Generate daily standup report"
+Goldfish: Shows yesterday's checkpoints, TODO progress, plan updates across all projects
+```
+
+#### 5. **`mcp__goldfish__recall`** - Context Restoration
+- Quick access to recent memories and work context
+- Cross-tool search for finding past decisions and solutions
+- **No parameters needed** - just instant context restoration
+
+```
+You: "What was I working on?"
+Goldfish: Shows recent checkpoints, active TODOs, current plans
+```
+
+#### 6. **`mcp__goldfish__chronicle`** - Decision and Progress Tracking
+- **NEW** - Replaces standalone Intel tool with integrated decision tracking  
+- Auto-populated from other tools or manual entry creation
+- Chronological progress logging for audit trails
+
+```
+You: "Record decision: Using PostgreSQL over MongoDB for better transaction support"
+Goldfish: Creates chronicle entry with timestamp, links to related plans/TODOs
+```
+
+#### 7. **`mcp__goldfish__workspace`** - Active Work State Management
+- **NEW** - Manages active plan and TODO list per workspace
+- Enforces the "ONE active item" concept for focused work
+- Cleanup orphaned work and validate workspace state
+
+```
+You: "Set active plan to user-authentication-plan" 
+Goldfish: Makes this the active plan, deactivates others, validates workspace state
+```
+
+## 🎯 Key Improvements Over TypeScript Version
+
+### Behavioral Enforcement System
+- **AI Agent Guidance** - Tools work together as a system, not isolated commands
+- **Active Work State** - Enforces ONE active plan and TODO list per workspace
+- **Automatic State Management** - Prevents stale/orphaned work items
+- **Workflow Validation** - Ensures proper tool usage patterns
+
+### Performance & Architecture  
+- **SQLite + Entity Framework Core** - 10x faster than JSON file operations
+- **Structured Queries** - Complex data correlations and cross-tool summaries
+- **Transaction Safety** - ACID compliance for data integrity
+- **Automatic Migrations** - Schema updates handled seamlessly
+
+### Enterprise Features
+- **Optional API Sync** - Sync data across teams/devices with offline-first design
+- **Global Workspace** - Cross-project TODO lists and plans using `__global__` workspace
+- **Audit Trails** - Complete history via Chronicle entries
+- **Backup & Recovery** - Built-in database backup during migrations
+
+## 📊 Database Schema
+
+### Core Entities
+```csharp
+public class WorkspaceState 
 {
-  "name": "timeline",
-  "arguments": { "since": "7d", "format": "emoji" }
+    public string WorkspaceId { get; set; }
+    public string? ActivePlanId { get; set; }      // ONE active plan
+    public string? ActiveTodoListId { get; set; }  // ONE active TODO list  
+    public DateTime LastActivity { get; set; }
+}
+
+public class Plan
+{
+    public string Id { get; set; }
+    public string WorkspaceId { get; set; }
+    public string Title { get; set; }
+    public string Description { get; set; }
+    public PlanStatus Status { get; set; }      // Draft, Active, Complete, Abandoned
+    public List<string> Items { get; set; }
+    public List<string> Discoveries { get; set; }  // NEW - replaces Intel tool
+    public DateTime CreatedAt { get; set; }
+}
+
+public class TodoList
+{
+    public string Id { get; set; }
+    public string WorkspaceId { get; set; }
+    public string Title { get; set; }
+    public bool IsActive { get; set; }          // Active list concept
+    public List<TodoItem> Items { get; set; }
+    public DateTime CreatedAt { get; set; }
+}
+
+public class ChronicleEntry  // NEW - Decision tracking
+{
+    public string Id { get; set; }
+    public string WorkspaceId { get; set; }
+    public DateTime Timestamp { get; set; }
+    public ChronicleEntryType Type { get; set; }  // Decision, Milestone, Issue, Resolution
+    public string Description { get; set; }
+    public string? RelatedPlanId { get; set; }    // Link to plans
+    public string? RelatedTodoId { get; set; }    // Link to TODOs
 }
 ```
 
-**Supported tools with format parameter:**
-`timeline`, `search_history`, `recall`, `restore_session`, `summarize_session`, `view_todos`, `create_todo_list`, `update_todo`, `checkpoint`
+## 🔧 Configuration
 
-## 🤖 AI Agent Optimization
+### Database Location
+```bash
+# Default: ~/.coa/goldfish/goldfish.db
+# Override with connection string:
+export GOLDFISH_DATABASE_CONNECTION_STRING="Data Source=/custom/path/goldfish.db"
 
-Goldfish is designed to work seamlessly with AI coding assistants:
-
-- **Proactive checkpointing** - AI agents automatically save progress
-- **Context restoration** - Agents can resume work intelligently  
-- **Smart task tracking** - TODO management with intuitive keywords
-- **Cross-session memory** - Agents remember work across conversations
-
-### TODO List Smart Keywords
-AI agents can use intuitive keywords instead of exact IDs when working with TODO lists:
-
-- **`latest`**, **`recent`**, **`last`** - Most recently updated TODO list
-- **`active`**, **`current`** - Most recent list with pending tasks  
-- **Partial ID matching** - Use just the suffix of the full ID (e.g., "D298" instead of "20250903-154935-560-5BD8-D298")
-
-```
-# Instead of remembering exact IDs:
-You: "Mark task 2 as done in list 20250903-154935-560-5BD8-D298"
-
-# Use smart keywords:
-You: "Mark task 2 as done in latest list"
-You: "Add urgent task to active list"
-You: "Show me the current todo list"
+# Or set base path (goldfish.db will be created there):
+export COA_GOLDFISH_BASE_PATH="/custom/goldfish/storage"
 ```
 
-This eliminates "TODO list not found" errors and makes the system more intuitive for AI agents.
+### API Sync (Optional)
+```json
+{
+  "Goldfish": {
+    "Sync": {
+      "Enabled": true,
+      "ApiUrl": "https://your-goldfish-api.com",
+      "ApiKey": "your-api-key"
+    }
+  }
+}
+```
 
-## 🎯 Philosophy
+### Behavioral Enforcement Levels
+```json
+{
+  "Goldfish": {
+    "Enforcement": {
+      "Level": "StronglyUrge",  // None, Suggest, StronglyUrge, Require
+      "RequireActiveWork": true,
+      "AutoCleanupDays": 7
+    }
+  }
+}
+```
 
-> "A goldfish's memory is actually about 3 months, not 3 seconds. For developers, 3 days of working memory is perfect - enough context to be useful, short enough to stay relevant."
+## 🚀 Usage Examples
 
-Goldfish embraces forgetting as a feature. By automatically expiring old memories, it keeps your working context fresh and focused on what matters now.
+### Morning Workflow
+```
+You: "What's my current work state?"
+Goldfish: 
+- Active Plan: "User Authentication System" (3/7 items complete)
+- Active TODO: "API Endpoints" (2 pending tasks)
+- Last Checkpoint: "JWT validation complete" (yesterday 4:30 PM)
+```
+
+### Strategic Planning  
+```
+You: "Create plan for database migration to PostgreSQL"
+Goldfish: Creates plan with structured items, then asks:
+"Would you like me to generate a TODO list from this plan?"
+
+You: "Yes, create TODO list"
+Goldfish: 
+- Creates TODO list with plan items
+- Sets as active TODO list
+- Links plan and TODO list in database
+```
+
+### Cross-Workspace Reporting
+```
+You: "Generate weekly standup across all projects"
+Goldfish:
+## Weekly Standup (Sept 2-8, 2025)
+
+**Completed Across All Projects:**
+- goldfish-mcp: Migration to .NET complete (23 checkpoints)
+- api-project: OAuth2 integration (15 checkpoints)  
+- client-portal: UI redesign phase 1 (8 checkpoints)
+
+**Active Work:**
+- 3 active plans across projects
+- 12 pending TODO items
+- Next: API testing and deployment
+```
+
+### Decision Tracking
+```
+You: "Record decision: Using Entity Framework Core over Dapper for better migration support"
+Goldfish: Creates chronicle entry linked to current active plan, searchable in future
+```
+
+## 🧪 Development & Testing
+
+```bash
+# Run all tests
+dotnet test
+
+# Run specific test project
+dotnet test tests/COA.Goldfish.McpServer.Tests/
+dotnet test tests/COA.Goldfish.IntegrationTests/
+
+# Development with hot reload
+dotnet watch run --project src/COA.Goldfish.McpServer
+
+# Database migrations
+dotnet ef migrations add NewMigration --project src/COA.Goldfish.McpServer
+dotnet ef database update --project src/COA.Goldfish.McpServer
+```
+
+## 📦 Migration from TypeScript Version
+
+If you have existing TypeScript Goldfish data:
+
+```bash
+# Run migration tool (will scan ~/.coa/goldfish automatically)
+cd dotnet
+dotnet run --project src/COA.Goldfish.Migration
+
+# Or specify custom paths:
+dotnet run --project src/COA.Goldfish.Migration -- "/custom/json/path" "Data Source=/custom/db/path"
+```
+
+**Note:** Migration preserves all checkpoints, TODO lists, and plans while converting them to the new SQLite schema.
+
+## 🎯 Behavioral Philosophy
+
+### Active Work Concept
+- **ONE active plan per workspace** - Enforces focused strategic work
+- **ONE active TODO list per workspace** - Prevents task fragmentation  
+- **Automatic cleanup** - Stale work items are automatically archived
+- **AI agent guidance** - Built-in templates encourage proper usage patterns
+
+### Tool Priorities for AI Agents
+1. **Plan** (90) - Strategic thinking first
+2. **Todo** (95) - Task management 
+3. **Checkpoint** (100) - Session persistence
+4. **Standup** (85) - Progress reporting
+5. **Recall** (80) - Context restoration
+6. **Chronicle** (75) - Decision tracking
+7. **Workspace** (70) - State management
+
+## 🏗 Architecture Overview
+
+```
+src/
+├── COA.Goldfish.McpServer/           # Main MCP server
+│   ├── Program.cs                    # Entry point with behavioral enforcement
+│   ├── Models/                       # EF Core entities  
+│   ├── Services/                     # Business logic layer
+│   │   ├── Storage/                  # Database context and services
+│   │   ├── WorkspaceService.cs       # Workspace state management
+│   │   └── SyncService.cs            # Optional API sync
+│   ├── Tools/                        # 7 MCP tools
+│   └── Templates/                    # Behavioral adoption templates
+└── COA.Goldfish.Migration/           # Data migration from TypeScript
+```
+
+## 🚀 Deployment
+
+### Global Tool Package
+```bash
+# Build and pack
+dotnet pack src/COA.Goldfish.McpServer -c Release
+
+# Install locally for testing
+dotnet tool install -g COA.Goldfish --add-source ./src/COA.Goldfish.McpServer/bin/Release
+
+# Publish to NuGet (when ready)
+dotnet nuget push COA.Goldfish.*.nupkg --api-key YOUR_API_KEY --source https://api.nuget.org/v3/index.json
+```
+
+### Container Deployment (API Sync Server)
+```dockerfile
+FROM mcr.microsoft.com/dotnet/aspnet:9.0
+COPY . /app
+WORKDIR /app
+EXPOSE 80
+ENTRYPOINT ["dotnet", "COA.Goldfish.McpServer.dll"]
+```
 
 ## 📄 License
 
-MIT License - Feel free to adapt for your workflow!
+MIT License - Build amazing workflows with structured persistence!
 
 ---
 
-**Questions?** Just ask Goldfish naturally - it's designed to understand what you need and help you stay productive.
+**Ready to upgrade?** The .NET version provides everything the TypeScript version offered, plus enterprise features, better performance, and AI agent behavioral enforcement for more productive development sessions.

@@ -1,0 +1,76 @@
+# Goldfish MCP - Checkpoint-Driven Development Orchestrator
+
+## Development Workflow Methodology
+
+Goldfish teaches Claude systematic development practices that persist across sessions:
+
+### MANDATORY Checkpoint Discipline ({{enforcement_level}})
+
+**When to Checkpoint:**
+- ✅ After completing meaningful work (feature implementation, bug fix)
+- ✅ Before risky changes (major refactors, architecture modifications)
+- ✅ Before breaks or end of session
+- ✅ When context switches between projects
+
+**Checkpoint Quality Standards:**
+- Always include business value description
+- Capture active files and current branch
+- Link to related todos and plans
+- Include next steps for resumption
+
+### Structured Planning Protocol
+
+**For Complex Features (3+ files, new patterns):**
+1. Create strategic plan BEFORE coding
+2. Define problem, approach, risks, success criteria
+3. Break into concrete phases with deliverables
+4. Generate actionable todos from plan
+5. Execute systematically with regular plan updates
+
+### Task Management Discipline
+
+**Todo-Driven Development:**
+- Break large work into 2-4 hour tasks
+- Use descriptive, actionable task descriptions
+- Mark complete IMMEDIATELY when finished
+- Group related tasks in themed lists
+- Use 'active' and 'latest' keywords for efficiency
+
+### Workflow Integration with Other Tools
+
+{{#each tool_comparisons}}
+**{{task}}:**
+- Use {{server_tool}} for {{advantage}}
+- Avoids limitations of {{built_in_tool}}: {{limitation}}
+- Performance benefit: {{performance_metric}}
+{{/each}}
+
+### Cross-Session Continuity
+
+Goldfish ensures work survives:
+- ✅ Application crashes and restarts
+- ✅ Context switches and interruptions  
+- ✅ Multi-day development sessions
+- ✅ Team handoffs and collaboration
+
+## Professional Development Patterns
+
+### Bug Investigation Pattern
+1. Bug discovered → create investigation plan
+2. Generate todo list for reproduction steps
+3. Checkpoint findings at each step
+4. Final checkpoint with solution and lessons
+
+### Feature Development Pattern  
+1. Feature request → strategic plan creation
+2. Plan generates implementation todos
+3. Systematic execution with regular checkpoints
+4. Completion checkpoint with retrospective
+
+### Refactoring Pattern
+1. Identify refactoring need → create refactoring plan
+2. Checkpoint stable state before changes
+3. Incremental refactoring with frequent checkpoints
+4. Final checkpoint with before/after comparison
+
+This systematic approach prevents chaotic development and builds maintainable habits.

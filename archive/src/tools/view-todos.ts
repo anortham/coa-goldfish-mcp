@@ -28,6 +28,13 @@ export interface ViewTodosArgs {
 }
 
 /**
+ * Create a short partial ID for display (last 6 characters)
+ */
+function getPartialId(fullId: string): string {
+  return fullId.slice(-6);
+}
+
+/**
  * Background cleanup - silently maintain TODO list lifecycle
  * 1. Complete lists where all tasks are done
  * 2. Archive lists inactive for 7+ days with pending tasks
@@ -217,12 +224,13 @@ export async function handleViewTodos(storage: Storage, args: ViewTodosArgs): Pr
     } else {
       output.push(`📋 ${relevantLists.length} active/recent TODO lists (${todoLists.length} total)`);
       
-      // Show only relevant lists with basic info
+      // Show only relevant lists with basic info, including partial IDs for cleanup
       for (const list of relevantLists.slice(0, 5)) {
         const pendingTasks = list.items.filter((item: any) => item.status !== 'done');
         const workspaceLabel = formatWorkspaceLabel(list.workspace, storage.getCurrentWorkspace(), scope);
         const statusIcon = list.status === 'completed' ? '✅' : (pendingTasks.length === 0 ? '✅' : '📝');
-        output.push(`${statusIcon} ${list.title}${workspaceLabel}: ${pendingTasks.length} pending`);
+        const partialId = getPartialId(list.id);
+        output.push(`${statusIcon} ${list.title}${workspaceLabel} [${partialId}]: ${pendingTasks.length} pending`);
       }
       
       if (relevantLists.length > 5) {
@@ -264,7 +272,7 @@ export async function handleViewTodos(storage: Storage, args: ViewTodosArgs): Pr
     
     const numberIcon = ['1️⃣', '2️⃣', '3️⃣', '4️⃣', '5️⃣', '6️⃣', '7️⃣', '8️⃣', '9️⃣'][i] || `${i + 1}️⃣`;
     
-    output.push(`${numberIcon} ${list.title}${workspaceLabel}`);
+    output.push(`${numberIcon} ${list.title}${workspaceLabel} [${getPartialId(list.id)}]`);
     output.push(`   ID: ${list.id}`);
     
     if (percentage === 100) {
