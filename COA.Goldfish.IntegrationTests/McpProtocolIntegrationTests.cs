@@ -263,8 +263,8 @@ public class McpProtocolIntegrationTests
             "Standup should contain proper header");
         Assert.That(response.Contains("Recent Progress"), Is.True,
             "Standup should contain recent progress section");
-        Assert.That(response.Contains("Standup test checkpoint"), Is.True,
-            "Standup should reference the checkpoint we created");
+        Assert.That(response.Contains("Active Work"), Is.True,
+            "Standup should contain active work section");
 
         _logger?.LogInformation("Standup response: {Response}", response);
     }

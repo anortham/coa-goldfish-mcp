@@ -7,57 +7,83 @@ Manage todo items quickly using the unified todo tool.
 
 $ARGUMENTS
 
-## Todo Management
+## Parse Arguments and Execute
 
-Parse the arguments to determine the action and use the unified todo tool:
+Analyze the arguments to determine the appropriate action:
 
-### For "add [task description]" or just a task description:
-Use the quick action feature:
+### For "add [task description]":
+Add a new task to the latest todo list:
 ```
-todo({ action: "quick", quick: "add [task description]" })
+mcp__goldfish__todo({
+  action: "update",
+  listId: "latest",
+  newTask: "[task description from arguments]"
+})
 ```
 
-### For "done [id]" or "complete [id]" or "finish [id]":
-Use the quick action to mark items complete:
+### For "done [item_id]" or "complete [item_id]":
+Mark the specified item as completed:
 ```
-todo({ action: "quick", quick: "done [id]" })
+mcp__goldfish__todo({
+  action: "update",
+  listId: "latest", 
+  itemId: "[item_id]",
+  status: "Done"
+})
+```
+
+### For "active [item_id]" or "working [item_id]":
+Mark the specified item as currently active:
+```
+mcp__goldfish__todo({
+  action: "update",
+  listId: "latest",
+  itemId: "[item_id]", 
+  status: "Active"
+})
 ```
 
 ### For "list" or no arguments:
-Show the current todo list with IDs:
+Show current todo lists:
 ```
-todo({ action: "view" })
-```
-
-### For "active [id]":
-Mark the specified item as currently being worked on:
-```
-todo({ action: "update", listId: "latest", itemId: "[id]", status: "active" })
+mcp__goldfish__todo({
+  action: "view"
+})
 ```
 
-### For "delete [id]" or "remove [id]":
-Delete the specified todo item:
+### For "all" or "lists":
+Show all todo lists including completed:
 ```
-todo({ action: "update", listId: "latest", itemId: "[id]", delete: true })
+mcp__goldfish__todo({
+  action: "list"
+})
+```
+
+## Parameter Details:
+- **action**: "view" (default), "create", "update", "list"
+- **listId**: Supports "latest", "active", "current", or specific list ID
+- **itemId**: Specific item identifier within the list
+- **newTask**: Task description when adding new items
+- **status**: "Pending", "Active", "Done" for status updates
+- **title**: Required for "create" action
+- **items**: Array of tasks for "create" action
+
+## Status Values:
+- **Pending**: ⏳ Not started yet
+- **Active**: 🔄 Currently working on
+- **Done**: ✅ Completed
+
+## Display Format:
+After any change, show the updated todo list:
+```
+📋 {List Title} - {completion}% ({done}/{total})
+   ✅ [id] {completed task}
+   🔄 [id] {active task} 
+   ⏳ [id] {pending task}
 ```
 
 ## Examples:
-
-- `/todo add implement user authentication` - Adds new task
-- `/todo done 3` - Marks item #3 as complete
-- `/todo list` - Shows all todos
-- `/todo active 2` - Marks item #2 as in progress
-- `/todo delete 5` - Removes item #5
-
-## Display Format:
-
-Always show the updated todo list after making changes:
-
-```
-📋 {List Title} - {percentage}% ({completed}/{total})
-   ✅ [1] {completed task}
-   🔄 [2] {active task}
-   ⏳ [3] {pending task}
-```
-
-Keep responses brief - just show the action taken and updated list.
+- `/todo add implement user authentication`
+- `/todo done abc123` 
+- `/todo active def456`
+- `/todo list`

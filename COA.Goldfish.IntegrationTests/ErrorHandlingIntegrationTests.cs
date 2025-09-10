@@ -8,6 +8,7 @@ using System.Text.Json;
 using System.IO;
 using System.Threading;
 using System.Diagnostics;
+using System.Reflection;
 
 namespace COA.Goldfish.IntegrationTests;
 
@@ -259,7 +260,9 @@ public class ErrorHandlingIntegrationTests
     public async Task LargeDatasetMigration_ShouldHandleMemoryPressure()
     {
         // Arrange - Create a large dataset that could cause memory issues
-        var todosDir = Path.Combine(_tempDirectory, "todos");
+        // Create workspace directory structure that migrator expects
+        var workspaceDir = Path.Combine(_tempDirectory, "large-data-test-workspace");
+        var todosDir = Path.Combine(workspaceDir, "todos");
         Directory.CreateDirectory(todosDir);
         
         // Create 100 TODO lists with 100 items each (10,000 total items)
@@ -313,7 +316,9 @@ public class ErrorHandlingIntegrationTests
     public async Task ConcurrentMigrationAttempts_ShouldHandleSafely()
     {
         // Arrange - Create test data
-        var todosDir = Path.Combine(_tempDirectory, "todos");
+        // Create workspace directory structure that migrator expects  
+        var workspaceDir = Path.Combine(_tempDirectory, "test-workspace");
+        var todosDir = Path.Combine(workspaceDir, "todos");
         Directory.CreateDirectory(todosDir);
         
         await File.WriteAllTextAsync(
@@ -352,10 +357,18 @@ public class ErrorHandlingIntegrationTests
 
     private async Task StartMcpServerAsync()
     {
-        var serverPath = Path.Combine(
-            Directory.GetCurrentDirectory(),
-            "..", "..", "..", "COA.Goldfish.McpServer", "bin", "Debug", "net9.0",
-            "COA.Goldfish.McpServer.exe");
+        // Try to find the server executable in the same directory as the test assembly first
+        var testAssemblyLocation = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)!;
+        var serverPath = Path.Combine(testAssemblyLocation, "COA.Goldfish.McpServer.exe");
+        
+        // Fallback to the original path if not found in test directory
+        if (!File.Exists(serverPath))
+        {
+            serverPath = Path.Combine(
+                Directory.GetCurrentDirectory(),
+                "..", "..", "..", "COA.Goldfish.McpServer", "bin", "Debug", "net9.0",
+                "COA.Goldfish.McpServer.exe");
+        }
 
         if (!File.Exists(serverPath))
         {

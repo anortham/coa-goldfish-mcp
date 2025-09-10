@@ -1,119 +1,109 @@
 ---
-allowed-tools: ["mcp__goldfish__checkpoint", "mcp__goldfish__todo", "mcp__goldfish__plan", "mcp__goldfish__intel"]
-hide-output: true
-description: "Resume work from the most recent checkpoint with enhanced display"
+allowed-tools: ["mcp__goldfish__recall", "mcp__goldfish__checkpoint"]
+description: "Resume work from recent activity and context"
 ---
 
-Load the most recent checkpoint and continue work from where we left off.
+Load recent work context and continue from where you left off.
 
 $ARGUMENTS
 
-## Resume Process:
+## Parse Arguments and Restore Context
 
-### 1. Gather Session Data (Balanced)
+Analyze the arguments to determine the recall scope and time range:
+
+### For basic recall (no arguments):
+Show recent activity from all sources:
 ```
-checkpoint({ action: "restore", depth: "highlights" })
-todo({ action: "view" })
-plan({ action: "list", showCompleted: false })  // Optional - only if plans exist
-intel({ action: "list" })  // Optional - only if intel exists
+mcp__goldfish__recall({
+  limit: 10
+})
 ```
 
-### 2. Format and Display Results Manually
-**IMPORTANT**: Extract data from tool responses and format it yourself - DO NOT just show tool output.
+### For specific search query:
+Search for specific topics or keywords:
+```
+mcp__goldfish__recall({
+  query: "[search terms from arguments]",
+  since: "7d",
+  limit: 10
+})
+```
 
-**BALANCED APPROACH**: Show useful context without overwhelming:
-- Latest checkpoint (description + context + highlights + files)
-- Active TODO lists with all pending tasks  
-- Intel (only if critical rules/discoveries exist)
-- Plans (only active ones, with brief status)
+### For specific time range:
+Recall activity from specific period:
+```
+mcp__goldfish__recall({
+  since: "[parsed time range like '1d', '3d', '1w']",
+  limit: 15
+})
+```
 
-Balanced display format (~20-25 lines max):
+### If recall finds a recent checkpoint, also restore it:
+```
+mcp__goldfish__checkpoint({
+  action: "restore"
+})
+```
+
+## Parameter Details:
+- **query**: Optional search terms to find specific topics
+- **since**: Time range (default: '7d') - '1d', '3d', '1w', '30d', etc.
+- **limit**: Maximum results to return (default: 10)
+- **workspace**: Target workspace (optional)
+
+## What Recall Provides:
+
+The recall tool aggregates recent activity from:
+- **Recent checkpoints**: Saved session states and progress
+- **Active todos**: Current tasks and their status
+- **Active plans**: Strategic work in progress  
+- **Chronicle entries**: Recent decisions and discoveries
+
+## Display Format:
+
+Format the recall results into a structured resume:
+
 ```
 🔄 RESUMING WORK SESSION
 ────────────────────────────────────────────────────────
 
-📍 **Last Work:** {description}
-🎯 **Context:** {work_context} 
+📍 **Recent Checkpoint:** {latest_checkpoint_description}
+🎯 **Context:** {work_context}
 🌿 **Branch:** {git_branch}
-📁 **Files:** {active_files}
+📁 **Active Files:** {active_files}
 
-✨ **Recent Highlights:** (max 3)
+✨ **Recent Highlights:**
   • {highlight1}
   • {highlight2}
 
-🧠 **Active Investigations:** (only if current investigations exist)
-  🔬 {active_investigation1}
-  🔬 {active_investigation2}
+📋 **Active TODOs:** ({pending_count} pending)
+  🔄 [id] {active_task}
+  ⏳ [id] {pending_task1}
+  ⏳ [id] {pending_task2}
 
-📐 **Active Plan:** (only if exists)
+📐 **Active Plans:** (if any)
   🎯 {plan_title} - {progress}%
 
-📋 **Active TODOs:** ({pending_count} pending)
-  🔄 [id] {current_active_task}
-  ⏳ [id] {pending_task1} 
-  ⏳ [id] {pending_task2}
-  ... and {more_count} more (if >5 tasks)
+📝 **Recent Chronicle Entries:**
+  • {recent_decision}
+  • {recent_discovery}
 
 ────────────────────────────────────────────────────────
 🚀 Ready to continue. What would you like to work on?
 ```
 
-### 3. Implementation Notes
-
-**Key Pattern**: 
-- Call all tools but display selectively
-- Parse JSON responses and show relevant sections
-- Keep intel/plans optional (only show if they have useful content)
-- Target ~20-25 lines total output
-
-**Data Extraction (Balanced)**:
-
-1. **Checkpoint Data** (restore useful context):
-   - Include: description, workContext, gitBranch, activeFiles
-   - Show: top 3 highlights (most recent accomplishments)
-   - Skip: extensive metadata
-
-2. **TODO Data** (actionable with context):
-   - Show active task + all pending tasks (up to 5)
-   - Include pending count summary
-   - Format: 🔄 (active) ⏳ (pending)
-
-3. **Intel Data** (show current work context):
-   - Show active investigations only (permanent rules load in background)
-   - Max 3-4 recent investigations to show current work context
-   
-4. **Plan Data** (brief status only):
-   - Show only active plans with progress %
-   - One line per plan maximum
-
-**Important Formatting Rules**:
-- ALWAYS show todo item IDs in brackets: [1], [2], [3], etc.
-- Show ALL todo items up to limit, not just examples
-- Use the exact ID from the item, don't renumber
-- Keep task descriptions on one line (truncate if > 70 chars)
-
-### 4. Example TODO Display
-When displaying todos, show them exactly like this:
+## Fallback (No Recent Activity):
+If no recent activity found:
 ```
-📋 **Active TODOs:** (3 pending)
-  🔄 [3] Debug memory leak in session handler
-  ⏳ [4] Fix CSS layout issue on mobile
-  ⏳ [5] Patch XSS vulnerability in comment form
+⚠️ No recent activity found for the specified time range.
+
+💡 **Getting Started:**
+  • Use `/checkpoint` to save your current progress
+  • Use `/todo` to create task lists
+  • Use `/chronicle` to capture decisions and discoveries
 ```
 
-### 5. Intel Display Rules
-**For Active Investigations only:**
-- Extract lines from "Active Investigations" section only
-- Skip "Permanent Rules" (agent gets these in background)  
-- Show max 3-4 most relevant current discoveries
-- Format as: 🔬 {investigation_text}
-
-### 6. Fallback (No Checkpoint)
-If no checkpoint found:
-```
-⚠️ No recent checkpoint found. Showing recent activity:
-
-[Use recall({ since: "7d" }) and format the results manually]
-
-💡 **Tip:** Create your first checkpoint with `/checkpoint`
-```
+## Usage Examples:
+- `/recall` - Show all recent activity
+- `/recall authentication bug` - Find work related to auth bugs  
+- `/recall 3d` - Show last 3 days of activity

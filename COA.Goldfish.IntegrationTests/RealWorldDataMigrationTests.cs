@@ -42,24 +42,47 @@ public class RealWorldDataMigrationTests
     }
 
     [TearDown]
-    public void TearDown()
+    public async Task TearDown()
     {
-        // Dispose any resources and wait a bit for database cleanup
+        // Properly dispose migrator if it implements IDisposable
+        if (_migrator is IDisposable disposable)
+        {
+            disposable.Dispose();
+        }
+        
+        // Force close any open SQLite connections
+        Microsoft.Data.Sqlite.SqliteConnection.ClearAllPools();
+        
+        // Give more time for file handles to close
         GC.Collect();
         GC.WaitForPendingFinalizers();
-        Thread.Sleep(100); // Give time for file handles to close
+        await Task.Delay(500); // Increased delay for SQLite cleanup
         
-        // Clean up test directory
+        // Clean up test directory with retry logic
         if (Directory.Exists(_tempDirectory))
         {
-            try
+            var attempts = 0;
+            while (attempts < 3)
             {
-                Directory.Delete(_tempDirectory, recursive: true);
-            }
-            catch (IOException ex)
-            {
-                // Log but don't fail the test
-                Console.WriteLine($"Warning: Could not clean up test directory: {ex.Message}");
+                try
+                {
+                    Directory.Delete(_tempDirectory, recursive: true);
+                    break;
+                }
+                catch (IOException ex) when (attempts < 2)
+                {
+                    Console.WriteLine($"Attempt {attempts + 1}: Could not clean up test directory: {ex.Message}");
+                    await Task.Delay(1000); // Wait before retry
+                    attempts++;
+                    GC.Collect();
+                    GC.WaitForPendingFinalizers();
+                }
+                catch (IOException ex)
+                {
+                    // Final attempt failed
+                    Console.WriteLine($"Warning: Could not clean up test directory after {attempts + 1} attempts: {ex.Message}");
+                    break;
+                }
             }
         }
     }
@@ -68,7 +91,8 @@ public class RealWorldDataMigrationTests
     public async Task MigrateRealTodoData_ShouldHandleActualTypeScriptStructure()
     {
         // Arrange - Create real TypeScript TODO structure based on actual production data
-        var todosDir = Path.Combine(_tempDirectory, "todos");
+        var workspaceDir = Path.Combine(_tempDirectory, "coa-goldfish-mcp");
+        var todosDir = Path.Combine(workspaceDir, "todos");
         Directory.CreateDirectory(todosDir);
         
         var realTypeScriptTodo = new
@@ -136,7 +160,8 @@ public class RealWorldDataMigrationTests
     public async Task MigrateRealCheckpointData_ShouldHandleNestedContentStructure()
     {
         // Arrange - Create real TypeScript checkpoint structure based on actual production data
-        var checkpointsDir = Path.Combine(_tempDirectory, "checkpoints");
+        var workspaceDir = Path.Combine(_tempDirectory, "coa-goldfish-mcp");
+        var checkpointsDir = Path.Combine(workspaceDir, "checkpoints");
         Directory.CreateDirectory(checkpointsDir);
         
         var realTypeScriptCheckpoint = new
@@ -199,7 +224,8 @@ public class RealWorldDataMigrationTests
     public async Task MigrateWithIncompleteData_ShouldHandleGracefully()
     {
         // Arrange - Create TypeScript data with missing/incomplete fields (common in real data)
-        var todosDir = Path.Combine(_tempDirectory, "todos");
+        var workspaceDir = Path.Combine(_tempDirectory, "coa-goldfish-mcp");
+        var todosDir = Path.Combine(workspaceDir, "todos");
         Directory.CreateDirectory(todosDir);
         
         var incompleteTypeScriptTodo = new
@@ -258,9 +284,10 @@ public class RealWorldDataMigrationTests
     public async Task MigrateMultipleRealFiles_ShouldPreserveDataRelationships()
     {
         // Arrange - Create multiple related files like real TypeScript usage
-        var checkpointsDir = Path.Combine(_tempDirectory, "checkpoints");
-        var todosDir = Path.Combine(_tempDirectory, "todos");
-        var plansDir = Path.Combine(_tempDirectory, "plans");
+        var workspaceDir = Path.Combine(_tempDirectory, "coa-goldfish-mcp");
+        var checkpointsDir = Path.Combine(workspaceDir, "checkpoints");
+        var todosDir = Path.Combine(workspaceDir, "todos");
+        var plansDir = Path.Combine(workspaceDir, "plans");
         
         Directory.CreateDirectory(checkpointsDir);
         Directory.CreateDirectory(todosDir);

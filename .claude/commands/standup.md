@@ -1,70 +1,93 @@
 ---
 allowed-tools: ["mcp__goldfish__standup"]
-description: "Generate daily standup report with yesterday's work, today's todos, and blockers"
+description: "Generate professional standup reports with progress summaries"
 ---
 
-Generate a daily standup report using the unified standup tool with intelligent relationship mapping.
+Generate a comprehensive standup report using the unified standup tool.
 
 $ARGUMENTS
 
-## Standup Process:
+## Parse Arguments and Generate Report
 
-### 1. Generate Comprehensive Standup Report
-Use the unified standup tool which automatically aggregates data from checkpoints, todos, and plans:
+Analyze arguments to determine the standup type and time range:
 
+### For "daily" or no arguments:
+Generate daily standup report (last 24 hours):
 ```
-standup({ 
-  action: "daily",
-  scope: "all",
-  outputStyle: "meeting"
+mcp__goldfish__standup({
+  action: "daily"
 })
 ```
 
-The unified standup tool will automatically:
-- Gather timeline data from the last 24 hours
-- Collect TODO lists across all workspaces
-- Map relationships between plans, todos, and checkpoints
-- Identify blockers and stalled work
-- Format everything into a meeting-ready report
-
-### 2. Alternative Options
-
-For different standup formats, use these variations:
-
-**Weekly Standup:**
+### For "weekly":
+Generate weekly standup report (last 7 days):
 ```
-standup({ 
-  action: "weekly",
-  scope: "all",
-  outputStyle: "meeting"
+mcp__goldfish__standup({
+  action: "weekly"
 })
 ```
 
-**Written Report (for async teams):**
+### For "project" or "month":
+Generate project standup report (last 30 days):
 ```
-standup({ 
-  action: "daily",
-  scope: "all",
-  outputStyle: "written"
+mcp__goldfish__standup({
+  action: "project"
 })
 ```
 
-**Executive Summary:**
+### For custom time range:
+Generate standup for specific time range:
 ```
-standup({ 
-  action: "project",
-  scope: "all",
-  outputStyle: "executive"
+mcp__goldfish__standup({
+  action: "custom",
+  since: "[parsed time range like '3d', '1w', '2025-01-01']"
 })
 ```
 
-### 3. What the Tool Provides
+## Parameter Details:
+- **action**: "daily" (default), "weekly", "project", "custom"
+- **since**: Time range override (e.g., '1d', '3d', '1w', '2025-01-15')
+- **workspace**: Target workspace (optional)
 
-The unified standup tool automatically handles:
-- **Yesterday**: Extracts accomplishments from checkpoints and completed todos
-- **Today**: Shows active and pending TODO items with IDs
-- **Blockers**: Identifies stalled tasks, overdue items, and failing dependencies
-- **Relationships**: Maps connections between plans, todos, and checkpoints
-- **Metrics**: Shows progress percentages and completion rates
+## Time Range Examples:
+- **'1d'** or **'24h'**: Last 24 hours
+- **'3d'**: Last 3 days  
+- **'1w'**: Last week
+- **'2025-01-15'**: Since specific date
 
-The output is formatted and ready for standup meetings without additional processing.
+## What the Tool Provides:
+
+The standup tool automatically aggregates:
+- **Recent checkpoints**: What was accomplished and saved
+- **Active todos**: Current tasks and their status
+- **Active plans**: Strategic work in progress  
+- **Chronicle entries**: Recent decisions and discoveries
+- **Progress metrics**: Completion rates and velocity
+
+## Report Format:
+```
+🔄 STANDUP REPORT - {timerange}
+────────────────────────────────
+
+✅ **COMPLETED WORK:**
+   • {checkpoint highlights}
+   • {completed todos}
+
+🔄 **IN PROGRESS:**  
+   • {active todos with IDs}
+   • {current plan milestones}
+
+⏳ **PLANNED:**
+   • {pending high-priority todos}
+   • {next plan phases}
+
+🚧 **BLOCKERS:**
+   • {stalled tasks}
+   • {overdue items}
+
+📊 **METRICS:**
+   • {completion percentages}
+   • {velocity trends}
+```
+
+The output is meeting-ready without additional formatting.

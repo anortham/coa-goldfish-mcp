@@ -40,24 +40,47 @@ public class JsonToSqliteMigratorTests
     }
 
     [TearDown]
-    public void TearDown()
+    public async Task TearDown()
     {
-        // Dispose any resources and wait a bit for database cleanup
+        // Properly dispose migrator if it implements IDisposable
+        if (_migrator is IDisposable disposable)
+        {
+            disposable.Dispose();
+        }
+        
+        // Force close any open SQLite connections
+        Microsoft.Data.Sqlite.SqliteConnection.ClearAllPools();
+        
+        // Give more time for file handles to close
         GC.Collect();
         GC.WaitForPendingFinalizers();
-        Thread.Sleep(100); // Give time for file handles to close
+        await Task.Delay(500); // Increased delay for SQLite cleanup
         
-        // Clean up test directory
+        // Clean up test directory with retry logic
         if (Directory.Exists(_tempDirectory))
         {
-            try
+            var attempts = 0;
+            while (attempts < 3)
             {
-                Directory.Delete(_tempDirectory, recursive: true);
-            }
-            catch (IOException ex)
-            {
-                // Log but don't fail the test
-                Console.WriteLine($"Warning: Could not clean up test directory: {ex.Message}");
+                try
+                {
+                    Directory.Delete(_tempDirectory, recursive: true);
+                    break;
+                }
+                catch (IOException ex) when (attempts < 2)
+                {
+                    Console.WriteLine($"Attempt {attempts + 1}: Could not clean up test directory: {ex.Message}");
+                    await Task.Delay(1000); // Wait before retry
+                    attempts++;
+                    GC.Collect();
+                    GC.WaitForPendingFinalizers();
+                }
+                catch (IOException ex)
+                {
+                    // Final attempt failed
+                    Console.WriteLine($"Warning: Could not clean up test directory after {attempts + 1} attempts: {ex.Message}");
+                    break;
+                }
             }
         }
     }
@@ -65,11 +88,12 @@ public class JsonToSqliteMigratorTests
     [Test]
     public async Task MigrateAllAsync_WithValidData_ShouldSucceed()
     {
-        // Arrange - Create expected directory structure
-        var checkpointsDir = Path.Combine(_tempDirectory, "checkpoints");
-        var todosDir = Path.Combine(_tempDirectory, "todos");
-        var plansDir = Path.Combine(_tempDirectory, "plans");
-        var memoriesDir = Path.Combine(_tempDirectory, "memories");
+        // Arrange - Create expected directory structure with workspace subdirectory
+        var workspaceDir = Path.Combine(_tempDirectory, "test-workspace");
+        var checkpointsDir = Path.Combine(workspaceDir, "checkpoints");
+        var todosDir = Path.Combine(workspaceDir, "todos");
+        var plansDir = Path.Combine(workspaceDir, "plans");
+        var memoriesDir = Path.Combine(workspaceDir, "memories");
         
         Directory.CreateDirectory(checkpointsDir);
         Directory.CreateDirectory(todosDir);
@@ -86,7 +110,7 @@ public class JsonToSqliteMigratorTests
         var result = await _migrator.MigrateAllAsync();
 
         // Assert
-        Assert.That(result.Success, Is.True, $"Migration failed: {result.ErrorMessage}");
+        Assert.That(result.Success, Is.True, $"Migration failed: {result.ErrorMessage}. Validation errors: {string.Join(", ", result.ValidationErrors)}");
         Assert.That(result.CheckpointsMigrated + result.TodoListsMigrated + result.PlansMigrated + result.MemoriesMigrated, Is.GreaterThan(0));
         
         // Note: WorkspacesMigrated depends on finding workspace IDs in migrated data
@@ -100,7 +124,8 @@ public class JsonToSqliteMigratorTests
     public async Task MigrateCheckpointsAsync_ShouldPreserveAllData()
     {
         // Arrange
-        var checkpointsDir = Path.Combine(_tempDirectory, "checkpoints");
+        var workspaceDir = Path.Combine(_tempDirectory, "test-workspace");
+        var checkpointsDir = Path.Combine(workspaceDir, "checkpoints");
         Directory.CreateDirectory(checkpointsDir);
         await CreateTestCheckpointFile(checkpointsDir);
 
@@ -128,7 +153,8 @@ public class JsonToSqliteMigratorTests
     public async Task MigrateTodoListsAsync_ShouldPreserveItems()
     {
         // Arrange
-        var todosDir = Path.Combine(_tempDirectory, "todos");
+        var workspaceDir = Path.Combine(_tempDirectory, "test-workspace");
+        var todosDir = Path.Combine(workspaceDir, "todos");
         Directory.CreateDirectory(todosDir);
         await CreateTestTodoFile(todosDir);
 
@@ -156,7 +182,8 @@ public class JsonToSqliteMigratorTests
     public async Task MigratePlansAsync_ShouldPreserveStructure()
     {
         // Arrange
-        var plansDir = Path.Combine(_tempDirectory, "plans");
+        var workspaceDir = Path.Combine(_tempDirectory, "test-workspace");
+        var plansDir = Path.Combine(workspaceDir, "plans");
         Directory.CreateDirectory(plansDir);
         await CreateTestPlanFile(plansDir);
 
@@ -176,15 +203,16 @@ public class JsonToSqliteMigratorTests
         var plan = plans.First();
         Assert.That(plan.Title, Is.EqualTo("Migration Testing Plan"));
         Assert.That(plan.Description, Contains.Substring("Comprehensive plan"));
-        Assert.That(plan.Category.ToString(), Is.EqualTo("Feature"));
-        Assert.That(plan.Status.ToString(), Is.EqualTo("Active"));
+        Assert.That(plan.Category, Is.EqualTo("feature"));
+        Assert.That(plan.Status, Is.EqualTo(PlanStatus.Active));
     }
 
     [Test]
     public async Task MigrateMemoriesAsync_ShouldConvertToChronicle()
     {
         // Arrange
-        var memoriesDir = Path.Combine(_tempDirectory, "memories");
+        var workspaceDir = Path.Combine(_tempDirectory, "test-workspace");
+        var memoriesDir = Path.Combine(workspaceDir, "memories");
         Directory.CreateDirectory(memoriesDir);
         await CreateTestMemoryFile(memoriesDir);
 
@@ -210,7 +238,8 @@ public class JsonToSqliteMigratorTests
     public async Task ValidateMigrationAsync_WithCorruptData_ShouldDetectIssues()
     {
         // Arrange
-        var checkpointsDir = Path.Combine(_tempDirectory, "checkpoints");
+        var workspaceDir = Path.Combine(_tempDirectory, "test-workspace");
+        var checkpointsDir = Path.Combine(workspaceDir, "checkpoints");
         Directory.CreateDirectory(checkpointsDir);
         
         // Create corrupted JSON file
@@ -256,16 +285,19 @@ public class JsonToSqliteMigratorTests
         var checkpoint = new
         {
             id = "test-checkpoint-1",
-            workspaceId = "test-workspace",
-            description = "Test checkpoint",
-            highlights = new[] { "Fixed bug", "Added feature" },
-            activeFiles = new[] { "test.cs", "readme.md" },
-            workContext = "Testing migration",
-            global = false,
+            workspace = "test-workspace", // TypeScript uses "workspace" not "workspaceId"
+            timestamp = DateTime.UtcNow.ToString("O"),
             sessionId = "session-1",
-            gitBranch = "main",
-            createdAt = DateTime.UtcNow.ToString("O"),
-            updatedAt = DateTime.UtcNow.ToString("O"),
+            type = "checkpoint",
+            content = new
+            {
+                description = "Test checkpoint",
+                highlights = new[] { "Fixed bug", "Added feature" },
+                activeFiles = new[] { "test.cs", "readme.md" },
+                workContext = "Testing migration",
+                gitBranch = "main",
+                sessionId = "session-1"
+            },
             ttlHours = 72
         };
 
@@ -280,14 +312,14 @@ public class JsonToSqliteMigratorTests
         var todoList = new
         {
             id = "todo-list-1",
-            workspaceId = "test-workspace",
+            workspace = "test-workspace", // TypeScript uses "workspace" not "workspaceId"
             title = "Test Migration Tasks",
             items = new[]
             {
                 new
                 {
                     id = "item-1",
-                    content = "Test data migration",
+                    task = "Test data migration", // TypeScript uses "task" not "content"
                     status = "pending",
                     priority = "normal",
                     createdAt = DateTime.UtcNow.ToString("O")
@@ -295,13 +327,13 @@ public class JsonToSqliteMigratorTests
                 new
                 {
                     id = "item-2",
-                    content = "Validate results",
+                    task = "Validate results", // TypeScript uses "task" not "content"
                     status = "done",
                     priority = "high",
                     createdAt = DateTime.UtcNow.ToString("O")
                 }
             },
-            isActive = true,
+            status = "active", // TypeScript uses status field instead of isActive
             createdAt = DateTime.UtcNow.ToString("O"),
             updatedAt = DateTime.UtcNow.ToString("O")
         };
@@ -317,7 +349,7 @@ public class JsonToSqliteMigratorTests
         var plan = new
         {
             id = "plan-1",
-            workspaceId = "test-workspace",
+            workspace = "test-workspace", // TypeScript uses "workspace" not "workspaceId"
             title = "Migration Testing Plan",
             description = "Comprehensive plan for testing data migration functionality",
             category = "feature",
@@ -340,9 +372,9 @@ public class JsonToSqliteMigratorTests
         var memory = new
         {
             id = "memory-1",
-            workspaceId = "test-workspace",
+            workspace = "test-workspace", // TypeScript uses "workspace" not "workspaceId"
             content = "Test memory content",
-            type = "general",
+            type = "discovery", // Use specific type that maps to ChronicleEntryType.Discovery
             context = "general",
             tags = new[] { "test", "migration" },
             createdAt = DateTime.UtcNow.ToString("O"),
