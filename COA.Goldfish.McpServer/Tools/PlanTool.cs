@@ -101,11 +101,13 @@ This tool prevents chaotic feature development through disciplined planning.";
 
                     result.Plan = await _storage.SavePlanAsync(plan);
                     result.Message = $"Created plan '{parameters.Title}' with {plan.Items.Count} items";
+                    result.Success = true;
                     break;
 
                 case "list":
                     result.Plans = await _storage.GetPlansAsync(workspaceId, includeCompleted: true);
                     result.Message = $"Found {result.Plans.Count} plans";
+                    result.Success = true;
                     break;
 
                 case "update":
@@ -169,6 +171,7 @@ This tool prevents chaotic feature development through disciplined planning.";
                     targetPlan.UpdatedAt = DateTime.UtcNow;
                     result.Plan = await _storage.SavePlanAsync(targetPlan);
                     result.Message = $"Updated plan '{targetPlan.Title}'";
+                    result.Success = true;
                     break;
 
                 case "complete":
@@ -199,6 +202,7 @@ This tool prevents chaotic feature development through disciplined planning.";
                     planToComplete.UpdatedAt = DateTime.UtcNow;
                     result.Plan = await _storage.SavePlanAsync(planToComplete);
                     result.Message = $"Completed plan '{planToComplete.Title}'";
+                    result.Success = true;
                     break;
 
                 case "generate-todos":
@@ -270,6 +274,7 @@ This tool prevents chaotic feature development through disciplined planning.";
 
                     result.GeneratedTodos = await _storage.SaveTodoListAsync(todoList);
                     result.Message = $"Generated TODO list with {sourcePlan.Items.Count} tasks from plan '{sourcePlan.Title}'";
+                    result.Success = true;
                     break;
 
                 default:

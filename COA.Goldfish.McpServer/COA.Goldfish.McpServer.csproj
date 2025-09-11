@@ -27,8 +27,8 @@
 
   <ItemGroup>
     <!-- COA Framework NuGet package references -->
-    <PackageReference Include="COA.Mcp.Framework" Version="2.1.14" />
-    <PackageReference Include="COA.Mcp.Framework.TokenOptimization" Version="2.1.14" />
+    <PackageReference Include="COA.Mcp.Framework" Version="2.1.16" />
+    <PackageReference Include="COA.Mcp.Framework.TokenOptimization" Version="2.1.16" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" Version="9.0.8" />
     
     <!-- Entity Framework Core for SQLite -->

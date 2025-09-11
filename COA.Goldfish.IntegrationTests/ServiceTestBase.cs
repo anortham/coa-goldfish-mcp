@@ -1,6 +1,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Configuration;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Data.Sqlite;
 using NUnit.Framework;
 using COA.Goldfish.McpServer.Services.Storage;
@@ -16,6 +17,7 @@ namespace COA.Goldfish.IntegrationTests;
 public abstract class ServiceTestBase
 {
     protected IServiceProvider? _serviceProvider;
+    protected IServiceScope? _serviceScope;
     protected GoldfishDbContext? _context;
     
     // Direct access to all MCP tools - no process spawning required
@@ -73,8 +75,26 @@ public abstract class ServiceTestBase
             .Build();
         services.AddSingleton<IConfiguration>(configuration);
 
-        // Add database context
-        services.AddSingleton(_context);
+        // Add database context factory for proper threading isolation
+        // Each scope gets its own context, but sharing the same database connection for SQLite
+        services.AddScoped<GoldfishDbContext>(_ => {
+            if (_context!.Database.IsSqlite())
+            {
+                // For SQLite, create new context with same connection
+                var connection = _context.Database.GetDbConnection();
+                var options = new DbContextOptionsBuilder<GoldfishDbContext>()
+                    .UseSqlite(connection)
+                    .EnableSensitiveDataLogging()
+                    .EnableDetailedErrors()
+                    .Options;
+                return new GoldfishDbContext(options);
+            }
+            else
+            {
+                // For InMemory EF, return the shared instance
+                return _context;
+            }
+        });
 
         // Add core services (matching main application)
         services.AddScoped<COA.Goldfish.McpServer.Services.Storage.IStorageService, COA.Goldfish.McpServer.Services.Storage.StorageService>();
@@ -96,9 +116,9 @@ public abstract class ServiceTestBase
         // Build service provider
         _serviceProvider = services.BuildServiceProvider();
 
-        // Create a scope for scoped services
-        var scope = _serviceProvider.CreateScope();
-        var scopedProvider = scope.ServiceProvider;
+        // Create a scope for scoped services - store for proper disposal
+        _serviceScope = _serviceProvider.CreateScope();
+        var scopedProvider = _serviceScope.ServiceProvider;
 
         // Get tool instances from scoped provider
         _checkpointTool = scopedProvider.GetRequiredService<CheckpointTool>();
@@ -162,6 +182,10 @@ public abstract class ServiceTestBase
     /// </summary>
     protected virtual async Task CleanupServicesAsync()
     {
+        // Dispose service scope first
+        _serviceScope?.Dispose();
+        _serviceScope = null;
+
         // Dispose service provider
         if (_serviceProvider is IDisposable disposableServiceProvider)
         {
@@ -273,7 +297,7 @@ public abstract class ServiceTestBase
     /// </summary>
     protected virtual async Task<int> CountEntitiesAsync<T>() where T : class
     {
-        return _context!.Set<T>().Count();
+        return await Task.FromResult(_context!.Set<T>().Count());
     }
 
     /// <summary>
@@ -282,6 +306,6 @@ public abstract class ServiceTestBase
     protected virtual async Task<bool> IsWorkspaceIsolatedAsync()
     {
         var workspaces = _context!.WorkspaceStates.ToList();
-        return workspaces.All(w => w.WorkspaceId == _testWorkspaceId);
+        return await Task.FromResult(workspaces.All(w => w.WorkspaceId == _testWorkspaceId));
     }
 }

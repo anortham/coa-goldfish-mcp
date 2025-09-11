@@ -129,6 +129,7 @@ public class SimpleDatabaseTests
     [Test]
     public async Task TestDataFactory_Should_GenerateRealisticData()
     {
+        await Task.Delay(1); // Ensure async context
         // Act: Generate test data for different scenarios
         var (ecommerceDesc, ecommerceHighlights, ecommerceFiles) = TestDataFactory.GenerateCheckpointData("ecommerce");
         var (devopsDesc, devopsHighlights, devopsFiles) = TestDataFactory.GenerateCheckpointData("devops");
