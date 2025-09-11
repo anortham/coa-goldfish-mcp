@@ -1,4 +1,5 @@
 using COA.Goldfish.McpServer.Services.Storage;
+using COA.Goldfish.McpServer.Services;
 using COA.Goldfish.McpServer.Models;
 using COA.Mcp.Framework.Models;
 using Microsoft.Extensions.Logging;
@@ -11,12 +12,14 @@ namespace COA.Goldfish.McpServer.Tools;
 public class RecallTool : GoldfishToolBase<RecallParameters, RecallResult>
 {
     private readonly IStorageService _storage;
+    private readonly WorkspaceService _workspaceService;
     private readonly ILogger<RecallTool> _logger;
 
-    public RecallTool(IServiceProvider serviceProvider, ILogger<RecallTool> logger, IStorageService storage) 
+    public RecallTool(IServiceProvider serviceProvider, ILogger<RecallTool> logger, IStorageService storage, WorkspaceService workspaceService) 
         : base(serviceProvider, logger)
     {
         _storage = storage;
+        _workspaceService = workspaceService;
         _logger = logger;
     }
 
@@ -29,7 +32,7 @@ public class RecallTool : GoldfishToolBase<RecallParameters, RecallResult>
     {
         try
         {
-            var workspaceId = parameters.Workspace ?? "default";
+            var workspaceId = parameters.Workspace ?? _workspaceService.GetCurrentWorkspace();
             var result = new RecallResult();
 
             // Parse time range

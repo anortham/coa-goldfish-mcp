@@ -215,14 +215,23 @@ public class Program
                         Limitation = "No structured planning, no progress tracking, plans get lost",
                         PerformanceMetric = "Structured planning workflow vs informal discussions"
                     },
-                    ["Systematic development workflow"] = new COA.Mcp.Framework.Configuration.ToolComparison
+                    ["Integrated development workflow"] = new COA.Mcp.Framework.Configuration.ToolComparison
                     {
-                        Task = "Systematic development workflow",
-                        ServerTool = "checkpoint + plan + todo workflow",
-                        Advantage = "Structured, recoverable development with persistent state",
-                        BuiltInTool = "Ad-hoc development",
-                        Limitation = "No persistence, no structure, work gets lost",
-                        PerformanceMetric = "Recoverable workflows vs starting from scratch after crashes"
+                        Task = "Professional development workflow",
+                        ServerTool = "mcp__goldfish__plan + mcp__codesearch__text_search + mcp__goldfish__checkpoint",
+                        Advantage = "Combined workflow organization AND technical precision - prevents both chaos and compilation errors",
+                        BuiltInTool = "Ad-hoc coding without planning or type verification",
+                        Limitation = "No persistence, no structure, no type safety - leads to broken code and lost work",
+                        PerformanceMetric = "Recoverable workflows with type safety vs starting from scratch with compilation errors"
+                    },
+                    ["Session continuity with technical context"] = new COA.Mcp.Framework.Configuration.ToolComparison
+                    {
+                        Task = "Resume development work",
+                        ServerTool = "mcp__goldfish__recall + mcp__codesearch__recent_files + mcp__goldfish__workspace",
+                        Advantage = "Restore both workflow context AND technical understanding of recent changes",
+                        BuiltInTool = "Memory + manual codebase exploration",
+                        Limitation = "Forget what you were doing, lose technical insights, re-discover same information",
+                        PerformanceMetric = "Instant context restoration vs 15+ minutes of re-discovery work"
                     },
                     ["Complex feature development"] = new COA.Mcp.Framework.Configuration.ToolComparison
                     {
