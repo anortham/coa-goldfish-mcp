@@ -41,7 +41,7 @@ public class PathResolutionService : IPathResolutionService
             }
         }
         
-        // Fall back to current directory
+        // Smart workspace detection: use current directory
         var currentDir = Environment.CurrentDirectory;
         _logger.LogInformation("Using current directory as primary workspace: {Workspace}", currentDir);
         return currentDir;

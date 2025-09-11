@@ -253,5 +253,168 @@ public class GoldfishDbContext : DbContext
             entity.HasIndex(e => e.RelatedTodoId);
             entity.HasIndex(e => e.TtlExpiry); // For cleanup operations
         });
+        
+        // FTS5 virtual tables are created via CreateFtsTablesAsync() during database initialization
+    }
+
+    /// <summary>
+    /// Execute SQL commands to create FTS5 virtual tables
+    /// This should be called after database creation/migration
+    /// </summary>
+    public async Task CreateFtsTablesAsync()
+    {
+        try
+        {
+            // Create FTS5 virtual table for checkpoints (simple table, not content-based)
+            await Database.ExecuteSqlRawAsync(@"
+                CREATE VIRTUAL TABLE IF NOT EXISTS CheckpointsFts USING fts5(
+                    Id, 
+                    WorkspaceId, 
+                    Description, 
+                    WorkContext, 
+                    Highlights
+                );
+            ");
+
+            // Create FTS5 virtual table for plans (simple table, not content-based)
+            await Database.ExecuteSqlRawAsync(@"
+                CREATE VIRTUAL TABLE IF NOT EXISTS PlansFts USING fts5(
+                    Id,
+                    WorkspaceId,
+                    Title,
+                    Description,
+                    Items,
+                    Discoveries
+                );
+            ");
+
+            // Create FTS5 virtual table for todo lists (simple table, not content-based)
+            await Database.ExecuteSqlRawAsync(@"
+                CREATE VIRTUAL TABLE IF NOT EXISTS TodoListsFts USING fts5(
+                    Id,
+                    WorkspaceId, 
+                    Title,
+                    Description
+                );
+            ");
+
+            // Create FTS5 virtual table for chronicle entries (simple table, not content-based)
+            await Database.ExecuteSqlRawAsync(@"
+                CREATE VIRTUAL TABLE IF NOT EXISTS ChronicleEntriesFts USING fts5(
+                    Id,
+                    WorkspaceId,
+                    Description
+                );
+            ");
+
+            // Create triggers to keep FTS tables in sync
+            await CreateFtsSyncTriggersAsync();
+        }
+        catch (Exception ex)
+        {
+            // Log error but don't fail - FTS is optional enhancement
+            Console.WriteLine($"Warning: Could not create FTS5 tables: {ex.Message}");
+        }
+    }
+
+    private async Task CreateFtsSyncTriggersAsync()
+    {
+        // Checkpoint triggers
+        await Database.ExecuteSqlRawAsync(@"
+            CREATE TRIGGER IF NOT EXISTS checkpoints_fts_insert AFTER INSERT ON Checkpoints BEGIN
+                INSERT INTO CheckpointsFts(Id, WorkspaceId, Description, WorkContext, Highlights)
+                VALUES (new.Id, new.WorkspaceId, new.Description, new.WorkContext, new.Highlights);
+            END;
+        ");
+
+        await Database.ExecuteSqlRawAsync(@"
+            CREATE TRIGGER IF NOT EXISTS checkpoints_fts_update AFTER UPDATE ON Checkpoints BEGIN
+                UPDATE CheckpointsFts SET 
+                    WorkspaceId = new.WorkspaceId,
+                    Description = new.Description, 
+                    WorkContext = new.WorkContext,
+                    Highlights = new.Highlights
+                WHERE Id = new.Id;
+            END;
+        ");
+
+        await Database.ExecuteSqlRawAsync(@"
+            CREATE TRIGGER IF NOT EXISTS checkpoints_fts_delete AFTER DELETE ON Checkpoints BEGIN
+                DELETE FROM CheckpointsFts WHERE Id = old.Id;
+            END;
+        ");
+
+        // Plan triggers  
+        await Database.ExecuteSqlRawAsync(@"
+            CREATE TRIGGER IF NOT EXISTS plans_fts_insert AFTER INSERT ON Plans BEGIN
+                INSERT INTO PlansFts(Id, WorkspaceId, Title, Description, Items, Discoveries)
+                VALUES (new.Id, new.WorkspaceId, new.Title, new.Description, new.Items, new.Discoveries);
+            END;
+        ");
+
+        await Database.ExecuteSqlRawAsync(@"
+            CREATE TRIGGER IF NOT EXISTS plans_fts_update AFTER UPDATE ON Plans BEGIN
+                UPDATE PlansFts SET
+                    WorkspaceId = new.WorkspaceId,
+                    Title = new.Title,
+                    Description = new.Description,
+                    Items = new.Items,
+                    Discoveries = new.Discoveries
+                WHERE Id = new.Id;
+            END;
+        ");
+
+        await Database.ExecuteSqlRawAsync(@"
+            CREATE TRIGGER IF NOT EXISTS plans_fts_delete AFTER DELETE ON Plans BEGIN
+                DELETE FROM PlansFts WHERE Id = old.Id;
+            END;
+        ");
+
+        // TodoList triggers
+        await Database.ExecuteSqlRawAsync(@"
+            CREATE TRIGGER IF NOT EXISTS todolists_fts_insert AFTER INSERT ON TodoLists BEGIN
+                INSERT INTO TodoListsFts(Id, WorkspaceId, Title, Description)
+                VALUES (new.Id, new.WorkspaceId, new.Title, new.Description);
+            END;
+        ");
+
+        await Database.ExecuteSqlRawAsync(@"
+            CREATE TRIGGER IF NOT EXISTS todolists_fts_update AFTER UPDATE ON TodoLists BEGIN
+                UPDATE TodoListsFts SET
+                    WorkspaceId = new.WorkspaceId,
+                    Title = new.Title,
+                    Description = new.Description
+                WHERE Id = new.Id;
+            END;
+        ");
+
+        await Database.ExecuteSqlRawAsync(@"
+            CREATE TRIGGER IF NOT EXISTS todolists_fts_delete AFTER DELETE ON TodoLists BEGIN
+                DELETE FROM TodoListsFts WHERE Id = old.Id;
+            END;
+        ");
+
+        // ChronicleEntry triggers
+        await Database.ExecuteSqlRawAsync(@"
+            CREATE TRIGGER IF NOT EXISTS chronicleentries_fts_insert AFTER INSERT ON ChronicleEntries BEGIN
+                INSERT INTO ChronicleEntriesFts(Id, WorkspaceId, Description)
+                VALUES (new.Id, new.WorkspaceId, new.Description);
+            END;
+        ");
+
+        await Database.ExecuteSqlRawAsync(@"
+            CREATE TRIGGER IF NOT EXISTS chronicleentries_fts_update AFTER UPDATE ON ChronicleEntries BEGIN
+                UPDATE ChronicleEntriesFts SET
+                    WorkspaceId = new.WorkspaceId,
+                    Description = new.Description
+                WHERE Id = new.Id;
+            END;
+        ");
+
+        await Database.ExecuteSqlRawAsync(@"
+            CREATE TRIGGER IF NOT EXISTS chronicleentries_fts_delete AFTER DELETE ON ChronicleEntries BEGIN
+                DELETE FROM ChronicleEntriesFts WHERE Id = old.Id;
+            END;
+        ");
     }
 }

@@ -2,78 +2,21 @@ using Microsoft.Extensions.Logging;
 using Microsoft.EntityFrameworkCore;
 using COA.Goldfish.McpServer.Services.Storage;
 using COA.Goldfish.McpServer.Models;
+using COA.Goldfish.McpServer.Services;
 
-namespace COA.Goldfish.McpServer.Services;
+namespace COA.Goldfish.IntegrationTests;
 
-// FTS result classes for raw SQL queries
-public class CheckpointFtsResult
-{
-    public string Id { get; set; } = string.Empty;
-    public string WorkspaceId { get; set; } = string.Empty;
-    public string Description { get; set; } = string.Empty;
-    public string WorkContext { get; set; } = string.Empty;
-    public string Highlights { get; set; } = string.Empty;
-    public DateTime CreatedAt { get; set; }
-    public string SessionId { get; set; } = string.Empty;
-    public bool IsGlobal { get; set; }
-    public string ActiveFiles { get; set; } = string.Empty;
-    public string GitBranch { get; set; } = string.Empty;
-}
-
-public class PlanFtsResult
-{
-    public string Id { get; set; } = string.Empty;
-    public string WorkspaceId { get; set; } = string.Empty;
-    public string Title { get; set; } = string.Empty;
-    public string Description { get; set; } = string.Empty;
-    public string Items { get; set; } = string.Empty;
-    public string Discoveries { get; set; } = string.Empty;
-    public DateTime UpdatedAt { get; set; }
-    public string Status { get; set; } = string.Empty;
-    public string Category { get; set; } = string.Empty;
-    public string Priority { get; set; } = string.Empty;
-}
-
-public class TodoListFtsResult
-{
-    public string Id { get; set; } = string.Empty;
-    public string WorkspaceId { get; set; } = string.Empty;
-    public string Title { get; set; } = string.Empty;
-    public string Description { get; set; } = string.Empty;
-    public DateTime UpdatedAt { get; set; }
-    public bool IsActive { get; set; }
-    public string Tags { get; set; } = string.Empty;
-}
-
-public class ChronicleEntryFtsResult
-{
-    public string Id { get; set; } = string.Empty;
-    public string WorkspaceId { get; set; } = string.Empty;
-    public string Description { get; set; } = string.Empty;
-    public DateTime Timestamp { get; set; }
-    public string Type { get; set; } = string.Empty;
-    public string RelatedPlanId { get; set; } = string.Empty;
-    public string RelatedTodoId { get; set; } = string.Empty;
-    public string RelatedCheckpointId { get; set; } = string.Empty;
-    public string Tags { get; set; } = string.Empty;
-}
-
-public interface ISearchService
-{
-    Task<SearchResult> SearchAsync(string query, string? workspaceId = null, int limit = 10, string? since = null);
-    Task<SearchResult> SearchCheckpointsAsync(string query, string? workspaceId = null, int limit = 10);
-    Task<SearchResult> SearchPlansAsync(string query, string? workspaceId = null, int limit = 10);
-    Task<SearchResult> SearchTodosAsync(string query, string? workspaceId = null, int limit = 10);
-    Task<SearchResult> SearchChronicleAsync(string query, string? workspaceId = null, int limit = 10);
-}
-
-public class SearchService : ISearchService
+/// <summary>
+/// Test-specific SearchService that uses LIKE queries instead of FTS5 
+/// to avoid complex FTS5 setup in tests while maintaining same interface
+/// </summary>
+public class TestSearchService : ISearchService
 {
     private readonly GoldfishDbContext _context;
-    private readonly ILogger<SearchService> _logger;
+    private readonly ILogger<TestSearchService> _logger;
     private readonly WorkspaceService _workspaceService;
 
-    public SearchService(GoldfishDbContext context, ILogger<SearchService> logger, WorkspaceService workspaceService)
+    public TestSearchService(GoldfishDbContext context, ILogger<TestSearchService> logger, WorkspaceService workspaceService)
     {
         _context = context;
         _logger = logger;
@@ -89,7 +32,7 @@ public class SearchService : ISearchService
 
             _logger.LogDebug("Starting comprehensive search for query '{Query}' in workspace '{WorkspaceId}'", query, resolvedWorkspaceId);
 
-            // Search across all entity types
+            // Search across all entity types using LIKE queries
             var checkpointResults = await SearchCheckpointsInternalAsync(query, resolvedWorkspaceId, limit / 4 + 1, sinceDate);
             var planResults = await SearchPlansInternalAsync(query, resolvedWorkspaceId, limit / 4 + 1, sinceDate);
             var todoResults = await SearchTodosInternalAsync(query, resolvedWorkspaceId, limit / 4 + 1, sinceDate);
@@ -255,46 +198,30 @@ public class SearchService : ISearchService
 
     private async Task<List<SearchResultItem>> SearchCheckpointsInternalAsync(string query, string workspaceId, int limit, DateTime? since = null)
     {
-        // Use FTS5 for full-text search directly (simple approach)
-        var ftsResults = await _context.Database
-            .SqlQueryRaw<CheckpointFtsResult>(@"
-                SELECT fts.Id, fts.WorkspaceId, fts.Description, fts.WorkContext, fts.Highlights, 
-                       c.CreatedAt, c.SessionId, c.IsGlobal, c.ActiveFiles, c.GitBranch
-                FROM CheckpointsFts fts
-                JOIN Checkpoints c ON fts.Id = c.Id
-                WHERE fts MATCH {0} AND fts.WorkspaceId = {1}
-                " + (since.HasValue ? " AND c.CreatedAt >= {2}" : "") + @"
-                ORDER BY bm25(fts), c.CreatedAt DESC
-                LIMIT {" + (since.HasValue ? "3" : "2") + "}", 
-                query, workspaceId, since)
-            .ToListAsync();
+        var checkpointsQuery = _context.Checkpoints
+            .Where(c => c.WorkspaceId == workspaceId)
+            .Where(c => c.Description.ToLower().Contains(query.ToLower()) || (c.WorkContext != null && c.WorkContext.ToLower().Contains(query.ToLower())));
 
-        var checkpoints = ftsResults.Select(r => new Checkpoint
-        {
-            Id = r.Id,
-            WorkspaceId = r.WorkspaceId,
-            Description = r.Description,
-            WorkContext = r.WorkContext,
-            Highlights = System.Text.Json.JsonSerializer.Deserialize<List<string>>(r.Highlights) ?? new List<string>(),
-            CreatedAt = r.CreatedAt,
-            SessionId = r.SessionId,
-            IsGlobal = r.IsGlobal,
-            ActiveFiles = System.Text.Json.JsonSerializer.Deserialize<List<string>>(r.ActiveFiles) ?? new List<string>(),
-            GitBranch = r.GitBranch
-        }).ToList();
+        if (since.HasValue)
+            checkpointsQuery = checkpointsQuery.Where(c => c.CreatedAt >= since.Value);
+
+        var checkpoints = await checkpointsQuery
+            .OrderByDescending(c => c.CreatedAt)
+            .Take(limit)
+            .ToListAsync();
             
         var results = checkpoints.Select(c => new SearchResultItem
         {
             Id = c.Id,
             EntityType = "checkpoint",
             Title = TruncateText(c.Description, 100),
-            Content = c.WorkContext,
-            Snippet = CreateSnippet(c.Description + " " + c.WorkContext, query, 200),
+            Content = c.WorkContext ?? "",
+            Snippet = CreateSnippet(c.Description + " " + (c.WorkContext ?? ""), query, 200),
             Timestamp = c.CreatedAt,
-            Score = CalculateRelevanceScore(c.Description + " " + c.WorkContext, query),
+            Score = CalculateRelevanceScore(c.Description + " " + (c.WorkContext ?? ""), query),
             Metadata = new Dictionary<string, object>
             {
-                ["sessionId"] = c.SessionId,
+                ["sessionId"] = c.SessionId ?? "",
                 ["isGlobal"] = c.IsGlobal,
                 ["activeFiles"] = c.ActiveFiles,
                 ["highlights"] = c.Highlights
@@ -306,33 +233,17 @@ public class SearchService : ISearchService
 
     private async Task<List<SearchResultItem>> SearchPlansInternalAsync(string query, string workspaceId, int limit, DateTime? since = null)
     {
-        // Use FTS5 for full-text search
-        var ftsResults = await _context.Database
-            .SqlQueryRaw<PlanFtsResult>(@"
-                SELECT p.Id, p.WorkspaceId, p.Title, p.Description, p.Items, p.Discoveries, p.UpdatedAt,
-                       p.Status, p.Category, p.Priority
-                FROM PlansFts fts
-                JOIN Plans p ON fts.Id = p.Id
-                WHERE fts MATCH {0} AND p.WorkspaceId = {1}
-                " + (since.HasValue ? " AND p.CreatedAt >= {2}" : "") + @"
-                ORDER BY bm25(fts), p.UpdatedAt DESC
-                LIMIT {" + (since.HasValue ? "3" : "2") + "}", 
-                query, workspaceId, since)
-            .ToListAsync();
+        var plansQuery = _context.Plans
+            .Where(p => p.WorkspaceId == workspaceId)
+            .Where(p => p.Title.ToLower().Contains(query.ToLower()) || p.Description.ToLower().Contains(query.ToLower()));
 
-        var plans = ftsResults.Select(r => new Plan
-        {
-            Id = r.Id,
-            WorkspaceId = r.WorkspaceId,
-            Title = r.Title,
-            Description = r.Description,
-            Items = System.Text.Json.JsonSerializer.Deserialize<List<string>>(r.Items) ?? new List<string>(),
-            Discoveries = System.Text.Json.JsonSerializer.Deserialize<List<string>>(r.Discoveries) ?? new List<string>(),
-            UpdatedAt = r.UpdatedAt,
-            Status = Enum.TryParse<PlanStatus>(r.Status, out var planStatus) ? planStatus : PlanStatus.Draft,
-            Category = r.Category,
-            Priority = r.Priority
-        }).ToList();
+        if (since.HasValue)
+            plansQuery = plansQuery.Where(p => p.CreatedAt >= since.Value);
+
+        var plans = await plansQuery
+            .OrderByDescending(p => p.UpdatedAt)
+            .Take(limit)
+            .ToListAsync();
             
         var results = plans.Select(p => new SearchResultItem
         {
@@ -358,24 +269,17 @@ public class SearchService : ISearchService
 
     private async Task<List<SearchResultItem>> SearchTodosInternalAsync(string query, string workspaceId, int limit, DateTime? since = null)
     {
-        // Use FTS5 for full-text search
-        var ftsResults = await _context.Database
-            .SqlQueryRaw<TodoListFtsResult>(@"
-                SELECT tl.Id, tl.WorkspaceId, tl.Title, tl.Description, tl.UpdatedAt, tl.IsActive, tl.Tags
-                FROM TodoListsFts fts
-                JOIN TodoLists tl ON fts.Id = tl.Id
-                WHERE fts MATCH {0} AND tl.WorkspaceId = {1}
-                " + (since.HasValue ? " AND tl.CreatedAt >= {2}" : "") + @"
-                ORDER BY bm25(fts), tl.UpdatedAt DESC
-                LIMIT {" + (since.HasValue ? "3" : "2") + "}", 
-                query, workspaceId, since)
-            .ToListAsync();
+        var todoListsQuery = _context.TodoLists
+            .Where(tl => tl.WorkspaceId == workspaceId)
+            .Where(tl => tl.Title.ToLower().Contains(query.ToLower()) || (tl.Description != null && tl.Description.ToLower().Contains(query.ToLower())));
 
-        var todoIds = ftsResults.Select(r => r.Id).ToList();
-        var todoLists = await _context.TodoLists
+        if (since.HasValue)
+            todoListsQuery = todoListsQuery.Where(tl => tl.CreatedAt >= since.Value);
+
+        var todoLists = await todoListsQuery
             .Include(tl => tl.Items)
-            .Where(tl => todoIds.Contains(tl.Id))
             .OrderByDescending(tl => tl.UpdatedAt)
+            .Take(limit)
             .ToListAsync();
             
         var results = todoLists.Select(tl => new SearchResultItem
@@ -383,10 +287,10 @@ public class SearchService : ISearchService
             Id = tl.Id,
             EntityType = "todo",
             Title = tl.Title,
-            Content = tl.Description,
-            Snippet = CreateSnippet(tl.Title + " " + tl.Description, query, 200),
+            Content = tl.Description ?? "",
+            Snippet = CreateSnippet(tl.Title + " " + (tl.Description ?? ""), query, 200),
             Timestamp = tl.UpdatedAt,
-            Score = CalculateRelevanceScore(tl.Title + " " + tl.Description, query),
+            Score = CalculateRelevanceScore(tl.Title + " " + (tl.Description ?? ""), query),
             Metadata = new Dictionary<string, object>
             {
                 ["isActive"] = tl.IsActive,
@@ -402,32 +306,17 @@ public class SearchService : ISearchService
 
     private async Task<List<SearchResultItem>> SearchChronicleInternalAsync(string query, string workspaceId, int limit, DateTime? since = null)
     {
-        // Use FTS5 for full-text search
-        var ftsResults = await _context.Database
-            .SqlQueryRaw<ChronicleEntryFtsResult>(@"
-                SELECT ce.Id, ce.WorkspaceId, ce.Description, ce.Timestamp, ce.Type,
-                       ce.RelatedPlanId, ce.RelatedTodoId, ce.RelatedCheckpointId, ce.Tags
-                FROM ChronicleEntriesFts fts
-                JOIN ChronicleEntries ce ON fts.Id = ce.Id
-                WHERE fts MATCH {0} AND ce.WorkspaceId = {1}
-                " + (since.HasValue ? " AND ce.Timestamp >= {2}" : "") + @"
-                ORDER BY bm25(fts), ce.Timestamp DESC
-                LIMIT {" + (since.HasValue ? "3" : "2") + "}", 
-                query, workspaceId, since)
-            .ToListAsync();
+        var chronicleQuery = _context.ChronicleEntries
+            .Where(ce => ce.WorkspaceId == workspaceId)
+            .Where(ce => ce.Description.ToLower().Contains(query.ToLower()));
 
-        var chronicleEntries = ftsResults.Select(r => new ChronicleEntry
-        {
-            Id = r.Id,
-            WorkspaceId = r.WorkspaceId,
-            Description = r.Description,
-            Timestamp = r.Timestamp,
-            Type = Enum.TryParse<ChronicleEntryType>(r.Type, out var entryType) ? entryType : ChronicleEntryType.Note,
-            RelatedPlanId = r.RelatedPlanId,
-            RelatedTodoId = r.RelatedTodoId,
-            RelatedCheckpointId = r.RelatedCheckpointId,
-            Tags = System.Text.Json.JsonSerializer.Deserialize<List<string>>(r.Tags) ?? new List<string>()
-        }).ToList();
+        if (since.HasValue)
+            chronicleQuery = chronicleQuery.Where(ce => ce.Timestamp >= since.Value);
+
+        var chronicleEntries = await chronicleQuery
+            .OrderByDescending(ce => ce.Timestamp)
+            .Take(limit)
+            .ToListAsync();
             
         var results = chronicleEntries.Select(ce => new SearchResultItem
         {
@@ -549,27 +438,4 @@ public class SearchService : ISearchService
 
         return text.Substring(0, maxLength) + "...";
     }
-}
-
-public class SearchResult
-{
-    public string Query { get; set; } = string.Empty;
-    public string WorkspaceId { get; set; } = string.Empty;
-    public string? EntityType { get; set; }
-    public List<SearchResultItem> Results { get; set; } = new List<SearchResultItem>();
-    public int TotalCount { get; set; }
-    public int LimitedCount { get; set; }
-    public string? Error { get; set; }
-}
-
-public class SearchResultItem
-{
-    public string Id { get; set; } = string.Empty;
-    public string EntityType { get; set; } = string.Empty;
-    public string Title { get; set; } = string.Empty;
-    public string Content { get; set; } = string.Empty;
-    public string Snippet { get; set; } = string.Empty;
-    public DateTime Timestamp { get; set; }
-    public double Score { get; set; }
-    public Dictionary<string, object> Metadata { get; set; } = new Dictionary<string, object>();
 }

@@ -38,12 +38,12 @@ Goldfish teaches Claude systematic development practices that persist across ses
 
 ### Workflow Integration with Other Tools
 
-{{#each tool_comparisons}}
-**{{task}}:**
-- Use {{server_tool}} for {{advantage}}
-- Avoids limitations of {{built_in_tool}}: {{limitation}}
-- Performance benefit: {{performance_metric}}
-{{/each}}
+{{ for comparison in tool_comparisons }}
+**{{comparison.task}}:**
+- Use {{comparison.server_tool}} for {{comparison.advantage}}
+- Avoids limitations of {{comparison.built_in_tool}}: {{comparison.limitation}}
+- Performance benefit: {{comparison.performance_metric}}
+{{ end }}
 
 ### Cross-Session Continuity
 

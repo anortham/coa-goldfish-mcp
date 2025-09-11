@@ -83,6 +83,7 @@ This tool builds persistent development habits that survive crashes and context 
 
                     result.Checkpoint = await _storage.SaveCheckpointAsync(checkpoint);
                     result.Message = "Checkpoint saved successfully";
+                    result.Success = true;
                     break;
 
                 case "restore":
@@ -98,6 +99,7 @@ This tool builds persistent development habits that survive crashes and context 
                     if (result.Checkpoint != null)
                     {
                         result.Message = "Checkpoint restored successfully";
+                        result.Success = true;
                     }
                     else
                     {

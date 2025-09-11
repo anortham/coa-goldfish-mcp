@@ -15,10 +15,14 @@
 - **`mcp__goldfish__standup`** - Daily/weekly summaries. Use `action="daily"` for recent work, `scope="all"` for cross-workspace reports
 
 ### Support Tools (Secondary)
-- **`mcp__goldfish__search_history`** - Find past work with `query` parameter
-- **`mcp__goldfish__timeline`** - Chronological view with `since` parameter
+- **`mcp__goldfish__search`** - Full-text search across all entities with FTS5 
+- **`mcp__goldfish__search_checkpoints`** - Search checkpoints specifically
+- **`mcp__goldfish__search_plans`** - Search plans specifically
+- **`mcp__goldfish__search_todos`** - Search todos specifically
+- **`mcp__goldfish__search_chronicle`** - Search chronicle entries specifically
 - **`mcp__goldfish__recall`** - Quick context restoration (no parameters needed)
-- **`mcp__goldfish__list_workspaces`** - Show available workspaces
+- **`mcp__goldfish__chronicle`** - Decision and progress tracking
+- **`mcp__goldfish__workspace`** - Workspace management and switching
 
 ## CRITICAL TESTING INFO
 **After making code changes, user must restart Claude Code before testing MCP tools.**
@@ -42,19 +46,21 @@
 ```csharp
 public class GoldfishDbContext : DbContext
 {
-    public DbSet<Memory> Memories { get; set; }
+    public DbSet<WorkspaceState> WorkspaceStates { get; set; }
+    public DbSet<Plan> Plans { get; set; }
     public DbSet<TodoList> TodoLists { get; set; }
     public DbSet<TodoItem> TodoItems { get; set; }
-    public DbSet<Plan> Plans { get; set; }
-    // ... other entities
+    public DbSet<Checkpoint> Checkpoints { get; set; }
+    public DbSet<ChronicleEntry> ChronicleEntries { get; set; }
 }
 ```
 
 ### Key Entities
-- **Memory**: Core storage for checkpoints, search history, and general memories
+- **Checkpoint**: Session snapshots with full context restoration
+- **Plan**: Strategic planning documents with versioning and progress tracking
 - **TodoList/TodoItem**: Task management with hierarchical structure
-- **Plan**: Strategic planning documents with versioning
-- **Workspace**: Multi-project organization with isolation
+- **ChronicleEntry**: Decision tracking and milestone recording
+- **WorkspaceState**: Multi-project organization with isolation
 
 ### Migration & Deployment
 ```bash
@@ -104,12 +110,12 @@ public async Task<ToolResult> TodoAsync(TodoRequest request)
 }
 ```
 
-### Memory Types & Storage
-- **general**: Default working memory and session data
-- **todo**: Task tracking with relationships and dependencies
-- **checkpoint**: Session snapshots with full context restoration
-- **context**: Conversation context for agent handoffs
-- **plan**: Strategic planning documents with versioning
+### Data Storage & Search
+- **Checkpoints**: Session state with active files, highlights, and context
+- **Plans**: Strategic planning with items, discoveries, and progress tracking
+- **TodoLists**: Task management with smart keyword resolution
+- **ChronicleEntries**: Decision tracking and milestone recording
+- **Full-text search**: FTS5-powered search across all entities with BM25 relevance scoring
 
 ### TODO List Special Keywords
 AI agents can use intuitive keywords instead of exact IDs:
@@ -120,58 +126,56 @@ AI agents can use intuitive keywords instead of exact IDs:
 - Partial ID match - Use suffix of actual ID for easy identification
 - **Database queries optimize keyword resolution** for fast lookup
 
-## Agent Handoff System
+## Search & Discovery System
 
-### Current Tag Pattern for C# Implementation
-**Store Handoff:**
+### FTS5 Full-Text Search
+The system provides powerful search capabilities across all entities:
+
 ```csharp
-var memory = new Memory
-{
-    Content = JsonSerializer.Serialize(new
-    {
-        FromAgent = "test-designer",
-        ToAgent = "test-implementer",
-        TestSpecs = new { /* technical details */ },
-        Summary = "Brief human summary"
-    }),
-    Type = "context",
-    Tags = "handoff,from-test-designer,to-test-implementer,tdd-workflow",
-    Workspace = currentWorkspace
-};
-await _context.Memories.AddAsync(memory);
+// Search across all entities
+var result = await _searchService.SearchAsync("query", workspaceId, limit: 10);
+
+// Entity-specific searches with BM25 relevance ranking
+var checkpoints = await _searchService.SearchCheckpointsAsync("implementation");
+var plans = await _searchService.SearchPlansAsync("feature design");
+var todos = await _searchService.SearchTodosAsync("bug fix");
+var chronicle = await _searchService.SearchChronicleAsync("decision");
 ```
 
-**Retrieve Handoff:**
-```csharp
-var handoffs = await _context.Memories
-    .Where(m => m.Type == "context" && 
-                m.Tags.Contains("handoff") && 
-                m.Tags.Contains("to-test-implementer"))
-    .OrderByDescending(m => m.CreatedAt)
-    .Take(5)
-    .ToListAsync();
-```
+### Search Features
+- **BM25 relevance scoring** for better result ranking
+- **FTS5 virtual tables** with automatic sync triggers
+- **Workspace-aware queries** for isolated search results
+- **Contextual snippets** with query highlighting
 
 ## Project Structure
 
 ```
 COA.Goldfish.McpServer/          # Main MCP server project
 ├── Models/                      # Entity Framework models
-│   ├── Memory.cs               # Core memory entity
-│   ├── TodoList.cs            # TODO list management
-│   ├── Plan.cs                # Strategic planning
-│   └── GoldfishDbContext.cs   # EF Core context
+│   ├── Checkpoint.cs          # Session management entity
+│   ├── Plan.cs                # Strategic planning entity
+│   ├── TodoList.cs            # TODO list management entity
+│   ├── ChronicleEntry.cs      # Decision tracking entity
+│   ├── WorkspaceState.cs      # Workspace management entity
+│   ├── ToolParameters.cs      # MCP tool parameters
+│   └── ToolResults.cs         # MCP tool results
 ├── Services/                   # Business logic services
-│   ├── MemoryService.cs       # Memory management
-│   ├── TodoService.cs         # Task management
+│   ├── SearchService.cs       # FTS5 search implementation
 │   ├── WorkspaceService.cs    # Workspace handling
 │   └── PathResolutionService.cs # Path utilities
 ├── Tools/                      # MCP tool implementations
 │   ├── CheckpointTool.cs      # Session management
-│   ├── TodoTool.cs           # Task management
+│   ├── TodoTool.cs           # Task management  
 │   ├── PlanTool.cs           # Strategic planning
-│   └── StandupTool.cs        # Reporting tools
-├── Migrations/                 # EF Core migrations
+│   ├── StandupTool.cs        # Reporting tools
+│   ├── ChronicleTool.cs      # Decision tracking
+│   ├── WorkspaceTool.cs      # Workspace management
+│   ├── RecallTool.cs         # Context restoration
+│   └── SearchTool.cs         # Full-text search tools
+├── Services/Storage/          # Database layer
+│   ├── GoldfishDbContext.cs  # EF Core context with FTS5
+│   └── DatabaseInitializer.cs # DB setup and FTS5 tables
 └── Program.cs                 # MCP server entry point
 
 COA.Goldfish.Migration/         # Legacy data migration utility
@@ -196,6 +200,9 @@ dotnet build COA.Goldfish.sln
 
 # Run main MCP server
 dotnet run --project COA.Goldfish.McpServer
+
+# Kill stuck process (Windows)
+taskkill /F /PID [process_id]
 
 # Run all tests
 dotnet test COA.Goldfish.sln
@@ -314,3 +321,4 @@ dotnet run --project COA.Goldfish.Migration
 - **Migration included**: Seamless upgrade path from Node.js version
 - **Test coverage**: Comprehensive integration and performance test suites
 - **Production ready**: Error handling, logging, and monitoring built-in
+- scriban docs are available at "C:\source\COA CodeSearch MCP\docs\scriban-docs.md"

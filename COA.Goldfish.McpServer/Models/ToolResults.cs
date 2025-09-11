@@ -87,14 +87,11 @@ public class WorkspaceResult : ToolResultBase
 }
 
 /// <summary>
-/// Result from workflow operations
+/// Result from search operations
 /// </summary>
-public class WorkflowResult : ToolResultBase
+public class SearchToolResult : ToolResultBase
 {
-    public override string Operation => "workflow";
+    public override string Operation => "search";
     
-    public WorkflowState? CurrentState { get; set; }
-    public List<WorkflowViolation>? Violations { get; set; }
-    public ToolPriorities? ToolPriorities { get; set; }
-    public string? NextRecommendedAction { get; set; }
+    public SearchResult? SearchResult { get; set; }
 }

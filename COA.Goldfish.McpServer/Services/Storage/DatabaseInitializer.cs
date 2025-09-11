@@ -26,7 +26,11 @@ public class DatabaseInitializer
         {
             // Ensure database is created (this will create the file if using SQLite)
             await _context.Database.EnsureCreatedAsync();
-            _logger.LogInformation("Database initialization completed successfully");
+            
+            // Create FTS5 virtual tables for enhanced search functionality
+            await _context.CreateFtsTablesAsync();
+            
+            _logger.LogInformation("Database initialization completed successfully with FTS5 search tables");
         }
         catch (Exception ex)
         {

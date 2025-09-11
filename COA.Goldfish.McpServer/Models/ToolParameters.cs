@@ -298,19 +298,34 @@ public class WorkspaceParameters
 }
 
 /// <summary>
-/// Parameters for workflow operations
+/// Parameters for search operations
 /// </summary>
-public class WorkflowParameters
+public class SearchParameters
 {
     /// <summary>
-    /// Action to perform
+    /// Search query string
     /// </summary>
-    [Description("Action to perform: check, validate, priorities, enforce, recommend")]
-    public string Action { get; set; } = "check";
+    [Required]
+    [Description("The search query to find across all Goldfish data")]
+    [StringLength(500, ErrorMessage = "Query cannot exceed 500 characters")]
+    public string Query { get; set; } = string.Empty;
 
     /// <summary>
-    /// Target workspace
+    /// Target workspace (optional - uses current if not specified)
     /// </summary>
-    [Description("Target workspace (path or name)")]
-    public string? Workspace { get; set; }
+    [Description("Target workspace (path or name) - uses current workspace if not specified")]
+    public string? WorkspaceId { get; set; }
+
+    /// <summary>
+    /// Maximum number of results to return
+    /// </summary>
+    [Description("Maximum number of results to return (default: 10, max: 50)")]
+    [Range(1, 50, ErrorMessage = "Limit must be between 1 and 50")]
+    public int? Limit { get; set; } = 10;
+
+    /// <summary>
+    /// Time range filter (optional)
+    /// </summary>
+    [Description("Time range filter (e.g., '1h', '1d', '3d', '1w', '1m' or specific date). Only search items created/updated since this time.")]
+    public string? Since { get; set; }
 }

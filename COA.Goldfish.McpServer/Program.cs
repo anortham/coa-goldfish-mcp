@@ -56,11 +56,8 @@ public class Program
         services.AddScoped<DatabaseInitializer>();
         services.AddScoped<IPathResolutionService, PathResolutionService>();
         services.AddScoped<WorkspaceService>();
-        services.AddScoped<SearchService>();
-        services.AddScoped<SessionService>();
+        services.AddScoped<ISearchService, SearchService>();
         services.AddScoped<SyncService>();
-        services.AddScoped<WorkflowSuggestionService>();
-        
         // Token Optimization services
         services.AddSingleton<ITokenEstimator, DefaultTokenEstimator>();
         
@@ -79,8 +76,6 @@ public class Program
         // Behavioral adoption template services
         services.AddSingleton<TemplateProvider>();
         services.AddScoped<GoldfishResourceProvider>();
-        services.AddScoped<ToolPriorityService>();
-        services.AddScoped<WorkflowEnforcementService>();
     }
     
     /// <summary>
@@ -167,6 +162,11 @@ public class Program
             builder.Services.AddScoped<ChronicleTool>();
             builder.Services.AddScoped<StandupTool>();
             builder.Services.AddScoped<WorkspaceTool>();
+            builder.Services.AddScoped<SearchTool>();
+            builder.Services.AddScoped<SearchCheckpointsTool>();
+            builder.Services.AddScoped<SearchPlansTool>();
+            builder.Services.AddScoped<SearchTodosTool>();
+            builder.Services.AddScoped<SearchChronicleTool>();
 
             // Discover and register all tools from assembly
             builder.DiscoverTools(typeof(Program).Assembly);
@@ -174,7 +174,7 @@ public class Program
             // Configure behavioral adoption using Framework features
             var templateVariables = new COA.Mcp.Framework.Services.TemplateVariables
             {
-                AvailableTools = new[] { "checkpoint", "todo", "plan", "recall", "chronicle", "standup", "workspace" },
+                AvailableTools = new[] { "checkpoint", "todo", "plan", "recall", "chronicle", "standup", "workspace", "search", "search_checkpoints", "search_plans", "search_todos", "search_chronicle" },
                 ToolPriorities = new Dictionary<string, int>
                 {
                     {"checkpoint", 100},
