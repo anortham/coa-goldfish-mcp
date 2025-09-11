@@ -256,6 +256,10 @@ public class SearchService : ISearchService
     private async Task<List<SearchResultItem>> SearchCheckpointsInternalAsync(string query, string workspaceId, int limit, DateTime? since = null)
     {
         // Use FTS5 for full-text search directly (simple approach)
+        object[] parameters = since.HasValue 
+            ? new object[] { query, workspaceId, since.Value }
+            : new object[] { query, workspaceId };
+            
         var ftsResults = await _context.Database
             .SqlQueryRaw<CheckpointFtsResult>(@"
                 SELECT fts.Id, fts.WorkspaceId, fts.Description, fts.WorkContext, fts.Highlights, 
@@ -266,7 +270,7 @@ public class SearchService : ISearchService
                 " + (since.HasValue ? " AND c.CreatedAt >= {2}" : "") + @"
                 ORDER BY bm25(fts), c.CreatedAt DESC
                 LIMIT {" + (since.HasValue ? "3" : "2") + "}", 
-                query, workspaceId, since)
+                parameters)
             .ToListAsync();
 
         var checkpoints = ftsResults.Select(r => new Checkpoint
@@ -307,6 +311,10 @@ public class SearchService : ISearchService
     private async Task<List<SearchResultItem>> SearchPlansInternalAsync(string query, string workspaceId, int limit, DateTime? since = null)
     {
         // Use FTS5 for full-text search
+        object[] parameters = since.HasValue 
+            ? new object[] { query, workspaceId, since.Value }
+            : new object[] { query, workspaceId };
+            
         var ftsResults = await _context.Database
             .SqlQueryRaw<PlanFtsResult>(@"
                 SELECT p.Id, p.WorkspaceId, p.Title, p.Description, p.Items, p.Discoveries, p.UpdatedAt,
@@ -317,7 +325,7 @@ public class SearchService : ISearchService
                 " + (since.HasValue ? " AND p.CreatedAt >= {2}" : "") + @"
                 ORDER BY bm25(fts), p.UpdatedAt DESC
                 LIMIT {" + (since.HasValue ? "3" : "2") + "}", 
-                query, workspaceId, since)
+                parameters)
             .ToListAsync();
 
         var plans = ftsResults.Select(r => new Plan
@@ -359,6 +367,10 @@ public class SearchService : ISearchService
     private async Task<List<SearchResultItem>> SearchTodosInternalAsync(string query, string workspaceId, int limit, DateTime? since = null)
     {
         // Use FTS5 for full-text search
+        object[] parameters = since.HasValue 
+            ? new object[] { query, workspaceId, since.Value }
+            : new object[] { query, workspaceId };
+            
         var ftsResults = await _context.Database
             .SqlQueryRaw<TodoListFtsResult>(@"
                 SELECT tl.Id, tl.WorkspaceId, tl.Title, tl.Description, tl.UpdatedAt, tl.IsActive, tl.Tags
@@ -368,7 +380,7 @@ public class SearchService : ISearchService
                 " + (since.HasValue ? " AND tl.CreatedAt >= {2}" : "") + @"
                 ORDER BY bm25(fts), tl.UpdatedAt DESC
                 LIMIT {" + (since.HasValue ? "3" : "2") + "}", 
-                query, workspaceId, since)
+                parameters)
             .ToListAsync();
 
         var todoIds = ftsResults.Select(r => r.Id).ToList();
@@ -403,6 +415,10 @@ public class SearchService : ISearchService
     private async Task<List<SearchResultItem>> SearchChronicleInternalAsync(string query, string workspaceId, int limit, DateTime? since = null)
     {
         // Use FTS5 for full-text search
+        object[] parameters = since.HasValue 
+            ? new object[] { query, workspaceId, since.Value }
+            : new object[] { query, workspaceId };
+            
         var ftsResults = await _context.Database
             .SqlQueryRaw<ChronicleEntryFtsResult>(@"
                 SELECT ce.Id, ce.WorkspaceId, ce.Description, ce.Timestamp, ce.Type,
@@ -413,7 +429,7 @@ public class SearchService : ISearchService
                 " + (since.HasValue ? " AND ce.Timestamp >= {2}" : "") + @"
                 ORDER BY bm25(fts), ce.Timestamp DESC
                 LIMIT {" + (since.HasValue ? "3" : "2") + "}", 
-                query, workspaceId, since)
+                parameters)
             .ToListAsync();
 
         var chronicleEntries = ftsResults.Select(r => new ChronicleEntry

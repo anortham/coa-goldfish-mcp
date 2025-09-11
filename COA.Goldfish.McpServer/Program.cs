@@ -264,24 +264,37 @@ public class Program
             // Load comprehensive behavioral methodology template
             string templateContent;
             var assembly = typeof(Program).Assembly;
-            var resourceName = "COA.Goldfish.McpServer.Templates.goldfish-methodology.scriban";
+            var resourceName = "COA.Goldfish.McpServer.Templates.goldfish-instructions.scriban";
             
-            Log.Information("Loading comprehensive behavioral adoption template: {ResourceName}", resourceName);
+            // BEHAVIORAL ADOPTION PIPELINE: Stage 1 - Template Loading
+            Log.Information("[BEHAVIORAL-ADOPTION] Stage 1: Template Loading - Attempting to load from embedded resource: {ResourceName}", resourceName);
+            
+            // List available embedded resources for debugging
+            var availableResources = assembly.GetManifestResourceNames();
+            Log.Information("[BEHAVIORAL-ADOPTION] Available embedded resources: {Resources}", string.Join(", ", availableResources));
             
             using (var stream = assembly.GetManifestResourceStream(resourceName))
             {
                 if (stream == null)
                 {
-                    Log.Error("Critical: Comprehensive behavioral adoption template not found: {ResourceName}", resourceName);
+                    Log.Error("[BEHAVIORAL-ADOPTION] Critical: Comprehensive behavioral adoption template not found: {ResourceName}", resourceName);
                     throw new InvalidOperationException($"Required template resource not found: {resourceName}");
                 }
                 
                 using (var reader = new StreamReader(stream))
                 {
                     templateContent = await reader.ReadToEndAsync();
-                    Log.Information("Loaded comprehensive behavioral adoption template ({Length} chars)", templateContent.Length);
                 }
             }
+            
+            // BEHAVIORAL ADOPTION PIPELINE: Stage 2 - Template Content Verification
+            var templateHash = templateContent.GetHashCode().ToString("X8");
+            Log.Information("[BEHAVIORAL-ADOPTION] Stage 2: Template Content Loaded - Length: {Length} characters, Hash: {Hash}", templateContent.Length, templateHash);
+            Log.Debug("[BEHAVIORAL-ADOPTION] Template content preview: {Preview}...", templateContent.Substring(0, Math.Min(200, templateContent.Length)));
+            
+            // BEHAVIORAL ADOPTION PIPELINE: Stage 3 - Variable Preparation
+            Log.Information("[BEHAVIORAL-ADOPTION] Stage 3: Variable Preparation - Preparing {ToolCount} tools, {ComparisonCount} comparisons", 
+                templateVariables.AvailableTools.Length, templateVariables.ToolComparisons.Count);
             
             // Configure template instructions
             builder.WithTemplateInstructions(options =>
@@ -298,8 +311,22 @@ public class Program
                     ["tool_comparisons"] = templateVariables.ToolComparisons.Values.ToList(),
                     ["has_tool"] = true
                 };
+                
+                // BEHAVIORAL ADOPTION PIPELINE: Stage 4 - Template Configuration
+                Log.Information("[BEHAVIORAL-ADOPTION] Stage 4: Template Configuration Complete - Variables: {VariableCount}", options.CustomTemplateVariables.Count);
+                Log.Information("[BEHAVIORAL-ADOPTION] Template variables configured:");
+                Log.Information("[BEHAVIORAL-ADOPTION] - Available tools: {Tools}", string.Join(", ", templateVariables.AvailableTools));
+                Log.Information("[BEHAVIORAL-ADOPTION] - Tool comparisons: {Count} comparisons", templateVariables.ToolComparisons.Count);
+                Log.Information("[BEHAVIORAL-ADOPTION] - Enforcement level: {Level}", templateVariables.EnforcementLevel);
+                Log.Information("[BEHAVIORAL-ADOPTION] - Template context: {Context}", options.TemplateContext);
+                Log.Information("[BEHAVIORAL-ADOPTION] - Template instructions enabled: {Enabled}", options.EnableTemplateInstructions);
             });
 
+            // BEHAVIORAL ADOPTION PIPELINE: Stage 5 - Server Startup
+            Log.Information("[BEHAVIORAL-ADOPTION] Stage 5: Starting Goldfish MCP Server with Enhanced Behavioral Adoption");
+            Log.Information("[BEHAVIORAL-ADOPTION] Template hash: {Hash} | Enforcement: {Level} | Tools: {Count}", 
+                templateHash, templateVariables.EnforcementLevel, templateVariables.AvailableTools.Length);
+            
             // Use STDIO transport with proper stdin/stdout streams for MCP protocol compliance
             // This prevents stream concurrency issues by using raw streams instead of Console.In/Out
             builder.UseStdioTransport(options =>
@@ -308,13 +335,13 @@ public class Program
                 options.Output = new StreamWriter(Console.OpenStandardOutput()) { AutoFlush = true };
             });
             
-            // Ensure database is initialized
-            using (var scope = builder.Services.BuildServiceProvider().CreateScope())
-            {
-                var initializer = scope.ServiceProvider.GetRequiredService<DatabaseInitializer>();
-                await initializer.InitializeAsync();
-                Log.Information("Database initialized successfully");
-            }
+            // Add hosted service for database initialization
+            builder.Services.AddHostedService<DatabaseInitializationService>();
+            
+            // BEHAVIORAL ADOPTION PIPELINE: Stage 6 - Final Preparation
+            Log.Information("[BEHAVIORAL-ADOPTION] Stage 6: STDIO Transport Configured - Ready to deliver behavioral adoption instructions");
+            Log.Information("[BEHAVIORAL-ADOPTION] Pipeline Complete: Template loaded → Variables prepared → Instructions configured → Server ready");
+            Log.Information("[BEHAVIORAL-ADOPTION] Expected behavior: Claude should follow systematic development workflow and maintain organized task management");
             
             await builder.RunAsync();
         }

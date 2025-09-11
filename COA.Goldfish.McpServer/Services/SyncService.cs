@@ -209,7 +209,7 @@ public class SyncService : ISyncService
         {
             _httpClient.DefaultRequestHeaders.Authorization = 
                 new System.Net.Http.Headers.AuthenticationHeaderValue(
-                    configuration.AuthenticationType, 
+                    configuration.AuthenticationType ?? "Bearer", 
                     configuration.AuthenticationToken);
         }
 
