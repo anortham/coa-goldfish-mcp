@@ -195,7 +195,7 @@ COA.Goldfish.PerformanceTests/  # Performance benchmarks
 ## Development Commands
 
 ```bash
-# Build solution
+# Build solution (ALWAYS use Debug mode - Release locks files when MCP server is running)
 dotnet build COA.Goldfish.sln
 
 # Run main MCP server
@@ -321,4 +321,5 @@ dotnet run --project COA.Goldfish.Migration
 - **Migration included**: Seamless upgrade path from Node.js version
 - **Test coverage**: Comprehensive integration and performance test suites
 - **Production ready**: Error handling, logging, and monitoring built-in
+- **IMPORTANT**: Always use Debug builds when MCP server is running - Release mode will lock executables and require killing active sessions
 - scriban docs are available at "C:\source\COA CodeSearch MCP\docs\scriban-docs.md"
