@@ -22,20 +22,7 @@ public class StandupTool : GoldfishToolBase<StandupParameters, StandupResult>
     }
 
     public override string Name => "standup";
-    public override string Description => @"Generate professional development progress reports with structured methodology.
-
-STANDUP METHODOLOGY:
-- Daily: What was accomplished yesterday, what's planned today, any blockers
-- Weekly: Major achievements, key decisions, lessons learned across projects  
-- Project: Comprehensive retrospective with metrics and insights
-
-PROFESSIONAL REPORTING:
-✅ Focus on business value delivered, not just tasks completed
-✅ Identify patterns in productivity and blockers
-✅ Track technical debt and quality improvements
-✅ Measure progress against strategic plans
-
-This tool creates accountability and continuous improvement in development practices.";
+    public override string Description => "Daily work summaries and progress reports. Shows what you accomplished, current tasks, blockers. Perfect for meetings and \"what did I do?\" questions.";
 
     protected override async Task<StandupResult> ExecuteInternalAsync(
         StandupParameters parameters, 

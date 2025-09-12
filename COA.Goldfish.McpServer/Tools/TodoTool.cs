@@ -26,26 +26,7 @@ public class TodoTool : GoldfishToolBase<TodoParameters, TodoResult>
     }
 
     public override string Name => "todo";
-    public override string Description => @"Manage tasks with structured todo methodology for systematic development.
-
-TODO-DRIVEN DEVELOPMENT:
-✅ Break large features into concrete, actionable tasks
-✅ Use 'active' and 'latest' keywords for quick access
-✅ Mark tasks complete IMMEDIATELY when finished
-✅ Create new lists for major features or bug investigations
-
-TASK STRUCTURING PRINCIPLES:
-- Each task should be completable in 2-4 hours max
-- Tasks should be verifiable (clear done criteria)
-- High-priority tasks go to 'active' list
-- Related tasks should be grouped in same list
-
-WORKFLOW INTEGRATION:
-- Start feature → create todo list → work systematically
-- Bug found → create investigation todo list
-- Daily standup → review active tasks and progress
-
-This tool enforces systematic task management over chaotic development.";
+    public override string Description => "Manage tasks efficiently. Create lists, track progress, mark complete. Use keywords \"latest\" and \"active\" to reference lists quickly.";
 
     protected override async Task<TodoResult> ExecuteInternalAsync(
         TodoParameters parameters, 

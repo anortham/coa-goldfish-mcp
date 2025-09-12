@@ -21,28 +21,7 @@ public class PlanTool : GoldfishToolBase<PlanParameters, PlanResult>
     }
 
     public override string Name => "plan";
-    public override string Description => @"Create strategic plans with structured methodology for complex features and architecture.
-
-STRATEGIC PLANNING METHODOLOGY:
-✅ ALWAYS plan before implementing complex features (3+ files, new patterns)
-✅ Include problem statement, approach, risks, and success criteria
-✅ Break into phases with concrete deliverables
-✅ Generate todos automatically from plan items
-
-PLANNING WORKFLOW:
-1. Complex feature requested → create strategic plan first
-2. Define problem clearly → research existing patterns
-3. Design approach → identify risks and dependencies
-4. Break into phases → generate concrete todos
-5. Execute systematically → update plan with lessons learned
-
-PLAN CATEGORIES:
-- 'feature': New functionality development
-- 'architecture': System design and refactoring
-- 'research': Investigation and spike work
-- 'bugfix': Complex bug resolution strategies
-
-This tool prevents chaotic feature development through disciplined planning.";
+    public override string Description => "PROACTIVE planning tool for complex features and architecture. Use BEFORE coding to design implementation approach, break down requirements, identify risks, and generate TODO lists. Different from checkpoint: plan = future work design, checkpoint = current progress save. Essential for features requiring multiple files/steps.";
 
     protected override async Task<PlanResult> ExecuteInternalAsync(
         PlanParameters parameters, 

@@ -24,27 +24,7 @@ public class CheckpointTool : GoldfishToolBase<CheckpointParameters, CheckpointR
     }
 
     public override string Name => "checkpoint";
-    public override string Description => @"Save and restore session state following checkpoint-driven development methodology.
-
-CHECKPOINT DISCIPLINE - MANDATORY PRACTICES:
-✅ Checkpoint after completing meaningful work (feature, bug fix, refactor)
-✅ Checkpoint before risky changes (major refactors, architecture changes)
-✅ Checkpoint before breaks/end of session to maintain context
-✅ Always include description that captures WHAT was accomplished and WHY
-
-CHECKPOINT WORKFLOW:
-1. Completed significant work → checkpoint with clear description
-2. About to make risky changes → checkpoint current stable state
-3. Session ending → checkpoint progress and next steps
-4. Resuming work → restore to understand context
-
-DISCIPLINE ENFORCEMENT:
-- Never leave work without checkpointing
-- Always describe the business value accomplished  
-- Include active files and current branch context
-- Link to related todos and plans
-
-This tool builds persistent development habits that survive crashes and context switches.";
+    public override string Description => "Save progress or restore session context. Use after completing tasks, before breaks, when resuming work, or asking \"what was I working on?\"";
 
     protected override async Task<CheckpointResult> ExecuteInternalAsync(
         CheckpointParameters parameters, 
