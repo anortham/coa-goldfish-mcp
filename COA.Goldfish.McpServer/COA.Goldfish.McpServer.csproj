@@ -6,6 +6,9 @@
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <LangVersion>latest</LangVersion>
+
+    <!-- Enable XML documentation generation for enhanced MCP tool descriptions -->
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
     
     <!-- Global dotnet tool configuration -->
     <IsPackable>true</IsPackable>
@@ -27,8 +30,8 @@
 
   <ItemGroup>
     <!-- COA Framework NuGet package references -->
-    <PackageReference Include="COA.Mcp.Framework" Version="2.1.16" />
-    <PackageReference Include="COA.Mcp.Framework.TokenOptimization" Version="2.1.16" />
+    <PackageReference Include="COA.Mcp.Framework" Version="2.1.23" />
+    <PackageReference Include="COA.Mcp.Framework.TokenOptimization" Version="2.1.23" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" Version="9.0.8" />
     
     <!-- Entity Framework Core for SQLite -->
